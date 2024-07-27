@@ -1,0 +1,27 @@
+GET  http://localhost:5000/users
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJlbWFpbCI6ImVtYWlsQGV4YW1wbGUuY29tIiwiaWF0IjoxNzIyMDQ3NjEyLCJleHAiOjE3MjIxMzQwMTJ9.N-l5X4P8-_pc0LBWqpP8CmS1CBYrKbJuA4jI2tAcNEM
+
+##3
+POST  http://localhost:5000/users
+Content-Type: application/json
+
+{
+    "username": "test",
+    "password": "1213",
+    "confPassword": "1213",
+    "email": "email@example.com",
+    "id_unit": null,
+    "role": "admin"
+}
+
+###
+POST  http://localhost:5000/users/login
+Content-Type: application/json
+
+{
+    "emailOrUsername": "test",
+    "password": "1213"
+}
+
+###
+GET http://localhost:5000/token
