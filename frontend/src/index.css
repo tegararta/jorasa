@@ -1,0 +1,34 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root{
+  font-family: 'Montserrat', sans-serif;
+}
+body{
+  background: white;
+}
+li{
+  list-style: none;
+  cursor: pointer;
+  position: relative;
+}
+
+li:hover::before{
+  position: absolute;
+  content: '';
+  height: 4px;
+  width: 100%;
+  background: #2B8D93;
+  right: 0;
+  bottom: -10px;
+  color: #2B8D93;
+}
+.icon{
+  cursor: pointer;
+}
+.card{
+  background: #000;
+}
