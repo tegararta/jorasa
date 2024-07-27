@@ -1,21 +1,17 @@
 import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { Login, Beranda, Dashboard, Saran, DetailSaran, BuatSurvey, DataResponden, TentangKami, EditProfile, EditPassword } from './Pages';
-import Sidebar from './Components/SidebarDiv';
-import TopBar from './Components/TopBar';
-import Survey from './Responden/Survey';
-import DataDiri from './Responden/DataDiri';
-import UnitKerja from './Pages/UnitKerja';
-import LaporanSurvey from './Pages/LaporanSurvey';
-import SurveyLink from './Pages/SurveyLink';
+import { Login, Beranda, Dashboard, Saran, DetailSaran, BuatSurvey, DataResponden, TentangKami, EditProfile, EditPassword, LaporanSurvey, UnitKerja, SurveyLink } from './Pages';
+import {Sidebar, TopBar} from './Components';
+import{Survey, DataDiri} from './Responden';
+import './App.css';  
 
 const Layout = ({ children }) => {
   return (
-    <div className="flex h-auto">
-      <Sidebar />
+    <div className="flex h-screen">
+      <Sidebar className="sidebar " />
       <div className="flex flex-col flex-grow">
-        <TopBar />
-        <div className="flex-grow p-4 bg-gray-100 h-screen">
+        <TopBar className="topbar" />
+        <div className="flex-grow p-4 bg-gray-100 overflow-auto">
           {children}
         </div>
       </div>

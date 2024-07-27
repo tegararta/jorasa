@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 
 function DataDiri() {
@@ -6,7 +6,21 @@ function DataDiri() {
   const [noHp, setNoHp] = useState("62");
   const [umur, setUmur] = useState("");
   const [jenisKelamin, setJenisKelamin] = useState("");
+  const [layanan, setLayanan] = useState([]);
+  const [selectedLayanan, setSelectedLayanan] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Dummy data untuk layanan
+    const dummyLayanan = [
+      { id: 1, name: 'Layanan 1' },
+      { id: 2, name: 'Layanan 2' },
+      { id: 3, name: 'Layanan 3' },
+    ];
+
+    // Simulasikan pengambilan data dari backend
+    setLayanan(dummyLayanan);
+  }, []);
 
   const handleNamaChange = (event) => {
     setNama(event.target.value);
@@ -30,15 +44,20 @@ function DataDiri() {
     setJenisKelamin(event.target.value);
   };
 
+  const handleLayananChange = (event) => {
+    setSelectedLayanan(event.target.value);
+  };
+
   const handleSubmit = () => {
     // Handle form submission
     console.log("Nama:", nama);
     console.log("No. HP:", noHp);
     console.log("Umur:", umur);
     console.log("Jenis Kelamin:", jenisKelamin);
+    console.log("Layanan:", selectedLayanan);
     // Redirect to survey page
     navigate('/SurveyJoRasa', {
-      state: { nama, noHp, umur, jenisKelamin },
+      state: { nama, noHp, umur, jenisKelamin, layanan: selectedLayanan },
     });
   };
 
@@ -81,6 +100,24 @@ function DataDiri() {
             onChange={handleUmurChange}
             className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           />
+        </div>
+        <div className="mb-4">
+          <label htmlFor="layanan" className="block text-gray-700 text-sm font-bold mb-2">
+            Layanan
+          </label>
+          <select
+            id="layanan"
+            value={selectedLayanan}
+            onChange={handleLayananChange}
+            className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          >
+            <option value="">Pilih Layanan</option>
+            {layanan.map((service) => (
+              <option key={service.id} value={service.id}>
+                {service.name}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="mb-4">
           <label htmlFor="jenisKelamin" className="block text-gray-700 text-sm font-bold mb-2">

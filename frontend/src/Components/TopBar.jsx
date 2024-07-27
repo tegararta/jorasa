@@ -6,8 +6,8 @@ function TopBar() {
   const [showEditPassword, setShowEditPassword] = useState(false); // State to show EditPassword component
 
   const user = {
-    name: 'John Doe', // Nama user yang diambil dari akun yang login
-    profilePicture: 'https://images.app.goo.gl/AxJwMjXwvyr8cQXk8', // URL gambar profil user
+    name: 'John Doe',
+    profilePicture: 'https://static.vecteezy.com/system/resources/thumbnails/005/544/718/small_2x/profile-icon-design-free-vector.jpg',
   };
 
   const handleProfileClick = () => {
@@ -24,16 +24,16 @@ function TopBar() {
   };
 
   return (
-    <div>
-      <div className="bg-white py-2 px-4 flex items-center justify-between">
-        <div className="flex items-center ml-auto">
+    <div className=''>
+      <div className="bg-white py-6 px-10 flex items-center justify-between">
+        <div className="flex items-center ml-auto ">
           <span className="mr-2 text-[#416829] font-semibold">
             Halo, {user.name}
           </span>
           <div className="relative">
             <img
               src={user.profilePicture}
-              alt="Profile Picture"
+              alt="fotouser"
               className="rounded-full w-8 h-8 cursor-pointer"
               onClick={handleProfileClick}
             />

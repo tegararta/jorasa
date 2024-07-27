@@ -116,27 +116,19 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      <div className="flex-grow p-6">
-        <div className="mb-6">
-          {user && (
-            <div className="bg-white rounded-lg shadow-md p-4 text-center">
-              <h2 className="text-2xl font-bold">{user.name}</h2>
-              <p className="text-gray-500">{user.email}</p>
-            </div>
-          )}
-        </div>
+    <div className="flex bg-gray-100">
+      <div className="flex-grow">
         <div className="grid grid-cols-3 gap-6">
           <div className="bg-white rounded-lg shadow-md p-2 text-center w-full">
-            <h2 className="text-2xl font-bold mt-1">714k</h2>
+            <h2 className="text-2xl font-bold mt-1">114k</h2>
             <p className="text-gray-500">Unit Kerja</p>
           </div>
           <div className="bg-white rounded-lg shadow-md p-2 text-center w-full">
-            <h2 className="text-2xl font-bold mt-1">1.35m</h2>
+            <h2 className="text-2xl font-bold mt-1">1000</h2>
             <p className="text-gray-500">Layanan</p>
           </div>
           <div className="bg-white rounded-lg shadow-md p-2 text-center w-full">
-            <h2 className="text-2xl font-bold mt-1">234</h2>
+            <h2 className="text-2xl font-bold mt-1">900</h2>
             <p className="text-gray-500">Responden</p>
           </div>
         </div>

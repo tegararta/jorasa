@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const Beranda = () => {
   return (
-    <div className="bg-[#FFFFFF] min-h-screen">
+    <div className="bg-white min-h-screen">
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center px-9">
           <img src="/assets/logo.png" alt="Logo" className="h-12 w-auto" />

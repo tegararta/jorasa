@@ -11,7 +11,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="bg-[#A8D1A1] p-4 w-64 h-auto shadow-lg justify-between">
+    <div className="bg-[#A8D1A1] p-10 w-auto h-auto shadow-lg justify-between">
       <div>
         <div className="flex items-center justify-center mb-4">
           <img
