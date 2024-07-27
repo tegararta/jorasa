@@ -1,9 +1,8 @@
-const { user } = require('../models');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { Op } = require('sequelize');
+const user = require('../models/user'); // Sesuaikan nama model
 
-// Login user
 const loginUser = async (req, res) => {
     try {
         const { emailOrUsername, password } = req.body;
@@ -28,24 +27,26 @@ const loginUser = async (req, res) => {
         }
 
         const userRecord = users[0];
+        console.log('User record:', userRecord);
+        
         const isValidPassword = await bcrypt.compare(password, userRecord.password);
         if (!isValidPassword) {
             return res.status(400).json({ error: 'Kata sandi salah' });
         }
 
-        const { id: userId, username, email } = userRecord;
-        const token = jwt.sign({ userId, username, email }, process.env.ACCESS, { expiresIn: '15s' });
-        const fresh = jwt.sign({ userId, username, email }, process.env.REFFACCESS, { expiresIn: '1d' });
+        const { id_user, username, email } = userRecord; // Mengakses properti yang benar
+        const token = jwt.sign({ userId: id_user, username, email }, process.env.ACCESS, { expiresIn: '30s' });
+        const fresh = jwt.sign({ userId: id_user, username, email }, process.env.REFFACCESS, { expiresIn: '1d' });
 
-        await user.update({ fresh }, {
+        await user.update({ refresh_token: fresh }, {
             where: {
-                id: userId
+                id_user: id_user
             }
         });
 
         res.cookie('refreshToken', fresh, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production', // Pastikan ini hanya aktif di production
+            // secure: process.env.NODE_ENV === 'production', // Pastikan ini hanya aktif di production
             maxAge: 24 * 60 * 60 * 1000 // 1 hari dalam milidetik
         });
 
@@ -166,6 +167,18 @@ const deleteUsersById = async (req, res) => {
     }
 };
 
+const logout = async (req, res) => {
+    try {
+        res.clearCookie('refreshToken', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production'
+        });
+        res.json({ message: 'Logout berhasil' });
+    } catch (error) {
+        console.error('Error during logout:', error);
+        res.status(500).json({ error: 'Terjadi kesalahan pada server' });
+    }
+};
 
 module.exports = {
     loginUser,
@@ -174,5 +187,7 @@ module.exports = {
     getUserById,
     createUsers,
     updateUsersById,
-    deleteUsersById
+    deleteUsersById,
+    logout
 }
+

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -103,6 +103,13 @@ const ageData = {
 
 const Dashboard = () => {
   const [showSidebar, setShowSidebar] = useState(true);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    // Fetch user data from localStorage
+    const userData = JSON.parse(localStorage.getItem('user'));
+    setUser(userData);
+  }, []);
 
   const toggleSidebar = () => {
     setShowSidebar(!showSidebar);
@@ -111,6 +118,14 @@ const Dashboard = () => {
   return (
     <div className="flex h-screen bg-gray-100">
       <div className="flex-grow p-6">
+        <div className="mb-6">
+          {user && (
+            <div className="bg-white rounded-lg shadow-md p-4 text-center">
+              <h2 className="text-2xl font-bold">{user.name}</h2>
+              <p className="text-gray-500">{user.email}</p>
+            </div>
+          )}
+        </div>
         <div className="grid grid-cols-3 gap-6">
           <div className="bg-white rounded-lg shadow-md p-2 text-center w-full">
             <h2 className="text-2xl font-bold mt-1">714k</h2>
@@ -126,7 +141,7 @@ const Dashboard = () => {
           </div>
         </div>
         <div className="grid grid-cols-2 gap-6 mt-6">
-        <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-bold mb-4 text-center">Penilaian Unit Kerja</h2>
             <div className="flex items-center justify-center w-full h-64">
               <Pie data={pieData} />

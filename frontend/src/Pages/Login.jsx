@@ -1,9 +1,29 @@
 import React, { useState } from "react";
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Login = () => {
-  const [username, setUsername] = useState('');
+  const [emailOrUsername, setEmailOrUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post('http://localhost:5000/users/login', 
+        { emailOrUsername, password },
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+      console.log(response)
+      // Assuming the response contains a token or user data
+      localStorage.setItem('token', response.data.token); // Save token if needed
+      navigate('/dashboard'); // Redirect to dashboard upon successful login
+    } catch (err) {
+      setError('Invalid email/username or password');
+    }
+  };
 
   return (
     <div className="bg-[#A8D1A1] flex flex-col items-center justify-center min-h-screen px-4 py-8">
@@ -28,9 +48,9 @@ const Login = () => {
                 />
                 <input
                   type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Nama"
+                  value={emailOrUsername}
+                  onChange={(e) => setEmailOrUsername(e.target.value)}
+                  placeholder="Nama atau Email"
                   className="w-full h-12 bg-transparent text-white text-lg pl-16 pr-4 rounded-full outline-none placeholder:text-white placeholder:opacity-70"
                 />
               </div>
@@ -42,7 +62,7 @@ const Login = () => {
                   src="/assets/image9.png"
                 />
                 <input
-                  type="password" // Ganti type menjadi password
+                  type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Sandi"
@@ -51,10 +71,15 @@ const Login = () => {
               </div>
             </div>
 
+            {error && <div className="text-red-500 text-center mb-4">{error}</div>}
+
             <div className="flex justify-center">
-              <Link to="/dashboard" className="bg-[#416829] hover:bg-[#A8D1A1] text-white font-bold py-2 px-6 rounded-full">
+              <button
+                onClick={handleSubmit}
+                className="bg-[#416829] hover:bg-[#A8D1A1] text-white font-bold py-2 px-6 rounded-full"
+              >
                 Masuk
-              </Link>
+              </button>
             </div>
           </div>
         </div>

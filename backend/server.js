@@ -1,35 +1,44 @@
 const express = require('express');
 const helmet = require('helmet');
+const dotenv = require('dotenv');
 const cookieParser = require('cookie-parser');
-const { sequelize } = require('./config/db'); // Impor instance sequelize
-const { user, unit_kerja, survey, layanan, pertanyaan, coresponden, jawaban, saran } = require('./models'); // Impor semua model
+const cors = require('cors'); // Import CORS
+const { sequelize } = require('./config/db'); // Import sequelize instance
+const { user, unit_kerja, survey, layanan, pertanyaan, coresponden, jawaban, saran } = require('./models'); // Import all models
 const middlewareLogReq = require('./middleware/logs');
+dotenv.config();
 
-// import Router
+// Import Router
 const userRoutes = require('./routes/userRoutes'); 
 const tokenRoutes = require('./routes/tokenRoutes');
 const app = express();
 
 // Middleware
-app.use(cookieParser()); // Gunakan cookie-parser sebelum rute
+app.use(cookieParser()); // Use cookie-parser before routes
 app.use(helmet());
-app.use(express.json()); 
+app.use(express.json());
+app.use(cors({ 
+    credentials: true,
+    origin: 'http://localhost:3000', // Replace with your frontend URL
+    methods: 'GET,POST,PUT,DELETE',
+    allowedHeaders: 'Content-Type,Authorization'
+})); // Use CORS
 
 const startServer = async () => {
     try {
         await sequelize.authenticate();
         console.log('Database connected...');
 
-        // Sync semua model dengan database
+        // Sync all models with the database
         await sequelize.sync({ force: false });
         console.log('All models were synchronized successfully.');
 
-        // Middleware dan Rute
+        // Middleware and Routes
         app.use(middlewareLogReq);
         app.use('/token', tokenRoutes);
         app.use('/users', userRoutes);
 
-        // Jalankan server pada port 5000
+        // Start server on port 5000
         app.listen(5000, () => {
             console.log('Server started on port 5000');
         });
