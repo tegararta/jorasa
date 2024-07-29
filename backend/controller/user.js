@@ -169,11 +169,24 @@ const deleteUsersById = async (req, res) => {
 
 const logout = async (req, res) => {
     try {
-        res.clearCookie('refreshToken', {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production'
+        const refreshToken = req.cookies.refreshToken;
+        console.log('Received refresh token:', refreshToken);
+        if (!refreshToken) return res.sendStatus(204); // No Content
+    
+        const User = await user.findOne({ 
+            where: {
+                refresh_token: refreshToken,
+            }
         });
-        res.json({ message: 'Logout berhasil' });
+        if (!User) return res.sendStatus(204); // No Content
+        
+        console.log('User found:', User);
+        
+        await User.update({ refresh_token: null }, {
+            where: { id_user: User.id_user } // Menggunakan id_user dari user yang ditemukan
+        });
+        res.clearCookie('refreshToken');
+        return res.sendStatus(200); // OK
     } catch (error) {
         console.error('Error during logout:', error);
         res.status(500).json({ error: 'Terjadi kesalahan pada server' });
@@ -188,6 +201,6 @@ module.exports = {
     createUsers,
     updateUsersById,
     deleteUsersById,
-    logout
+    logout,
 }
 

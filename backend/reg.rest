@@ -1,5 +1,5 @@
 GET  http://localhost:5000/users
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJuYW1lIjoidGVzdCIsImVtYWlsIjoiZW1haWxAZXhhbXBsZS5jb20iLCJpYXQiOjE3MjIxMTU0NzUsImV4cCI6MTcyMjExOTA3NX0.wijRJvhINGHmGIgpnkurx8w23GH4fDaoYwpA9PzgBBI
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJuYW1lIjoidGVzdCIsImVtYWlsIjoiZW1haWxAZXhhbXBsZS5jb20iLCJpYXQiOjE3MjIyMDc0NjEsImV4cCI6MTcyMjIwNzQ3Nn0.RFACiX0oiDN9VFvYxhV2zheRyVU2YzDo6Q58PlALIH0
 
 ###
 POST  http://localhost:5000/users
@@ -27,4 +27,4 @@ Content-Type: application/json
 GET http://localhost:5000/token
 
 ###
-GET http://localhost:5000/logout
+DELETE http://localhost:5000/users/logout

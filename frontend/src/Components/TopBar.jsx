@@ -1,34 +1,57 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import EditPassword from './EditPassword'; // Pastikan nama dan jalur ini benar
 
 function TopBar() {
   const [showMenu, setShowMenu] = useState(false);
-  const [showEditPassword, setShowEditPassword] = useState(false); // State to show EditPassword component
+  const [showEditPassword, setShowEditPassword] = useState(false);
+  const [user, setUser] = useState(null);
 
-  const user = {
-    name: 'John Doe',
-    profilePicture: 'https://static.vecteezy.com/system/resources/thumbnails/005/544/718/small_2x/profile-icon-design-free-vector.jpg',
-  };
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://localhost:5000/users', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (response.data.length > 0) {
+          setUser(response.data[0]); // Akses elemen pertama dari array
+        } else {
+          console.error('No user data found');
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const handleProfileClick = () => {
     setShowMenu(!showMenu);
   };
 
   const handleEditPassword = () => {
-    setShowMenu(false); // Tutup menu
-    setShowEditPassword(true); // Tampilkan komponen EditPassword
+    setShowMenu(false);
+    setShowEditPassword(true);
   };
 
   const handleCloseEditPassword = () => {
-    setShowEditPassword(false); // Tutup komponen EditPassword
+    setShowEditPassword(false); 
   };
-
+  
+  if (!user) {
+    return <div>Loading...</div>;
+  }
+  
   return (
     <div className=''>
       <div className="bg-white py-6 px-10 flex items-center justify-between">
         <div className="flex items-center ml-auto ">
           <span className="mr-2 text-[#416829] font-semibold">
-            Halo, {user.name}
+            Halo, {user.username}
           </span>
           <div className="relative">
             <img

@@ -5,23 +5,27 @@ import axios from 'axios';
 const Login = () => {
   const [emailOrUsername, setEmailOrUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [msg, setMsg] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
-      const response = await axios.post('http://localhost:5000/users/login', 
-        { emailOrUsername, password },
-        { headers: { 'Content-Type': 'application/json' } }
-      );
-      console.log(response)
-      // Assuming the response contains a token or user data
-      localStorage.setItem('token', response.data.token); // Save token if needed
-      navigate('/dashboard'); // Redirect to dashboard upon successful login
-    } catch (err) {
-      setError('Invalid email/username or password');
+      const response = await axios.post('http://localhost:5000/users/login', {
+        emailOrUsername: emailOrUsername,
+        password: password,
+      });
+  
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token); // Simpan token ke localStorage
+        navigate('/dashboard');
+        setMsg('');
+      } else {
+        setMsg(response.data.msg); // Use `error` instead of `msg` to match your backend
+      }
+    } catch (error) {
+      console.error(msg);
+      setMsg('Terjadi kesalahan pada server');
     }
   };
 
@@ -71,7 +75,7 @@ const Login = () => {
               </div>
             </div>
 
-            {error && <div className="text-red-500 text-center mb-4">{error}</div>}
+            {msg && <div className="text-red-500 text-center mb-4">{msg}</div>}
 
             <div className="flex justify-center">
               <button

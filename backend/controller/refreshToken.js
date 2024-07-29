@@ -8,12 +8,12 @@ const refreshToken = async (req, res) => {
     console.log('Received refresh token:', refreshToken);
     if (!refreshToken) return res.sendStatus(401);
 
-    const user = await User.findOne({ 
+    const user = await User.findAll({ 
       where: {
         refresh_token: refreshToken,
       }
     });
-    if (!user) return res.sendStatus(403);
+    if (!user[0]) return res.sendStatus(403);
 
     jwt.verify(refreshToken, process.env.REFFACCESS, (err, decoded) => {
       if (err) {
@@ -23,16 +23,15 @@ const refreshToken = async (req, res) => {
 
       console.log('Decoded token info:', decoded);
 
-      const userId = user.id_user;
-      const username = user.username;
-      const email = user.email;
+      const userId = user[0].id_user;
+      const username = user[0].username;
+      const email = user[0].email;
 
       console.log('Creating new access token for user:', { userId, username, email });
 
       const accessToken = jwt.sign({ userId, username, email }, process.env.ACCESS, {
-        expiresIn: '1h',
+        expiresIn: '15s',
       });
-
       console.log('Generated access token:', accessToken);
       res.json({ accessToken });
     });
