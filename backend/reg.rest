@@ -1,15 +1,15 @@
 GET  http://localhost:5000/users
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJuYW1lIjoidGVzdCIsImVtYWlsIjoiZW1haWxAZXhhbXBsZS5jb20iLCJpYXQiOjE3MjIyMDc0NjEsImV4cCI6MTcyMjIwNzQ3Nn0.RFACiX0oiDN9VFvYxhV2zheRyVU2YzDo6Q58PlALIH0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsInVzZXJuYW1lIjoiaW5kcmEiLCJlbWFpbCI6ImluZHJhQGdtYWlsLmNvbSIsImlhdCI6MTcyMjI0MDMxMCwiZXhwIjoxNzIyMzI2NzEwfQ.QfPQS7TJRIuMh1sfLRGoX1rimo1JSp_7wK5xTS0x3gQ
 
 ###
 POST  http://localhost:5000/users
 Content-Type: application/json
 
 {
-    "username": "test",
+    "username": "indra",
     "password": "1213",
     "confPassword": "1213",
-    "email": "email@example.com",
+    "email": "indra@gmail.com",
     "id_unit": null,
     "role": "admin"
 }
@@ -19,7 +19,7 @@ POST  http://localhost:5000/users/login
 Content-Type: application/json
 
 {
-    "emailOrUsername": "test",
+    "emailOrUsername": "indra",
     "password": "1213"
 }
 

@@ -27,14 +27,13 @@ const loginUser = async (req, res) => {
         }
 
         const userRecord = users[0];
-        console.log('User record:', userRecord);
         
         const isValidPassword = await bcrypt.compare(password, userRecord.password);
         if (!isValidPassword) {
             return res.status(400).json({ error: 'Kata sandi salah' });
         }
 
-        const { id_user, username, email } = userRecord; // Mengakses properti yang benar
+        const { id_user, username, email } = userRecord;
         const token = jwt.sign({ userId: id_user, username, email }, process.env.ACCESS, { expiresIn: '30s' });
         const fresh = jwt.sign({ userId: id_user, username, email }, process.env.REFFACCESS, { expiresIn: '1d' });
 

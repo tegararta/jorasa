@@ -27,6 +27,10 @@ const user = sequelize.define('user', {
             key: 'id_unit'
         }
     },
+    foto: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
     role: {
         type: DataTypes.STRING,
         allowNull: false,

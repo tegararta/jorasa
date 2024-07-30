@@ -31,7 +31,7 @@ const startServer = async () => {
 
         // Sync all models with the database
         await sequelize.sync({ force: false });
-        console.log('All models were synchronized successfully.');
+        console.log('All models were syncloginhronized successfully.');
 
         // Middleware and Routes
         app.use(middlewareLogReq);
