@@ -7,6 +7,14 @@ const saran = sequelize.define('saran', {
         primaryKey: true,
         autoIncrement: true,
     },
+    uuid: {
+        type: DataTypes.STRING,
+        defaultValue: DataTypes.UUIDV4,
+        allowNull: false,
+        validate: {
+            notEmpty: true
+        }
+    },
     id_coresponden: {
         type: DataTypes.INTEGER,
         references: {

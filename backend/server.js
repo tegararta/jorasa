@@ -1,28 +1,48 @@
 const express = require('express');
 const helmet = require('helmet');
 const dotenv = require('dotenv');
-const cookieParser = require('cookie-parser');
-const cors = require('cors'); // Import CORS
-const { sequelize } = require('./config/db'); // Import sequelize instance
+const sequelizestore = require('connect-session-sequelize');
+const session = require('express-session')
+const cors = require('cors');
+const { sequelize } = require('./config/db');
 const { user, unit_kerja, survey, layanan, pertanyaan, coresponden, jawaban, saran } = require('./models'); // Import all models
 const middlewareLogReq = require('./middleware/logs');
+const authRoutes = require('./routes/authRoutes');
 dotenv.config();
 
-// Import Router
-const userRoutes = require('./routes/userRoutes'); 
-const tokenRoutes = require('./routes/tokenRoutes');
+// Import Routes
+const { 
+    adminRoutes, 
+    unitkerjaRoutes,
+    layananRoutes,
+} = require('./routes/'); 
 const app = express();
 
+const sessionStore = sequelizestore(session.Store);
+const store = new sessionStore({
+    db: sequelize
+});
+
 // Middleware
-app.use(cookieParser()); // Use cookie-parser before routes
 app.use(helmet());
 app.use(express.json());
+app.use(session({
+    secret: process.env.ACCESS,
+    resave: false,
+    saveUninitialized: true,
+    store: store,
+    cookie:{
+        secure: 'auto'
+    }
+}));
 app.use(cors({ 
     credentials: true,
-    origin: 'http://localhost:3000', // Replace with your frontend URL
+    origin: 'http://localhost:3000',
     methods: 'GET,POST,PUT,DELETE',
     allowedHeaders: 'Content-Type,Authorization'
-})); // Use CORS
+}));
+// tabel menyimpan cookie aktifkan
+// store.sync();
 
 const startServer = async () => {
     try {
@@ -35,8 +55,10 @@ const startServer = async () => {
 
         // Middleware and Routes
         app.use(middlewareLogReq);
-        app.use('/token', tokenRoutes);
-        app.use('/users', userRoutes);
+        app.use(authRoutes);
+        app.use('/layanan', layananRoutes);
+        app.use('/users', adminRoutes);
+        app.use('/unit', unitkerjaRoutes);
 
         // Start server on port 5000
         app.listen(5000, () => {

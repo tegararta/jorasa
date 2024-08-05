@@ -1,0 +1,48 @@
+GET  http://localhost:5000/users
+
+###
+POST  http://localhost:5000/users
+Content-Type: application/json
+
+{
+    "username": "hukum",
+    "password": "1213",
+    "confPassword": "1213",
+    "email": "hukum@gmail.com",
+    "role": "user",
+    "nama_unit": "hukum",
+    "alamat": "kota"
+}
+
+###
+POST  http://localhost:5000/login
+Content-Type: application/json
+
+{
+    "username": "admin",
+    "password": "1212"
+}
+
+### cek login 
+GET http://localhost:5000/userOn/
+
+###
+DELETE http://localhost:5000/users/42865442-e6d5-431c-b50f-d0dfa4ecca3f
+
+###
+DELETE http://localhost:5000/logout
+
+### Admin
+PATCH  http://localhost:5000/users/b4cc51e2-3c35-40c9-9f13-a4a12d47ba8b
+Content-Type: application/json
+
+{
+    "username": "kesehatan1",
+    "password": "123",
+    "confPassword": "123",
+    "email": "kesehatan@gmail.com",
+    "role": "user"
+}
+
+###
+GET  http://localhost:5000/unit

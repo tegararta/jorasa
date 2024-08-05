@@ -9,8 +9,10 @@ const jawaban = require('./jawaban');
 const saran = require('./saran');
 
 // Define associations
-unit_kerja.hasMany(user, { foreignKey: 'id_unit' });
-user.belongsTo(unit_kerja, { foreignKey: 'id_unit' });
+user.hasMany(unit_kerja, { foreignKey: 'id_user' });
+user.hasMany(survey, { foreignKey: 'id_user' });
+survey.hasMany(pertanyaan, { foreignKey: 'id_survey'})
+unit_kerja.hasOne(user, { foreignKey: 'id_user' });
 survey.belongsTo(user, { foreignKey: 'id_user' });
 layanan.belongsTo(unit_kerja, { foreignKey: 'id_unit' });
 coresponden.belongsTo(survey, { foreignKey: 'id_survey' });

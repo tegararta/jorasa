@@ -1,11 +1,20 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/db');
+const User = require('./user');
 
 const survey = sequelize.define('survey', {
     id_survey: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
+    },
+    uuid: {
+        type: DataTypes.STRING,
+        defaultValue: DataTypes.UUIDV4,
+        allowNull: false,
+        validate: {
+            notEmpty: true
+        }
     },
     url: {
         type: DataTypes.TEXT,
@@ -16,13 +25,16 @@ const survey = sequelize.define('survey', {
         allowNull: false,
         defaultValue: DataTypes.NOW,
     },
-    id_user: {
+    id_user:{
         type: DataTypes.INTEGER,
-        references: {
-            model: 'users',
-            key: 'id_user'
+        allowNull: false,
+        validate:{
+            notEmpty: true
         }
-    },
+    }
 });
+User.hasMany(survey, { foreignKey: 'id_user' });
+survey.belongsTo(User, { foreignKey: 'id_user' });
+
 
 module.exports = survey;

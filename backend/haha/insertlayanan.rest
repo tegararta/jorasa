@@ -1,0 +1,25 @@
+### login user
+POST  http://localhost:5000/login
+Content-Type: application/json
+
+{
+    "username": "hukum",
+    "password": "1213"
+}
+
+### cek login
+GET http://localhost:5000/userOn/
+
+###
+DELETE http://localhost:5000/logout
+
+### getLayanan all or id
+GET  http://localhost:5000/layanan/82ff5b8f-ca1d-4434-9b6b-896afd11cd31
+
+###
+POST   http://localhost:5000/layanan
+Content-Type: application/json
+
+{
+    "nama_layanan": "parkir"
+}

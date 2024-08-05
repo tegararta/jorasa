@@ -73,7 +73,6 @@ const logout = () => {
   if (!user) {
     return <div className='flex py-6 px-10 items-center ml-auto mr-2 text-[#416829] font-semibold'>Not found</div>;
   }
-  console.log("data", user);
 
   return (
     <div className=''>

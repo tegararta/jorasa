@@ -1,16 +1,16 @@
 import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { Login, Beranda, Dashboard, Saran, DetailSaran, BuatSurvey, DataResponden, TentangKami, EditProfile, EditPassword, LaporanSurvey, UnitKerja, SurveyLink } from './Pages';
+import { Login, Beranda, Dashboard, Saran, DetailSaran, BuatSurvey, DataResponden, TentangKami, EditPassword, LaporanSurvey, UnitKerja, SurveyLink } from './Pages';
 import { Sidebar, TopBar } from './Components';
 import { Survey, DataDiri } from './Responden';
 import './App.css';
-import { AuthProvider } from '../src/auth/AuthContext';
-import PrivateRoute from '../src/auth/ProtectedRoute';
+import { AuthProvider } from './auth/AuthContext'; // Pastikan path benar
+import PrivateRoute from './auth/ProtectedRoute'; // Pastikan path benar
 
 const Layout = ({ children }) => {
   return (
     <div className="flex h-screen">
-      <Sidebar className="sidebar " />
+      <Sidebar className="sidebar" />
       <div className="flex flex-col flex-grow">
         <TopBar className="topbar" />
         <div className="flex-grow p-4 bg-gray-100 overflow-auto">
@@ -119,9 +119,7 @@ const router = createBrowserRouter([
 const App = () => {
   return (
     <AuthProvider>
-      <div className='m-auto bg-white'>
-        <RouterProvider router={router} />
-      </div>
+      <RouterProvider router={router} />
     </AuthProvider>
   );
 };

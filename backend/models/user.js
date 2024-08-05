@@ -1,12 +1,19 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/db');
-const Unit = require('./unit_kerja');
 
-const user = sequelize.define('user', {
+const User = sequelize.define('user', {
     id_user: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
+    },
+    uuid: {
+        type: DataTypes.STRING,
+        defaultValue: DataTypes.UUIDV4,
+        allowNull: false,
+        validate: {
+            notEmpty: true
+        }
     },
     username: {
         type: DataTypes.STRING,
@@ -20,28 +27,10 @@ const user = sequelize.define('user', {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    id_unit: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: Unit,
-            key: 'id_unit'
-        }
-    },
-    foto: {
-        type: DataTypes.STRING,
-        allowNull: true,
-    },
     role: {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    refresh_token: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
 });
 
-Unit.hasMany(user, { foreignKey: 'id_unit' });
-user.belongsTo(Unit, { foreignKey: 'id_unit' });
-
-module.exports = user;
+module.exports = User;

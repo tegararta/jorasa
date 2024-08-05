@@ -7,6 +7,14 @@ const layanan = sequelize.define('layanan', {
         primaryKey: true,
         autoIncrement: true,
     },
+    uuid: {
+        type: DataTypes.STRING,
+        defaultValue: DataTypes.UUIDV4,
+        allowNull: false,
+        validate: {
+            notEmpty: true
+        }
+    },
     nama_layanan: {
         type: DataTypes.TEXT,
         allowNull: false,

@@ -1,11 +1,42 @@
 const argon2 = require('argon2');
-const user = require('../models/user'); // Sesuaikan nama model
 const unitkerja = require('../models/unit_kerja');
+const user = require('../models/user');
 
-// Update user
-const updateUser = async (req, res) => {
+const getUnit = async (req, res) => {
+    try {
+        let respon;
+        if(req.role === 'admin') {
+            respon = await unitkerja.findAll({
+                include: [{
+                    model: user,
+                    attributes: ['username']
+                }],
+                attributes: ['uuid', 'nama_unit', 'alamat', 'id_user']
+            });
+        } else {
+            if (!req.id_user) { 
+                return res.status(400).json({ msg: 'User ID is required' });
+            }
+
+            respon = await unitkerja.findAll({
+                where: {
+                    id_user: req.id_user
+                },
+                include: [{
+                    model: user,
+                    attributes: ['username']
+                }],
+                attributes: ['uuid', 'nama_unit', 'alamat', 'id_user']
+            });
+        }
+        res.status(200).json(respon);
+    } catch (error) {
+        res.status(500).json({ msg: error.message });
+    }
+};
+
+const updateUnit = async (req, res) => {
     const { username, password, confPassword, email } = req.body;
-
     // Pengecekan apakah password dan confPassword sama
     if (password && password !== confPassword) {
         return res.status(400).json({ msg: "Kata sandi tidak cocok" });
@@ -15,7 +46,7 @@ const updateUser = async (req, res) => {
         // Temukan pengguna berdasarkan ID
         const User = await user.findOne({
             where: {
-                id_user: req.params.id_user,
+                id_user: req.id_user
             },
         });
 
@@ -40,7 +71,7 @@ const updateUser = async (req, res) => {
         // Update informasi pengguna
         await User.update(updatedData);
 
-        res.status(200).json({ msg: "Pengguna berhasil diperbarui" });
+        res.status(200).json({ msg: "Berhasil diperbarui" });
     } catch (error) {
         console.error('Error updating account:', error);
         res.status(500).json({ error: 'Gagal memperbarui akun' });
@@ -48,6 +79,6 @@ const updateUser = async (req, res) => {
 };
 
 module.exports = {
-    updateUser,
+    getUnit,
+    updateUnit,
 }
-

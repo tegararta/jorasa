@@ -35,6 +35,16 @@ const Sidebar = () => {
               <span>Dashboard</span>
             </div>
           </li>
+          <li onClick={() => handleClick("Unit Kerja", "/unitkerja")}>
+            <div
+              className={`flex items-center gap-4 p-2 rounded-md hover:bg-green-100 transition-all duration-300 ${
+                selected === "Unit Kerja" && "bg-[#A8D1A1]"
+              }`}
+            >
+              <img src="/icon/building.png" alt="building" className="w-6 h-6" />
+              <span>Unit Kerja</span>
+            </div>
+          </li>
           <li>
             <h1 className="text-md font-bold mt-8">Survey</h1>
           </li>
@@ -82,16 +92,6 @@ const Sidebar = () => {
             >
               <img src="/icon/users.png" alt="users" className="w-6 h-6" />
               <span>Responden</span>
-            </div>
-          </li>
-          <li onClick={() => handleClick("Unit Kerja", "/unitkerja")}>
-            <div
-              className={`flex items-center gap-4 p-2 rounded-md hover:bg-green-100 transition-all duration-300 ${
-                selected === "Unit Kerja" && "bg-[#A8D1A1]"
-              }`}
-            >
-              <img src="/icon/building.png" alt="building" className="w-6 h-6" />
-              <span>Unit Kerja</span>
             </div>
           </li>
         </ul>

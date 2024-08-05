@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "root",
+    "password": "1203210107",
+    "database": "jorasa",
+    "host": "10.0.3.46",
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "root",
+    "password": 1203210107,
+    "database": "jorasa",
+    "host": "10.0.3.46",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "root",
+    "password": 1203210107,
+    "database": "jorasa",
+    "host": "10.0.3.46",
+    "dialect": "mysql"
+  }
+}

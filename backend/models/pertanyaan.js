@@ -7,6 +7,14 @@ const pertanyaan = sequelize.define('pertanyaan', {
         primaryKey: true,
         autoIncrement: true,
     },
+    uuid: {
+        type: DataTypes.STRING,
+        defaultValue: DataTypes.UUIDV4,
+        allowNull: false,
+        validate: {
+            notEmpty: true
+        }
+    },
     id_survey: {
         type: DataTypes.INTEGER,
         references: {
@@ -15,22 +23,6 @@ const pertanyaan = sequelize.define('pertanyaan', {
         }
     },
     pertanyaan: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-    },
-    pilihan_a: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-    },
-    pilihan_b: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-    },
-    pilihan_c: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-    },
-    pilihan_d: {
         type: DataTypes.TEXT,
         allowNull: false,
     },

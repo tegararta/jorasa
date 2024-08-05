@@ -7,6 +7,14 @@ const coresponden = sequelize.define('coresponden', {
         primaryKey: true,
         autoIncrement: true,
     },
+    uuid: {
+        type: DataTypes.STRING,
+        defaultValue: DataTypes.UUIDV4,
+        allowNull: false,
+        validate: {
+            notEmpty: true
+        }
+    },
     id_survey: {
         type: DataTypes.INTEGER,
         references: {

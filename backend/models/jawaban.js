@@ -7,6 +7,14 @@ const jawaban = sequelize.define('jawaban', {
         primaryKey: true,
         autoIncrement: true,
     },
+    uuid: {
+        type: DataTypes.STRING,
+        defaultValue: DataTypes.UUIDV4,
+        allowNull: false,
+        validate: {
+            notEmpty: true
+        }
+    },
     id_pertanyaan: {
         type: DataTypes.INTEGER,
         references: {
@@ -21,8 +29,8 @@ const jawaban = sequelize.define('jawaban', {
             key: 'id_coresponden'
         }
     },
-    jawaban: {
-        type: DataTypes.STRING,
+    bintang: {
+        type: DataTypes.INTEGER,
         allowNull: false,
     },
 });
