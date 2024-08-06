@@ -6,6 +6,7 @@ import Saran from "./LaporanSaran";
 import DetailSaran from "./DetailSaran";
 import BuatSurvey from "./BuatSurvey";
 import UnitKerja from "./UnitKerja";
+import Layanan from "./Layanan";
 import DataResponden from "./DataResponden";
 import LaporanSurvey from "./LaporanSurvey";
 import TentangKami from "./TentangKami";
@@ -14,4 +15,4 @@ import Survey from "../Responden/Survey";
 import Sidebar from "../Components/SidebarDiv";
 import TopBar from "../Components/TopBar";
 
-export { Login, Beranda, Dashboard, EditPassword, Saran, Sidebar, TopBar, DetailSaran, Survey, BuatSurvey, UnitKerja, DataResponden, LaporanSurvey, TentangKami, SurveyLink };
+export { Login, Beranda, Dashboard, EditPassword, Saran, Sidebar, TopBar, DetailSaran, Survey, BuatSurvey, UnitKerja, Layanan, DataResponden, LaporanSurvey, TentangKami, SurveyLink };

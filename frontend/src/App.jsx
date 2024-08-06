@@ -1,6 +1,6 @@
 import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { Login, Beranda, Dashboard, Saran, DetailSaran, BuatSurvey, DataResponden, TentangKami, EditPassword, LaporanSurvey, UnitKerja, SurveyLink } from './Pages';
+import { Login, Beranda, Dashboard, Saran, DetailSaran, BuatSurvey, DataResponden, TentangKami, EditPassword, LaporanSurvey, UnitKerja, Layanan, SurveyLink } from './Pages';
 import { Sidebar, TopBar } from './Components';
 import { Survey, DataDiri } from './Responden';
 import './App.css';
@@ -72,6 +72,12 @@ const router = createBrowserRouter([
     path: "/unitkerja",
     element: (
         <Layout><UnitKerja /></Layout>
+    )
+  },
+  {
+    path: "/layanan",
+    element: (
+        <Layout><Layanan /></Layout>
     )
   },
   {
