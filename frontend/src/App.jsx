@@ -33,33 +33,25 @@ const router = createBrowserRouter([
   {
     path: "/dashboard",
     element: (
-      <PrivateRoute>
         <Layout><Dashboard /></Layout>
-      </PrivateRoute>
     )
   },
   {
     path: "/editpassword",
     element: (
-      <PrivateRoute>
         <Layout><EditPassword /></Layout>
-      </PrivateRoute>
     )
   },
   {
     path: "/saran",
     element: (
-      <PrivateRoute>
         <Layout><Saran /></Layout>
-      </PrivateRoute>
     )
   },
   {
     path: "/detailsaran",
     element: (
-      <PrivateRoute>
         <Layout><DetailSaran /></Layout>
-      </PrivateRoute>
     )
   },
   {
@@ -73,41 +65,31 @@ const router = createBrowserRouter([
   {
     path: "/buatsurvey",
     element: (
-      <PrivateRoute>
         <Layout><BuatSurvey /></Layout>
-      </PrivateRoute>
     )
   },
   {
     path: "/unitkerja",
     element: (
-      <PrivateRoute>
         <Layout><UnitKerja /></Layout>
-      </PrivateRoute>
     )
   },
   {
     path: "/dataresponden",
     element: (
-      <PrivateRoute>
         <Layout><DataResponden /></Layout>
-      </PrivateRoute>
     )
   },
   {
     path: "/laporan-survey",
     element: (
-      <PrivateRoute>
         <Layout><LaporanSurvey /></Layout>
-      </PrivateRoute>
     )
   },
   {
     path: "/SurveyLink",
     element: (
-      <PrivateRoute>
         <Layout><SurveyLink /></Layout>
-      </PrivateRoute>
     )
   },
   {

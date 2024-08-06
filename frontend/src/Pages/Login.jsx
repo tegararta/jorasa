@@ -1,36 +1,35 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 
 const Login = () => {
-    const [emailOrUsername, setEmailOrUsername] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [msg, setMsg] = useState('');
     const navigate = useNavigate();
 
-   
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:5000/users/login', {
-                emailOrUsername,
-                password,
-            }, { withCredentials: true });
-
-            if (response.data.token) {
-                const datatoken = await axios.get('http://localhost:5000/token', { withCredentials: true });
-                console.log("tokennew", datatoken);
-                localStorage.setItem('token', datatoken.data.accessToken);
-                navigate('/dashboard');
-                setMsg('');
-            } else {
-                setMsg(response.data.error);
-            }
+          const response = await fetch('http://localhost:5000/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include', // Menyertakan cookie sesi
+            body: JSON.stringify({ username, password }),
+          });
+    
+          if (!response.ok) {
+            const errorData = await response.json();
+            setMsg(errorData.message || 'An error occurred. Please try again.');
+            return;
+          }
+    
+          navigate('/dashboard'); // Ubah ini ke route yang diinginkan setelah login
         } catch (error) {
-            setMsg(error.response?.data?.error || 'Terjadi kesalahan pada server');
+          setMsg('An error occurred. Please try again.');
         }
-    };
+      };
 
     return (
         <div className="bg-[#A8D1A1] flex flex-col items-center justify-center min-h-screen px-4 py-8">
@@ -44,13 +43,13 @@ const Login = () => {
                             JORASA
                         </div>
 
-                        <div className="flex flex-col space-y-4 mb-8">
+                        <form onSubmit={handleSubmit} className="flex flex-col space-y-4 mb-8">
                             <div className="relative bg-[#80a668] rounded-full flex items-center">
                                 <img className="w-5 h-5 absolute top-1/2 left-6 transform -translate-y-1/2" alt="Nama Icon" src="/assets/image8.png" />
                                 <input
                                     type="text"
-                                    value={emailOrUsername}
-                                    onChange={(e) => setEmailOrUsername(e.target.value)}
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
                                     placeholder="Nama pengguna atau Email"
                                     className="w-full h-12 bg-transparent text-white text-lg pl-16 pr-4 rounded-full outline-none placeholder:text-white placeholder:opacity-70"
                                 />
@@ -66,18 +65,18 @@ const Login = () => {
                                     className="w-full h-12 bg-transparent text-white text-lg pl-16 pr-4 rounded-full outline-none placeholder:text-white placeholder:opacity-70"
                                 />
                             </div>
-                        </div>
 
-                        {msg && <div className="text-red-800 text-center font-extralight text-base mb-6">{msg}</div>}
+                            {msg && <div className="text-red-800 text-center font-extralight text-base mb-6">{msg}</div>}
 
-                        <div className="flex justify-center">
-                            <button
-                                onClick={handleSubmit}
-                                className="bg-[#416829] hover:bg-[#A8D1A1] text-white font-bold py-2 px-6 rounded-full"
-                            >
-                                Masuk
-                            </button>
-                        </div>
+                            <div className="flex justify-center">
+                                <button
+                                    type="submit"
+                                    className="bg-[#416829] hover:bg-[#A8D1A1] text-white font-bold py-2 px-6 rounded-full"
+                                >
+                                    Masuk
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>

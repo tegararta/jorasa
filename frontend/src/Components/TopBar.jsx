@@ -1,39 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
 import EditPassword from './EditPassword'; // Pastikan nama dan jalur ini benar
 
 function TopBar() {
   const [showMenu, setShowMenu] = useState(false);
   const [showEditPassword, setShowEditPassword] = useState(false);
-  const [user, setUser] = useState(null);
+  const [username, setUsername] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchUsername = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/token', { withCredentials: true });
-        const { accessToken } = response.data;
-
-        const userResponse = await axios.get('http://localhost:5000/users', {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-          withCredentials: true,
+        const response = await fetch('http://localhost:5000/userOn/', {
+          credentials: 'include'
         });
 
-        if (userResponse.data.length > 0) {
-          setUser(userResponse.data[0]); // Akses elemen pertama dari array
-        } else {
-          console.error('No user data found');
+        if (!response.ok) {
+          throw new Error('Failed to fetch user data');
         }
+
+        const data = await response.json();
+        setUsername(data.username);
       } catch (error) {
-        console.error('Error fetching user data:', error);
       }
     };
 
-    fetchUserData();
+    fetchUsername();
   }, []);
 
   const handleProfileClick = () => {
@@ -49,28 +41,26 @@ function TopBar() {
     setShowEditPassword(false); 
   };
 
-  
-const logout = () => {
-  // Clear the token from localStorage
-  localStorage.removeItem('token');
-  
-  // Clear cookies using js-cookie
-  Cookies.remove('refreshToken'); // Replace 'yourCookieName' with the actual name of your cookie
+  const logout = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/logout', {
+        method: 'DELETE',
+        credentials: 'include', // Menyertakan cookie sesi
+      });
 
-  // Optionally, call the API to invalidate the session on the server
-  axios.delete('http://localhost:5000/users/logout', { withCredentials: true })
-    .then(() => {
-      // Redirect to login after logout
-      navigate('/login');
-    })
-    .catch(error => {
-      console.error('Error during logout:', error);
-      // Redirect to login even if there is an error during logout
-      navigate('/login');
-    });
-};
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error(errorData.msg);
+        return;
+      }
 
-  if (!user) {
+      navigate('/login'); // Ubah ini ke route login atau route lain setelah logout
+    } catch (error) {
+      console.error('An error occurred during logout.');
+    }
+  };
+
+  if (!username) {
     return <div className='flex py-6 px-10 items-center ml-auto mr-2 text-[#416829] font-semibold'>Not found</div>;
   }
 
@@ -79,7 +69,7 @@ const logout = () => {
       <div className="bg-white py-6 px-10 flex items-center justify-between">
         <div className="flex items-center ml-auto ">
           <span className="mr-2 text-[#416829] font-semibold">
-            Halo, {user.username}
+            Halo, {username}
           </span>
           <div className="relative">
             <img
