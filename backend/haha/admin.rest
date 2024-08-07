@@ -46,3 +46,16 @@ Content-Type: application/json
 
 ###
 GET  http://localhost:5000/unit
+
+### cek survey 
+GET http://localhost:5000/survey/
+
+### cek survey 
+POST  http://localhost:5000/survey/create
+Content-Type: application/json
+
+{
+    "url": "kesehatan1",
+    "pertanyaan": "Apa kabar?",
+    "pertanyaan": "losp"
+}

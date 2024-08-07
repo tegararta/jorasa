@@ -15,6 +15,7 @@ const {
     adminRoutes, 
     unitkerjaRoutes,
     layananRoutes,
+    surveyRoutes
 } = require('./routes/'); 
 const app = express();
 
@@ -59,6 +60,7 @@ const startServer = async () => {
         app.use('/layanan', layananRoutes);
         app.use('/users', adminRoutes);
         app.use('/unit', unitkerjaRoutes);
+        app.use('/survey', surveyRoutes);
 
         // Start server on port 5000
         app.listen(5000, () => {

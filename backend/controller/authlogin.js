@@ -1,3 +1,4 @@
+const UnitKerja = require('../models/unit_kerja');
 const User = require('../models/user');
 const argon2 = require('argon2');
 
@@ -32,7 +33,11 @@ const userOn = async (req, res) => {
         where: {
             uuid: req.session.id_user
         },
-        attributes: ['uuid', 'username', 'email', 'role']
+        attributes: ['uuid', 'username', 'email', 'role'],
+        include: {
+            model: UnitKerja,
+            attributes: ['nama_unit']
+        }
     });
     if(!user) {
         return res.status(404).json({ msg: 'Akun tidak ditemukan'});
