@@ -21,6 +21,7 @@ const AuthProvider = ({ children }) => {
     localStorage.setItem('username', JSON.stringify(usernameData));
     localStorage.setItem('role', roleData);
   };
+  console.log(login);
 
   const logout = () => {
     setusername(null);

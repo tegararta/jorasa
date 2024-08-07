@@ -5,7 +5,7 @@ const Beranda = () => {
   return (
     <div className="bg-white min-h-screen">
       <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center px-9">
+        <div className="flex justify-between items-center px-9 shadow-md py-6">
           <img src="/assets/logo.png" alt="Logo" className="h-12 w-auto" />
           <div className="flex gap-10">
             <Link to="/" className="text-[#416829] font-bold hover:text-[#A8D1A1] transition duration-300 ease-in-out">
