@@ -58,7 +58,7 @@ const startServer = async () => {
         app.use(middlewareLogReq);
         app.use(authRoutes);
         app.use('/layanan', layananRoutes);
-        app.use('/users', adminRoutes);
+        app.use('/akun', adminRoutes);
         app.use('/unit', unitkerjaRoutes);
         app.use('/survey', surveyRoutes);
 

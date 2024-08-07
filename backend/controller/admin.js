@@ -38,28 +38,39 @@ const createUsers = async (req, res) => {
         return res.status(400).json({ msg: "Kata sandi tidak cocok" });
     }
     const hashPasswd = await argon2.hash(password);
-    
-    try {
-        // Membuat user terlebih dahulu
-        const newUser = await user.create({
+
+    if (role === "admin") {
+        await user.create({
             username: username,
             password: hashPasswd,
             email: email,
-            role: role
+            role: role,
         });
-
-        // Menggunakan id_user dari user yang baru dibuat untuk membuat unit_kerja
-        await unitkerja.create({
-            nama_unit: nama_unit,
-            alamat: alamat,
-            id_user: newUser.id_user  // Menghubungkan dengan user yang baru dibuat
-        });
-
-        res.status(201).json({ msg: "Berhasil" });
-    } catch (error) {
-        console.error('Error creating account:', error);
-        res.status(500).json({ error: 'Failed to create account' });
+        res.status(201).json({ msg: "Akun admin berhasil ditambahkan" });
+    } else{
+        try {
+            // Membuat user terlebih dahulu
+            const newUser = await user.create({
+                username: username,
+                password: hashPasswd,
+                email: email,
+                role: role
+            });
+    
+            // Menggunakan id_user dari user yang baru dibuat untuk membuat unit_kerja
+            await unitkerja.create({
+                nama_unit: nama_unit,
+                alamat: alamat,
+                id_user: newUser.id_user  // Menghubungkan dengan user yang baru dibuat
+            });
+    
+            res.status(201).json({ msg: "Akun dinas berhasil ditambahkan" });
+        } catch (error) {
+            console.error('Terjadi kesalahan membuat akun:', error);
+            res.status(500).json({ error: 'Kesalahan membuat akun' });
+        }
     }
+    
 };
 
 
@@ -76,7 +87,7 @@ const update = async (req, res) => {
         // Temukan pengguna berdasarkan ID
         const User = await user.findOne({
             where: {
-                uuid: req.params.id_user,
+                uuid: req.params.uuid,
             },
         });
 
@@ -114,7 +125,7 @@ const update = async (req, res) => {
 const deleteUsersById = async (req, res) => {
     const respon = await user.findOne({
         where: {
-            uuid: req.params.id_user
+            uuid: req.params.uuid
         },
     })
     if (!respon) {
@@ -123,7 +134,7 @@ const deleteUsersById = async (req, res) => {
     try { 
         await user.destroy({
             where: {
-                uuid: req.params.id_user
+                uuid: req.params.uuid
             }
         });
         

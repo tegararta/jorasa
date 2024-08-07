@@ -7,11 +7,11 @@ const { updateUser, } = require('../controller/user')
 
 
 // Routes role admin
-router.patch('/:id_user', verifyUser, userAdmin, update);
+router.patch('/:uuid', verifyUser, userAdmin, update);
 router.get('/', verifyUser, userAdmin, getUsers);
-router.get('/:id_user', verifyUser, userAdmin, getUserById);
-router.post('/', verifyUser, userAdmin, createUsers);
-router.delete('/:id_user', verifyUser, userAdmin, deleteUsersById);
+router.get('/:uuid', verifyUser, userAdmin, getUserById);
+router.post('/create', verifyUser, userAdmin, createUsers);
+router.delete('/:uuid', verifyUser, userAdmin, deleteUsersById);
 
 // Routes role user
 router.get('/unit/:id_user', verifyUser, updateUser);
