@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
@@ -6,30 +6,47 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [msg, setMsg] = useState('');
     const navigate = useNavigate();
+    const isSubmitting = useRef(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+        if (isSubmitting.current) return;
+        isSubmitting.current = true;
+
         try {
-          const response = await fetch('http://localhost:5000/login', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            credentials: 'include', // Menyertakan cookie sesi
-            body: JSON.stringify({ username, password }),
-          });
-    
-          if (!response.ok) {
-            const errorData = await response.json();
-            setMsg(errorData.message || 'An error occurred. Please try again.');
-            return;
-          }
-    
-          navigate('/dashboard'); // Ubah ini ke route yang diinginkan setelah login
+            const response = await fetch('http://localhost:5000/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username,
+                    password,
+                }),
+                credentials: 'include', // Menyertakan cookie sesi
+            });
+
+            const data = await response.json();
+
+            console.log(data.msg); // Cetak respons dari backend
+
+            if (!response.ok) {
+                setMsg(data.msg);
+                isSubmitting.current = false;
+                return;
+            } else {
+                setMsg('');
+            }
+
+            localStorage.setItem('token', data.token);
+            navigate('/dashboard'); // Ubah ini ke route yang diinginkan setelah login
         } catch (error) {
-          setMsg('An error occurred. Please try again.');
+            setMsg(error.response?.data?.error || 'Terjadi kesalahan pada server');
+        } finally {
+            isSubmitting.current = false;
         }
-      };
+    };
 
     return (
         <div className="bg-[#A8D1A1] flex flex-col items-center justify-center min-h-screen px-4 py-8">

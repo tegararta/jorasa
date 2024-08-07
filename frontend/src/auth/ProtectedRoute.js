@@ -1,17 +1,15 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { AuthContext } from './AuthContext';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from './AuthContext'; // Pastikan jalur ini benar
 
-const PrivateRoute = ({ children }) => {
-  const { isAuthenticated } = useAuth();
-  const token = localStorage.getItem('accessToken');
-  const isTokenValid = token && token !== 'null' && token !== null;
+const ProtectedRoute = ({ children }) => {
+  const { user } = useContext(AuthContext);
 
-  if (isAuthenticated || isTokenValid) {
-    return children;
-  } else {
+  if (!user) {
     return <Navigate to="/login" />;
   }
+
+  return children;
 };
 
-export default PrivateRoute;
+export default ProtectedRoute;

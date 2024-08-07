@@ -15,6 +15,8 @@ function TopBar() {
           credentials: 'include'
         });
 
+        console.log(response); // Cetak respons untuk debug
+
         if (!response.ok) {
           throw new Error('Failed to fetch user data');
         }
@@ -22,6 +24,7 @@ function TopBar() {
         const data = await response.json();
         setUsername(data.username);
       } catch (error) {
+        console.error(error); // Cetak kesalahan untuk debug
       }
     };
 
@@ -45,21 +48,23 @@ function TopBar() {
     try {
       const response = await fetch('http://localhost:5000/logout', {
         method: 'DELETE',
-        credentials: 'include', // Menyertakan cookie sesi
+        credentials: 'include'
       });
-
+  
       if (!response.ok) {
-        const errorData = await response.json();
-        console.error(errorData.msg);
-        return;
+        throw new Error('Failed to logout');
       }
-
-      navigate('/login'); // Ubah ini ke route login atau route lain setelah logout
+  
+      const data = await response.json();
+      console.log(data); // Cetak respons untuk debug
+  
+      // Redirect ke halaman login atau halaman lain setelah logout
+      navigate('/login');
     } catch (error) {
-      console.error('An error occurred during logout.');
+      console.error(error); // Cetak kesalahan untuk debug
     }
   };
-
+  
   if (!username) {
     return <div className='flex py-6 px-10 items-center ml-auto mr-2 text-[#416829] font-semibold'>Not found</div>;
   }
