@@ -1,51 +1,28 @@
-import React, { useState, useRef } from "react";
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { LoginUser, reset } from "../auth/Authslice";
 
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [msg, setMsg] = useState('');
+    const dispatch = useDispatch();
     const navigate = useNavigate();
-    const isSubmitting = useRef(false);
+    const { user, isError, isSucces, isLoading, msg } = useSelector((state) => 
+        state.auth
+    );
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        
-        if (isSubmitting.current) return;
-        isSubmitting.current = true;
-
-        try {
-            const response = await fetch('http://localhost:5000/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    username,
-                    password,
-                }),
-                credentials: 'include', // Menyertakan cookie sesi
-            });
-
-            const data = await response.json();
-
-            console.log(data.msg); // Cetak respons dari backend
-
-            if (!response.ok) {
-                setMsg(data.msg);
-                isSubmitting.current = false;
-                return;
-            } else {
-                setMsg('');
-            }
-
-            localStorage.setItem('token', data.token);
-            navigate('/dashboard'); // Ubah ini ke route yang diinginkan setelah login
-        } catch (error) {
-            setMsg(error.response?.data?.error || 'Terjadi kesalahan pada server');
-        } finally {
-            isSubmitting.current = false;
+    useEffect(() => {
+        if (isSucces && user) {
+            console.log(user)
+            navigate('/dashboard');
         }
+        dispatch(reset());
+    }, [user, isSucces, dispatch, navigate]);
+
+    const Auth = (e) => {
+        e.preventDefault();
+        dispatch(LoginUser({ username, password }));
     };
 
     return (
@@ -60,14 +37,14 @@ const Login = () => {
                             JORASA
                         </div>
 
-                        <form onSubmit={handleSubmit} className="flex flex-col space-y-4 mb-8">
+                        <form onSubmit={Auth} className="flex flex-col space-y-4 mb-8">
                             <div className="relative bg-[#80a668] rounded-full flex items-center">
                                 <img className="w-5 h-5 absolute top-1/2 left-6 transform -translate-y-1/2" alt="Nama Icon" src="/assets/image8.png" />
                                 <input
                                     type="text"
                                     value={username}
                                     onChange={(e) => setUsername(e.target.value)}
-                                    placeholder="Nama pengguna atau Email"
+                                    placeholder="Pengguna"
                                     className="w-full h-12 bg-transparent text-white text-lg pl-16 pr-4 rounded-full outline-none placeholder:text-white placeholder:opacity-70"
                                 />
                             </div>
@@ -83,14 +60,14 @@ const Login = () => {
                                 />
                             </div>
 
-                            {msg && <div className="text-red-800 text-center font-extralight text-base mb-6">{msg}</div>}
+                            {isError && <div className="text-red-800 text-center font-extralight text-base mb-6">{msg}</div>}
 
                             <div className="flex justify-center">
                                 <button
                                     type="submit"
                                     className="bg-[#416829] hover:bg-[#A8D1A1] text-white font-bold py-2 px-6 rounded-full"
                                 >
-                                    Masuk
+                                    {isLoading ? "Loading.." : "Masuk"}
                                 </button>
                             </div>
                         </form>

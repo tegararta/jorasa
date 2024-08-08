@@ -1,4 +1,5 @@
 import Sidebar from './SidebarDiv';
 import TopBar from './TopBar';
+import Layout from './Layout';
 
-export { Sidebar, TopBar };
+export { Sidebar, TopBar, Layout };
