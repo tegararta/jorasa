@@ -14,5 +14,6 @@ import SurveyLink from "./SurveyLink";
 import Survey from "../Responden/Survey";
 import Sidebar from "../Components/SidebarDiv";
 import TopBar from "../Components/TopBar";
+import ListSurvey from "./ListSurvey";
 
-export { Login, Beranda, Dashboard, EditPassword, Saran, Sidebar, TopBar, DetailSaran, Survey, BuatSurvey, UnitKerja, Layanan, DataResponden, LaporanSurvey, TentangKami, SurveyLink };
+export { Login, Beranda, Dashboard, EditPassword, Saran, Sidebar, TopBar, DetailSaran, Survey, BuatSurvey, UnitKerja, Layanan, DataResponden, LaporanSurvey, TentangKami, SurveyLink, ListSurvey };

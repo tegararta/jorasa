@@ -1,35 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from "react-redux";
+import { logOut, reset } from "../auth/Authslice";
 import EditPassword from './EditPassword'; // Pastikan nama dan jalur ini benar
 
 function TopBar() {
   const [showMenu, setShowMenu] = useState(false);
   const [showEditPassword, setShowEditPassword] = useState(false);
-  const [username, setUsername] = useState('');
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
+  
   useEffect(() => {
-    const fetchUsername = async () => {
-      try {
-        const response = await fetch('http://localhost:5000/userOn/', {
-          credentials: 'include'
-        });
-
-        console.log(response); // Cetak respons untuk debug
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch user data');
-        }
-
-        const data = await response.json();
-        setUsername(data.username);
-      } catch (error) {
-        console.error(error); // Cetak kesalahan untuk debug
-      }
-    };
-
-    fetchUsername();
-  }, []);
+  
+  }, [user]);
 
   const handleProfileClick = () => {
     setShowMenu(!showMenu);
@@ -43,38 +27,30 @@ function TopBar() {
   const handleCloseEditPassword = () => {
     setShowEditPassword(false); 
   };
+  
+  const deleteCookie = (name) => {
+    document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+  };
 
   const logout = async () => {
-    try {
-      const response = await fetch('http://localhost:5000/logout', {
-        method: 'DELETE',
-        credentials: 'include'
-      });
-  
-      if (!response.ok) {
-        throw new Error('Failed to logout');
-      }
-  
-      const data = await response.json();
-      console.log(data); // Cetak respons untuk debug
-  
-      // Redirect ke halaman login atau halaman lain setelah logout
-      navigate('/login');
-    } catch (error) {
-      console.error(error); // Cetak kesalahan untuk debug
-    }
+    dispatch(logOut());
+    dispatch(reset());
+    deleteCookie();
+    navigate("/login");
   };
   
-  if (!username) {
+  if (!user) {
     return <div className='flex py-6 px-10 items-center ml-auto mr-2 text-[#416829] font-semibold'>Not found</div>;
   }
 
+  
+
   return (
-    <div className=''>
+    <div>
       <div className="bg-white py-6 px-10 flex items-center justify-between">
-        <div className="flex items-center ml-auto ">
+        <div className="flex items-center ml-auto">
           <span className="mr-2 text-[#416829] font-semibold">
-            Halo, {username}
+            Halo, {user.username}
           </span>
           <div className="relative">
             <img

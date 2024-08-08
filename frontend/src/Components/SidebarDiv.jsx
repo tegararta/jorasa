@@ -68,6 +68,16 @@ const Sidebar = () => {
               <span>Buat Survey (user)</span>
             </div>
           </li>
+          <li onClick={() => handleClick("List Survey", "/listsurvey")}>
+            <div
+              className={`flex items-center gap-4 p-2 rounded-md hover:bg-green-100 transition-all duration-300 ${
+                selected === "List Survey" && "bg-[#A8D1A1]"
+              }`}
+            >
+              <img src="/icon/list.png" alt="survey" className="w-6 h-6" />
+              <span>List Survey</span>
+            </div>
+          </li>
           <li>
             <h1 className="text-md font-bold mt-8">Laporan</h1>
           </li>

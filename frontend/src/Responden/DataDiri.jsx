@@ -8,6 +8,7 @@ function DataDiri() {
   const [jenisKelamin, setJenisKelamin] = useState("");
   const [layanan, setLayanan] = useState([]);
   const [selectedLayanan, setSelectedLayanan] = useState("");
+  const [isFormComplete, setIsFormComplete] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,6 +22,17 @@ function DataDiri() {
     // Simulasikan pengambilan data dari backend
     setLayanan(dummyLayanan);
   }, []);
+
+  useEffect(() => {
+    // Memeriksa apakah semua field telah diisi
+    setIsFormComplete(
+      nama.trim() !== "" &&
+      noHp.trim() !== "" &&
+      umur.trim() !== "" &&
+      jenisKelamin !== "" &&
+      selectedLayanan !== ""
+    );
+  }, [nama, noHp, umur, jenisKelamin, selectedLayanan]);
 
   const handleNamaChange = (event) => {
     setNama(event.target.value);
@@ -49,16 +61,20 @@ function DataDiri() {
   };
 
   const handleSubmit = () => {
-    // Handle form submission
-    console.log("Nama:", nama);
-    console.log("No. HP:", noHp);
-    console.log("Umur:", umur);
-    console.log("Jenis Kelamin:", jenisKelamin);
-    console.log("Layanan:", selectedLayanan);
-    // Redirect to survey page
-    navigate('/SurveyJoRasa', {
-      state: { nama, noHp, umur, jenisKelamin, layanan: selectedLayanan },
-    });
+    if (isFormComplete) {
+      // Handle form submission
+      console.log("Nama:", nama);
+      console.log("No. HP:", noHp);
+      console.log("Umur:", umur);
+      console.log("Jenis Kelamin:", jenisKelamin);
+      console.log("Layanan:", selectedLayanan);
+      // Redirect to survey page
+      navigate('/SurveyJoRasa', {
+        state: { nama, noHp, umur, jenisKelamin, layanan: selectedLayanan },
+      });
+    } else {
+      alert("Harap lengkapi semua field sebelum melanjutkan.");
+    }
   };
 
   return (
@@ -151,7 +167,8 @@ function DataDiri() {
         <div className="flex justify-center">
           <button
             onClick={handleSubmit}
-            className="bg-[#416829] hover:bg-[#A1C19C] text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline"
+            className={`bg-[#416829] hover:bg-[#A1C19C] text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline ${!isFormComplete ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={!isFormComplete}
           >
             Selanjutnya
           </button>

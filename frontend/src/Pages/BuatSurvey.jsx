@@ -4,26 +4,27 @@ import { useNavigate } from 'react-router-dom';
 function BuatSurvey() {
   const [questions, setQuestions] = useState([]);
   const [newQuestion, setNewQuestion] = useState('');
+  const [surveyTitle, setSurveyTitle] = useState('');
   const [editingIndex, setEditingIndex] = useState(null);
   const [tempQuestion, setTempQuestion] = useState('');
-  const navigate = useNavigate(); // Inisialisasi useNavigate
+  const navigate = useNavigate();
 
   const addQuestion = () => {
     if (newQuestion.trim() !== '') {
-      setQuestions([...questions, { question: newQuestion }]);
+      setQuestions([...questions, newQuestion]);
       setNewQuestion('');
     }
   };
 
   const editQuestion = (index) => {
     setEditingIndex(index);
-    setTempQuestion(questions[index].question);
+    setTempQuestion(questions[index]);
   };
 
   const saveQuestion = (index) => {
     if (tempQuestion.trim() !== '') {
       const updatedQuestions = [...questions];
-      updatedQuestions[index].question = tempQuestion;
+      updatedQuestions[index] = tempQuestion;
       setQuestions(updatedQuestions);
       setTempQuestion('');
       setEditingIndex(null);
@@ -41,8 +42,16 @@ function BuatSurvey() {
   };
 
   const createSurvey = () => {
-    // Logika pembuatan survey
-    navigate('/SurveyLink'); // Arahkan ke halaman link QR code
+    if (surveyTitle.trim() === '' || questions.length === 0) {
+      alert('Judul survey dan pertanyaan tidak boleh kosong');
+      return;
+    }
+
+    const newSurvey = { title: surveyTitle, questions };
+    const storedSurveys = JSON.parse(localStorage.getItem('surveys')) || [];
+    localStorage.setItem('surveys', JSON.stringify([...storedSurveys, newSurvey]));
+
+    navigate('/listsurvey'); // Arahkan ke halaman daftar survey
   };
 
   return (
@@ -51,6 +60,15 @@ function BuatSurvey() {
         <h2 className="text-lg font-bold text-center mb-2 bg-[#A8D1A1] p-2 rounded-md" style={{ color: '#416829' }}>
           Form Buat Survey
         </h2>
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Masukkan Judul Survey"
+            className="border rounded-md py-2 px-3 w-full"
+            value={surveyTitle}
+            onChange={(event) => setSurveyTitle(event.target.value)}
+          />
+        </div>
         <div className="mb-4 mt-5">
           <input
             type="text"
@@ -72,7 +90,8 @@ function BuatSurvey() {
           <tbody>
             {questions.map((question, index) => (
               <tr key={index}>
-                <td className="py-2 px-4 border-b">
+                <td className="py-2 px-4 border-b w-1/12 text-center">{index + 1}.</td>
+                <td className="py-2 px-4 border-b w-10/12">
                   {editingIndex === index ? (
                     <input
                       type="text"
@@ -81,10 +100,10 @@ function BuatSurvey() {
                       className="border rounded-md py-2 px-3 w-full"
                     />
                   ) : (
-                    <p>{question.question}</p>
+                    <p>{question}</p>
                   )}
                 </td>
-                <td className="py-2 px-4 border-b flex justify-end space-x-2">
+                <td className="py-2 px-4 border-b w-1/12 flex justify-end space-x-2">
                   {editingIndex === index ? (
                     <button onClick={() => saveQuestion(index)} className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md">
                       Simpan
@@ -102,7 +121,7 @@ function BuatSurvey() {
             ))}
             {questions.length === 0 && (
               <tr>
-                <td colSpan="2" className="py-2 px-4 border-b text-center">Tidak ada pertanyaan.</td>
+                <td colSpan="3" className="py-2 px-4 border-b text-center">Tidak ada pertanyaan.</td>
               </tr>
             )}
           </tbody>
