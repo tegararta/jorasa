@@ -1,193 +1,290 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
-function UnitKerja() {
-  const [unitKerja, setUnitKerja] = useState([]);
-  const [editingUnitKerja, setEditingUnitKerja] = useState(null);
-  const [newUnit, setNewUnit] = useState({ id: Date.now(), name: '', layanan: [''] });
+const UnitKerja = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [users, setUsers] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [newUser, setNewUser] = useState({
+    username: '',
+    password: '',
+    confPassword: '',
+    email: '',
+    role: 'user',
+    nama_unit: '',
+    alamat: '',
+  });
 
   useEffect(() => {
-    const storedUnitKerja = localStorage.getItem('unitKerja');
-    if (storedUnitKerja) {
-      const parsedUnitKerja = JSON.parse(storedUnitKerja).map(unit => ({
-        ...unit,
-        layanan: unit.layanan || []
-      }));
-      setUnitKerja(parsedUnitKerja);
-    }
+    const getUsers = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/akun");
+        setUsers(response.data);
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      }
+    };
+
+    getUsers();
   }, []);
 
-  const handleAddUnitKerja = () => {
-    const updatedUnitKerja = [...unitKerja, newUnit];
-    setUnitKerja(updatedUnitKerja);
-    localStorage.setItem('unitKerja', JSON.stringify(updatedUnitKerja));
-    setNewUnit({ id: Date.now(), name: '', layanan: [''] });
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
   };
 
-  const handleInputChange = (e, id, index, isEditing = false) => {
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const handleRowsPerPageChange = (e) => {
+    setRowsPerPage(parseInt(e.target.value, 10));
+  };
+
+  const handleNewUserChange = (e) => {
     const { name, value } = e.target;
-    if (isEditing) {
-      setUnitKerja(unitKerja.map(unit =>
-        unit.id === id
-          ? {
-              ...unit,
-              [name]: name === 'name' ? value : unit[name],
-              layanan: name !== 'name' ? unit.layanan.map((layanan, idx) => idx === index ? value : layanan) : unit.layanan
-            }
-          : unit
-      ));
-    } else {
-      if (name === 'name') {
-        setNewUnit({ ...newUnit, [name]: value });
-      } else {
-        const newLayanan = [...newUnit.layanan];
-        newLayanan[index] = value;
-        setNewUnit({ ...newUnit, layanan: newLayanan });
+    setNewUser((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const handleAddUser = async () => {
+    try {
+      await axios.post("http://localhost:5000/akun/create", newUser, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      setShowModal(false);
+      setNewUser({
+        username: '',
+        password: '',
+        confPassword: '',
+        email: '',
+        role: 'user',
+        nama_unit: '',
+        alamat: '',
+      });
+      // Refresh user list
+      const response = await axios.get("http://localhost:5000/akun");
+      setUsers(response.data);
+    } catch (error) {
+      console.error("Error creating user: ", error);
+    }
+  };
+
+  const handleDeleteUser = async (uuid) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this user?");
+    if (confirmDelete) {
+      try {
+        await axios.delete(`http://localhost:5000/akun/${uuid}`);
+        // Refresh user list
+        const response = await axios.get("http://localhost:5000/akun");
+        setUsers(response.data);
+      } catch (error) {
+        console.error("Error deleting user: ", error);
       }
     }
   };
 
-  const handleAddLayananField = (isEditing, id) => {
-    if (isEditing) {
-      setUnitKerja(unitKerja.map(unit =>
-        unit.id === id
-          ? { ...unit, layanan: [...unit.layanan, ''] }
-          : unit
-      ));
-    } else {
-      setNewUnit({ ...newUnit, layanan: [...newUnit.layanan, ''] });
-    }
-  };
+  const filteredUsers = users
+    .filter((user) => user.username.toLowerCase().includes(searchTerm.toLowerCase()))
+    .sort((a, b) => a.username.localeCompare(b.username)); // Sorting users alphabetically
 
-  const handleSaveEdit = () => {
-    setEditingUnitKerja(null);
-    localStorage.setItem('unitKerja', JSON.stringify(unitKerja));
-  };
-
-  const handleEditUnitKerja = (id) => {
-    setEditingUnitKerja(id);
-  };
-
-  const handleDeleteUnitKerja = (id) => {
-    const updatedUnitKerja = unitKerja.filter(unit => unit.id !== id);
-    setUnitKerja(updatedUnitKerja);
-    localStorage.setItem('unitKerja', JSON.stringify(updatedUnitKerja));
-  };
+  const startIndex = (currentPage - 1) * rowsPerPage;
+  const endIndex = startIndex + rowsPerPage;
+  const currentUsers = filteredUsers.slice(startIndex, endIndex);
 
   return (
-    <div className="container mx-auto p-4 bg-[#A8D1A1] rounded">
-      <h1 className="text-2xl font-bold mb-4 text-center">Daftar Unit Kerja</h1>
-      <div className="mb-4 bg-white p-4 rounded shadow-md">
-        <input
-          type="text"
-          name="name"
-          placeholder="Nama Unit Kerja"
-          value={newUnit.name}
-          onChange={(e) => handleInputChange(e)}
-          className="border rounded px-2 py-1 mb-2 w-full"
+    <div className="font-sans bg-gray-100 min-h-screen p-4">
+      <h1 className="text-2xl font-semibold mb-4">Users</h1>
+      <div className="flex justify-between items-center mb-4">
+        <input 
+          type="text" 
+          placeholder="Search user..." 
+          value={searchTerm} 
+          onChange={handleSearch} 
+          className="border border-gray-300 rounded-lg p-2 w-full max-w-sm"
         />
-        {newUnit.layanan.map((layanan, index) => (
-          <div key={index} className="mb-2">
-            <input
-              type="text"
-              name={`layanan${index}`}
-              placeholder={`Layanan ${index + 1}`}
-              value={layanan}
-              onChange={(e) => handleInputChange(e, null, index)}
-              className="border rounded px-2 py-1 w-full"
-            />
-          </div>
-        ))}
-        <div className="flex justify-between mt-2">
-          <button onClick={() => handleAddLayananField(false)} className="bg-[#416829] hover:bg-green-700 text-white font-bold py-1 px-2 rounded">
-            Tambah Layanan
-          </button>
-          <button onClick={handleAddUnitKerja} className="bg-[#416829] hover:bg-green-700 text-white font-bold py-1 px-2 rounded">
-            Tambah Unit Kerja
-          </button>
-        </div>
+        <button 
+          className="ml-4 bg-blue-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-600"
+          onClick={() => setShowModal(true)}
+        >
+          Buat Akun
+        </button>
       </div>
-      <table className="w-full mt-4 bg-white border-collapse rounded shadow-md">
-        <thead>
+      {showModal && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
+            <h2 className="text-xl font-semibold mb-4">Create New User</h2>
+            <form onSubmit={(e) => { e.preventDefault(); handleAddUser(); }}>
+              <div className="mb-4">
+                <label className="block text-gray-700">Username:</label>
+                <input
+                  type="text"
+                  name="username"
+                  value={newUser.username}
+                  onChange={handleNewUserChange}
+                  required
+                  className="border border-gray-300 rounded-lg p-2 w-full"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700">Password:</label>
+                <input
+                  type="password"
+                  name="password"
+                  value={newUser.password}
+                  onChange={handleNewUserChange}
+                  required
+                  className="border border-gray-300 rounded-lg p-2 w-full"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700">Confirm Password:</label>
+                <input
+                  type="password"
+                  name="confPassword"
+                  value={newUser.confPassword}
+                  onChange={handleNewUserChange}
+                  required
+                  className="border border-gray-300 rounded-lg p-2 w-full"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700">Email:</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={newUser.email}
+                  onChange={handleNewUserChange}
+                  required
+                  className="border border-gray-300 rounded-lg p-2 w-full"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700">Role:</label>
+                <select
+                  name="role"
+                  value={newUser.role}
+                  onChange={handleNewUserChange}
+                  className="border border-gray-300 rounded-lg p-2 w-full"
+                >
+                  <option value="user">User</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700">Nama Unit:</label>
+                <input
+                  type="text"
+                  name="nama_unit"
+                  value={newUser.nama_unit}
+                  onChange={handleNewUserChange}
+                  required
+                  className="border border-gray-300 rounded-lg p-2 w-full"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700">Alamat:</label>
+                <input
+                  type="text"
+                  name="alamat"
+                  value={newUser.alamat}
+                  onChange={handleNewUserChange}
+                  className="border border-gray-300 rounded-lg p-2 w-full"
+                />
+              </div>
+              <div className="flex justify-end space-x-4">
+                <button
+                  type="submit"
+                  className="bg-blue-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-600"
+                >
+                  Tambah
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="bg-gray-300 text-gray-800 py-2 px-4 rounded-lg shadow-md hover:bg-gray-400"
+                >
+                  Batal
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      <table className="w-full bg-white border border-gray-300 rounded-lg shadow-md mt-4">
+        <thead className="bg-gray-100">
           <tr>
-            <th className="p-2 text-left bg-[#E9F4E7] border-b">Nama Unit Kerja</th>
-            <th className="p-2 text-left bg-[#E9F4E7] border-b">Layanan</th>
-            <th className="p-2 text-center bg-[#E9F4E7] border-b">Aksi</th>
+            <th className="py-2 px-4 border-b">No</th>
+            <th className="py-2 px-4 border-b">Username</th>
+            <th className="py-2 px-4 border-b">Unit Kerja</th>
+            <th className="py-2 px-4 border-b">Email</th>
+            <th className="py-2 px-4 border-b">Role</th>
+            <th className="py-2 px-4 border-b">Actions</th>
           </tr>
         </thead>
         <tbody>
-          {unitKerja.map(unit => (
-            <React.Fragment key={unit.id}>
-              <tr>
-                <td rowSpan={unit.layanan.length + 1} className="p-2 border-t">
-                  {editingUnitKerja === unit.id ? (
-                    <input
-                      type="text"
-                      name="name"
-                      value={unit.name}
-                      onChange={(e) => handleInputChange(e, unit.id, null, true)}
-                      className="border rounded px-2 py-1 w-full"
-                    />
-                  ) : (
-                    unit.name
-                  )}
-                </td>
-                <td className="p-2 border-t">
-                  {editingUnitKerja === unit.id ? (
-                    unit.layanan.map((layanan, index) => (
-                      <div key={index} className="mb-2">
-                        <input
-                          type="text"
-                          name={`layanan${index}`}
-                          value={layanan}
-                          onChange={(e) => handleInputChange(e, unit.id, index, true)}
-                          className="border rounded px-2 py-1 w-full"
-                        />
-                      </div>
+          {currentUsers.map((user, index) => (
+            <tr key={user.uuid}>
+              <td className="py-2 px-4 border-b">{startIndex + index + 1}</td>
+              <td className="py-2 px-4 border-b">{user.username}</td>
+              <td className="py-2 px-4 border-b">
+                {user.unit_kerjas.length > 0
+                  ? user.unit_kerjas.map((unit, idx) => (
+                      <div key={idx}>{unit.nama_unit}</div>
                     ))
-                  ) : (
-                    unit.layanan.map((layanan, index) => (
-                      <div key={index} className="mb-2">
-                        {layanan}
-                      </div>
-                    ))
-                  )}
-                </td>
-                <td rowSpan={unit.layanan.length + 1} className="p-2 border-t text-center">
-                  {editingUnitKerja === unit.id ? (
-                    <>
-                      <div className="mb-2">
-                        <button onClick={() => handleAddLayananField(true, unit.id)} className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded">
-                          Tambah Layanan
-                        </button>
-                      </div>
-                      <button onClick={handleSaveEdit} className="bg-green-600 hover:bg-green-800 text-white font-bold py-1 px-2 rounded">
-                        Simpan
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <button onClick={() => handleEditUnitKerja(unit.id)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded mr-2">
-                        Edit
-                      </button>
-                      <button onClick={() => handleDeleteUnitKerja(unit.id)} className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">
-                        Hapus
-                      </button>
-                    </>
-                  )}
-                </td>
-              </tr>
-              {/* Adding empty rows for each layanan */}
-              {unit.layanan.map((_, index) => (
-                <tr key={index}>
-                  <td></td> {/* Empty cell for alignment */}
-                </tr>
-              ))}
-            </React.Fragment>
+                  : 'N/A'}
+              </td>
+              <td className="py-2 px-4 border-b">{user.email}</td>
+              <td className="py-2 px-4 border-b">{user.role}</td>
+              <td className="py-2 px-4 border-b">
+                <button 
+                  onClick={() => handleDeleteUser(user.uuid)}
+                  className="bg-red-500 text-white py-1 px-3 rounded-md shadow-md hover:bg-red-600"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
           ))}
         </tbody>
       </table>
+      <div className="flex justify-between items-center mt-4">
+        <select 
+          value={rowsPerPage} 
+          onChange={handleRowsPerPageChange}
+          className="border border-gray-300 rounded-lg p-2"
+        >
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+        </select>
+        <div className="text-gray-700">
+          {startIndex + 1} - {endIndex > filteredUsers.length ? filteredUsers.length : endIndex} of {filteredUsers.length}
+        </div>
+        <div>
+          <button 
+            onClick={() => handlePageChange(currentPage - 1)} 
+            disabled={currentPage === 1}
+            className="bg-blue-500 text-white py-1 px-3 rounded-md shadow-md hover:bg-blue-600 disabled:bg-gray-300"
+          >
+            &lt;
+          </button>
+          <button 
+            onClick={() => handlePageChange(currentPage + 1)} 
+            disabled={endIndex >= filteredUsers.length}
+            className="bg-blue-500 text-white py-1 px-3 rounded-md shadow-md hover:bg-blue-600 disabled:bg-gray-300 ml-2"
+          >
+            &gt;
+          </button>
+        </div>
+      </div>
     </div>
   );
-}
+};
 
 export default UnitKerja;
