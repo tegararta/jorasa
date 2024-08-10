@@ -14,8 +14,6 @@ export const LoginUser = createAsyncThunk("user/LoginUser", async (user, thunkAP
             username: user.username,
             password: user.password
         });
-        console.log(response.username);
-        localStorage.setItem("user", JSON.stringify(response?.data, true));
         return response.data;
     } catch (error) {
         if (error.response) {
@@ -23,7 +21,7 @@ export const LoginUser = createAsyncThunk("user/LoginUser", async (user, thunkAP
             return thunkAPI.rejectWithValue(error.response.data.msg);
         } else {
             console.log("An unexpected error occurred.");
-            return thunkAPI.rejectWithValue("An unexpected error occurred.");
+            return thunkAPI.rejectWithValue("server error.");
         }
     }
 })
@@ -44,7 +42,7 @@ export const userOn = createAsyncThunk("user/users", async (_, thunkAPI) => {
 })
 
 export const logOut = createAsyncThunk("user/users", async () => {
-    await axios.delete("http://localhost:5000/userOn/");
+    await axios.delete("http://localhost:5000/logout");
     
 })
 

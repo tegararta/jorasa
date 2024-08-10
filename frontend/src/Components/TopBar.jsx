@@ -9,7 +9,7 @@ function TopBar() {
   const [showEditPassword, setShowEditPassword] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);
+  const { user, layanan } = useSelector((state) => state.auth);
   
   useEffect(() => {
   
@@ -43,6 +43,7 @@ function TopBar() {
     return <div className='flex py-6 px-10 items-center ml-auto mr-2 text-[#416829] font-semibold'>Not found</div>;
   }
 
+  console.log("data",layanan);
   
 
   return (

@@ -1,164 +1,176 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import UnitKerja from './UnitKerja';
 
-function Layanan() {
-  const [unitKerja, setUnitKerja] = useState([]);
-  const [newLayanan, setNewLayanan] = useState({ id: Date.now(), layanan: [''] });
-  const [userUnitKerja, setUserUnitKerja] = useState({});
+const Layanan = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [layanan, setLayanan] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [Addlayanan, setAddlayanan] = useState({
+    nama_layanan: "",
+  });
 
   useEffect(() => {
-    const storedUnitKerja = localStorage.getItem('unitKerja');
-    if (storedUnitKerja) {
-      const parsedUnitKerja = JSON.parse(storedUnitKerja);
-      setUnitKerja(parsedUnitKerja);
-    } else {
-      const dummyUnitKerja = [
-        {
-          id: 1,
-          name: 'Unit Kerja 1',
-          layanan: ['Layanan 1', 'Layanan 2']
-        },
-        {
-          id: 2,
-          name: 'Unit Kerja 2',
-          layanan: ['Layanan 3', 'Layanan 4']
-        }
-      ];
-      setUnitKerja(dummyUnitKerja);
-      localStorage.setItem('unitKerja', JSON.stringify(dummyUnitKerja));
-    }
-
-    // Simulasi pengambilan unit kerja dari user yang login
-    const user = {
-      id: 1,
-      name: 'John Doe',
-      unitKerja: {
-        id: 1,
-        name: 'Unit Kerja 1'
+    const getLayanan = async () => {
+      try {
+        const layananResponse = await axios.get("http://localhost:5000/layanan/");
+        setLayanan(layananResponse.data);
+      } catch (error) {
+        console.error("Error fetching data: ", error);
       }
     };
-    setUserUnitKerja(user.unitKerja);
+
+    getLayanan();
   }, []);
 
-  const handleInputChange = (e, index) => {
-    const { value } = e.target;
-    const newLayananList = [...newLayanan.layanan];
-    newLayananList[index] = value;
-    setNewLayanan({ ...newLayanan, layanan: newLayananList });
+  const handleSearch = (e) => setSearchTerm(e.target.value);
+
+  const handlePageChange = (page) => setCurrentPage(page);
+
+  const handleRowsPerPageChange = (e) => setRowsPerPage(parseInt(e.target.value, 10));
+
+  const handleNewLayananChange = (e) => {
+    const { name, value } = e.target;
+    setAddlayanan((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
   };
 
-  const handleAddLayananField = () => {
-    setNewLayanan({ ...newLayanan, layanan: [...newLayanan.layanan, ''] });
-  };
-
-  const handleSimpanLayanan = () => {
-    const updatedUnitKerja = unitKerja.map(unit =>
-      unit.id === userUnitKerja.id
-        ? {
-          ...unit,
-          layanan: [...unit.layanan, ...newLayanan.layanan.filter(layanan => layanan !== '')]
-        }
-        : unit
-    );
-
-    // If the unit kerja doesn't exist in the table, add it
-    if (!updatedUnitKerja.some(unit => unit.id === userUnitKerja.id)) {
-      updatedUnitKerja.push({
-        id: userUnitKerja.id,
-        name: userUnitKerja.name,
-        layanan: newLayanan.layanan.filter(layanan => layanan !== '')
+  const handleAddLayanan = async () => {
+    try {
+      await axios.post("http://localhost:5000/layanan/create", Addlayanan, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
+      setShowModal(false);
+      setAddlayanan({ nama_layanan: "" });
+      const response = await axios.get("http://localhost:5000/layanan/");
+      setLayanan(response.data);
+    } catch (error) {
+      console.error("Error creating layanan: ", error);
     }
-
-    setUnitKerja(updatedUnitKerja);
-    localStorage.setItem('unitKerja', JSON.stringify(updatedUnitKerja));
-    setNewLayanan({ id: Date.now(), layanan: [''] });
   };
 
-  const handleEditUnitKerja = (id) => {
-    // handle edit logic here if needed
-  };
+  const filteredLayanan = layanan
+    .filter((layanan) => layanan.nama_layanan.toLowerCase().includes(searchTerm.toLowerCase()))
+    .sort((a, b) => a.nama_layanan.localeCompare(b.nama_layanan));
 
-  const handleDeleteUnitKerja = (id) => {
-    const updatedUnitKerja = unitKerja.filter(unit => unit.id !== id);
-    setUnitKerja(updatedUnitKerja);
-    localStorage.setItem('unitKerja', JSON.stringify(updatedUnitKerja));
-  };
+  const startIndex = (currentPage - 1) * rowsPerPage;
+  const endIndex = startIndex + rowsPerPage;
+  const currentLayanan = filteredLayanan.slice(startIndex, endIndex);
 
   return (
-    <div className="container mx-auto p-4 bg-[#A8D1A1] rounded">
-      <h1 className="text-2xl font-bold mb-4 text-center">Daftar Layanan</h1>
-      <div className="mb-4 bg-white p-4 rounded shadow-md">
-        <h2 className="text-xl font-bold mb-2">Unit Kerja yang Login</h2>
-        <div className="mb-4">
-          <p>{userUnitKerja.name}</p>
-        </div>
-        <h2 className="text-xl font-bold mb-2">Tambah Layanan</h2>
-        {newLayanan.layanan.map((layanan, index) => (
-          <div key={index} className="mb-2">
-            <input
-              type="text"
-              name={`layanan${index}`}
-              placeholder={`Layanan ${index + 1}`}
-              value={layanan}
-              onChange={(e) => handleInputChange(e, index)}
-              className="border rounded px-2 py-1 w-full"
-            />
-          </div>
-        ))}
-        <div className="flex justify-between mt-2">
-          <button onClick={handleAddLayananField} className="bg-[#416829] hover:bg-green-700 text-white font-bold py-1 px-2 rounded">
-            Tambah Layanan
-          </button>
-          <button onClick={handleSimpanLayanan} className="bg-[#416829] hover:bg-green-700 text-white font-bold py-1 px-2 rounded">
-            Simpan Layanan
-          </button>
-        </div>
-      </div>
-      <table className="w-full mt-4 bg-white border-collapse rounded shadow-md">
-        <thead>
-          <tr>
-            <th className="p-2 text-left bg-[#E9F4E7] border-b">Nama Unit Kerja</th>
-            <th className="p-2 text-left bg-[#E9F4E7] border-b">Layanan</th>
-            <th className="p-2 text-center bg-[#E9F4E7] border-b">Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          {unitKerja.length > 0 ? (
-            unitKerja.map(unit => (
-              <React.Fragment key={unit.id}>
-                <tr>
-                  <td className="p-2 border-t">
-                    {unit.name}
-                  </td>
-                  <td className="p-2 border-t">
-                    {unit.layanan.map((layanan, index) => (
-                      <div key={index} className="mb-2">
-                        {layanan}
-                      </div>
-                    ))}
-                  </td>
-                  <td className="p-2 border-t text-center">
-                    <button onClick={() => handleEditUnitKerja(unit.id)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded mr-2">
+    <div className="font-sans bg-gray-100 min-h-screen p-8 flex space-x-8">
+      {/* Left Side: Display Layanan */}
+      <div className="w-3/5 bg-[#A8D1A1] rounded-lg shadow-md p-6">
+        <h1 className="text-2xl font-bold mb-6 text-gray-800">Daftar Layanan - {UnitKerja}</h1>
+        <input
+          type="text"
+          placeholder="Cari layanan..."
+          value={searchTerm}
+          onChange={handleSearch}
+          className="border border-gray-300 rounded-lg p-2 w-full mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white rounded-lg shadow-lg">
+            <thead>
+              <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-relaxed">
+                <th className="py-3 px-6 text-left">No</th>
+                <th className="py-3 px-6 text-left">Nama Layanan</th>
+                <th className="py-3 px-6 text-left">Aksi</th>
+              </tr>
+            </thead>
+            <tbody className="text-gray-600 text-sm">
+              {currentLayanan.map((layanan, index) => (
+                <tr key={layanan.id} className="border-b border-gray-200 hover:bg-gray-50">
+                  <td className="py-3 px-6 text-left">{startIndex + index + 1}</td>
+                  <td className="py-3 px-6 text-left whitespace-nowrap">{layanan.nama_layanan}</td>
+                  <td className="py-3 px-6 text-left whitespace-nowrap">
+                    <button
+                      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2 transition duration-200"
+                      // onClick={() => handleEdit(layanan.uuid)}
+                    >
                       Edit
                     </button>
-                    <button onClick={() => handleDeleteUnitKerja(unit.id)} className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">
+                    <button
+                      className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-200"
+                    >
                       Hapus
                     </button>
                   </td>
                 </tr>
-              </React.Fragment>
-            ))
-          ) : (
-            <tr>
-              <td colSpan={3} className="p-2 text-center">
-                Tidak ada data
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {/* Pagination Controls */}
+        <div className="flex justify-between items-center mt-6">
+          <div>
+            <label className="mr-2 text-gray-700">Rows per page:</label>
+            <select
+              value={rowsPerPage}
+              onChange={handleRowsPerPageChange}
+              className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+            </select>
+          </div>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className={`py-2 px-4 rounded-lg shadow-md transition duration-200 ${currentPage === 1 ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'
+                }`}
+            >
+              Prev
+            </button>
+            <span className="text-gray-700">{currentPage}</span>
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={endIndex >= filteredLayanan.length}
+              className={`py-2 px-4 rounded-lg shadow-md transition duration-200 ${endIndex >= filteredLayanan.length ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'
+                }`}
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Add Layanan */}
+      <div className="w-2/5 bg-[#A8D1A1] rounded-lg shadow-md p-10">
+        <h1 className="text-3xl font-bold mb-6 text-gray-800">Tambah Layanan Baru</h1>
+        <form onSubmit={(e) => { e.preventDefault(); handleAddLayanan(); }}>
+          <div className="mb-5">
+            <label className="block text-lg font-medium text-gray-700 mb-2">Nama Layanan:</label>
+            <input
+              type="text"
+              name="nama_layanan"
+              value={Addlayanan.nama_layanan}
+              onChange={handleNewLayananChange}
+              required
+              className="w-full border border-gray-300 rounded-lg p-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+              placeholder="Masukkan nama layanan"
+            />
+          </div>
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              className="bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200"
+            >
+              Tambah
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
-}
+};
 
 export default Layanan;

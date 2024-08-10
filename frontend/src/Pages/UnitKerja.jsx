@@ -6,7 +6,9 @@ const UnitKerja = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [users, setUsers] = useState([]);
+  const [layanan, setLayanan] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [selectedUnit, setSelectedUnit] = useState(null);
   const [newUser, setNewUser] = useState({
     username: '',
     password: '',
@@ -17,17 +19,22 @@ const UnitKerja = () => {
     alamat: '',
   });
 
+  const getUsersAndLayanan = async () => {
+    try {
+      const [usersResponse, layananResponse] = await Promise.all([
+        axios.get("http://localhost:5000/users/"),
+        axios.get("http://localhost:5000/layanan/")
+      ]);
+      setUsers(usersResponse.data);
+      setLayanan(layananResponse.data);
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+    }
+  };
+  
   useEffect(() => {
-    const getUsers = async () => {
-      try {
-        const response = await axios.get("http://localhost:5000/akun");
-        setUsers(response.data);
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-      }
-    };
 
-    getUsers();
+    getUsersAndLayanan();
   }, []);
 
   const handleSearch = (e) => {
@@ -76,7 +83,7 @@ const UnitKerja = () => {
   };
 
   const handleDeleteUser = async (uuid) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this user?");
+    const confirmDelete = window.confirm("Anda yakin ingin menghapus pengguna ini?");
     if (confirmDelete) {
       try {
         await axios.delete(`http://localhost:5000/akun/${uuid}`);
@@ -89,6 +96,18 @@ const UnitKerja = () => {
     }
   };
 
+  const handleShowLayanan = (unit) => {
+    setSelectedUnit(unit);
+  };
+
+  const closeLayananModal = () => {
+    setSelectedUnit(null);
+  };
+
+  const filteredLayanan = layanan.filter(layanan =>
+    selectedUnit && layanan.unit_kerja && layanan.unit_kerja.nama_unit === selectedUnit
+  );
+
   const filteredUsers = users
     .filter((user) => user.username.toLowerCase().includes(searchTerm.toLowerCase()))
     .sort((a, b) => a.username.localeCompare(b.username)); // Sorting users alphabetically
@@ -99,26 +118,28 @@ const UnitKerja = () => {
 
   return (
     <div className="font-sans bg-gray-100 min-h-screen p-4">
-      <h1 className="text-2xl font-semibold mb-4">Users</h1>
+      <h1 className="text-2xl font-semibold mb-4">Pengguna</h1>
       <div className="flex justify-between items-center mb-4">
-        <input 
-          type="text" 
-          placeholder="Search user..." 
-          value={searchTerm} 
-          onChange={handleSearch} 
+        <input
+          type="text"
+          placeholder="Cari pengguna..."
+          value={searchTerm}
+          onChange={handleSearch}
           className="border border-gray-300 rounded-lg p-2 w-full max-w-sm"
         />
-        <button 
+        <button
           className="ml-4 bg-blue-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-600"
           onClick={() => setShowModal(true)}
         >
           Buat Akun
         </button>
       </div>
+
+      {/* Modal for creating new user */}
       {showModal && (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
-            <h2 className="text-xl font-semibold mb-4">Create New User</h2>
+            <h2 className="text-xl font-semibold mb-4">Buat Pengguna Baru</h2>
             <form onSubmit={(e) => { e.preventDefault(); handleAddUser(); }}>
               <div className="mb-4">
                 <label className="block text-gray-700">Username:</label>
@@ -143,7 +164,7 @@ const UnitKerja = () => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-gray-700">Confirm Password:</label>
+                <label className="block text-gray-700">Konfirmasi Password:</label>
                 <input
                   type="password"
                   name="confPassword"
@@ -176,27 +197,34 @@ const UnitKerja = () => {
                   <option value="admin">Admin</option>
                 </select>
               </div>
-              <div className="mb-4">
-                <label className="block text-gray-700">Nama Unit:</label>
-                <input
-                  type="text"
-                  name="nama_unit"
-                  value={newUser.nama_unit}
-                  onChange={handleNewUserChange}
-                  required
-                  className="border border-gray-300 rounded-lg p-2 w-full"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-gray-700">Alamat:</label>
-                <input
-                  type="text"
-                  name="alamat"
-                  value={newUser.alamat}
-                  onChange={handleNewUserChange}
-                  className="border border-gray-300 rounded-lg p-2 w-full"
-                />
-              </div>
+
+              {/* Conditionally render Nama Unit and Alamat fields */}
+              {newUser.role !== 'admin' && (
+                <>
+                  <div className="mb-4">
+                    <label className="block text-gray-700">Nama Unit:</label>
+                    <input
+                      type="text"
+                      name="nama_unit"
+                      value={newUser.nama_unit}
+                      onChange={handleNewUserChange}
+                      required
+                      className="border border-gray-300 rounded-lg p-2 w-full"
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-gray-700">Alamat:</label>
+                    <input
+                      type="text"
+                      name="alamat"
+                      value={newUser.alamat}
+                      onChange={handleNewUserChange}
+                      className="border border-gray-300 rounded-lg p-2 w-full"
+                    />
+                  </div>
+                </>
+              )}
+
               <div className="flex justify-end space-x-4">
                 <button
                   type="submit"
@@ -216,20 +244,54 @@ const UnitKerja = () => {
           </div>
         </div>
       )}
-      <table className="w-full bg-white border border-gray-300 rounded-lg shadow-md mt-4">
+
+      {/* Modal for viewing layanan */}
+      {selectedUnit && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+        <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
+          <h2 className="text-xl font-semibold mb-4">Detail Layanan - {selectedUnit}</h2>
+          <div className="mb-4"> 
+          <h3 className="text-lg font-semibold">Layanan:</h3>
+            <ul>
+              {filteredLayanan.length > 0 ? (
+                filteredLayanan.map((layanan, index) => (
+                  <li key={layanan.uuid} className="border-b py-2">
+                    <span>{index + 1}. </span>
+                    {layanan.nama_layanan}
+                  </li>
+                ))
+              ) : (
+                <p>Tidak ada layanan tersedia untuk unit kerja ini.</p>
+              )}
+            </ul>
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={closeLayananModal}
+                className="bg-gray-300 text-gray-800 py-2 px-4 rounded-lg shadow-md hover:bg-gray-400"
+              >
+                Tutup
+              </button>
+            </div>
+
+          </div>
+          </div>
+        </div>
+      )}
+
+      <table className="w-full bg-white border border-gray-300 rounded-lg shadow-md mt-4  ">
         <thead className="bg-gray-100">
           <tr>
             <th className="py-2 px-4 border-b">No</th>
             <th className="py-2 px-4 border-b">Username</th>
             <th className="py-2 px-4 border-b">Unit Kerja</th>
             <th className="py-2 px-4 border-b">Email</th>
-            <th className="py-2 px-4 border-b">Role</th>
-            <th className="py-2 px-4 border-b">Actions</th>
+            <th className="py-2 px-4 border-">Role</th>
+            <th className="py-2 px-4 border-b">Aksi</th>
           </tr>
         </thead>
         <tbody>
           {currentUsers.map((user, index) => (
-            <tr key={user.uuid}>
+            <tr key={user.uuid} className=' text-center'>
               <td className="py-2 px-4 border-b">{startIndex + index + 1}</td>
               <td className="py-2 px-4 border-b">{user.username}</td>
               <td className="py-2 px-4 border-b">
@@ -237,49 +299,54 @@ const UnitKerja = () => {
                   ? user.unit_kerjas.map((unit, idx) => (
                       <div key={idx}>{unit.nama_unit}</div>
                     ))
-                  : 'N/A'}
+                  : 'Administator'}
               </td>
               <td className="py-2 px-4 border-b">{user.email}</td>
               <td className="py-2 px-4 border-b">{user.role}</td>
               <td className="py-2 px-4 border-b">
-                <button 
+                <button
+                  onClick={() => handleShowLayanan(user.unit_kerjas[0]?.nama_unit)}
+                  className="bg-green-500 text-white py-1 px-3 rounded-md shadow-md hover:bg-green-600 mr-2"
+                >
+                  Lihat Layanan
+                </button>
+                <button
                   onClick={() => handleDeleteUser(user.uuid)}
                   className="bg-red-500 text-white py-1 px-3 rounded-md shadow-md hover:bg-red-600"
                 >
-                  Delete
+                  Hapus
                 </button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      {/* Pagination controls */}
       <div className="flex justify-between items-center mt-4">
-        <select 
-          value={rowsPerPage} 
+        <select
+          value={rowsPerPage}
           onChange={handleRowsPerPageChange}
           className="border border-gray-300 rounded-lg p-2"
         >
-          <option value="5">5</option>
-          <option value="10">10</option>
-          <option value="20">20</option>
+          <option value={5}>5 baris</option>
+          <option value={10}>10 baris</option>
+          <option value={15}>15 baris</option>
         </select>
-        <div className="text-gray-700">
-          {startIndex + 1} - {endIndex > filteredUsers.length ? filteredUsers.length : endIndex} of {filteredUsers.length}
-        </div>
-        <div>
-          <button 
-            onClick={() => handlePageChange(currentPage - 1)} 
+        <div className="flex space-x-2">
+          <button
             disabled={currentPage === 1}
-            className="bg-blue-500 text-white py-1 px-3 rounded-md shadow-md hover:bg-blue-600 disabled:bg-gray-300"
+            onClick={() => handlePageChange(currentPage - 1)}
+            className="bg-blue-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-600"
           >
-            &lt;
+            Sebelumnya
           </button>
-          <button 
-            onClick={() => handlePageChange(currentPage + 1)} 
+          <button
             disabled={endIndex >= filteredUsers.length}
-            className="bg-blue-500 text-white py-1 px-3 rounded-md shadow-md hover:bg-blue-600 disabled:bg-gray-300 ml-2"
+            onClick={() => handlePageChange(currentPage + 1)}
+            className="bg-blue-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-600"
           >
-            &gt;
+            Berikutnya
           </button>
         </div>
       </div>

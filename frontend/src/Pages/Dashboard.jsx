@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -103,12 +104,24 @@ const ageData = {
 
 const Dashboard = () => {
   const [showSidebar, setShowSidebar] = useState(true);
-  const [user, setUser] = useState(null);
+  const [unit, setUnit] = useState([]);
+  const [layanan, setLayanan] = useState([]);
+
+  const getUnitAndLayanan = async () => {
+    try {
+      const [usersResponse, layananResponse] = await Promise.all([
+        axios.get("http://localhost:5000/unit"),
+        axios.get("http://localhost:5000/layanan/")
+      ]);
+      setUnit(usersResponse.data);
+      setLayanan(layananResponse.data);
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+    }
+  };
 
   useEffect(() => {
-    // Fetch user data from localStorage
-    const userData = JSON.parse(localStorage.getItem('user'));
-    setUser(userData);
+    getUnitAndLayanan();
   }, []);
 
   const toggleSidebar = () => {
@@ -120,11 +133,12 @@ const Dashboard = () => {
       <div className="flex-grow">
         <div className="grid grid-cols-3 gap-6">
           <div className="bg-white rounded-lg shadow-md p-2 text-center w-full">
-            <h2 className="text-2xl font-bold mt-1">114k</h2>
+            {/* nomor dibawah ini berikan menghitung banyak dari  */}
+            <h2 className="text-2xl font-bold mt-1">{unit.length}</h2> 
             <p className="text-gray-500">Unit Kerja</p>
           </div>
           <div className="bg-white rounded-lg shadow-md p-2 text-center w-full">
-            <h2 className="text-2xl font-bold mt-1">1000</h2>
+            <h2 className="text-2xl font-bold mt-1">{layanan.length}</h2>
             <p className="text-gray-500">Layanan</p>
           </div>
           <div className="bg-white rounded-lg shadow-md p-2 text-center w-full">
