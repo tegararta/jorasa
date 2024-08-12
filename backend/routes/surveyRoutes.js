@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const {
     getSurvey,
-    getUserById,
     createSurvey,
     update,
     deleteSurveyById,
@@ -12,6 +11,7 @@ const { verifyUser } = require('../middleware/authuser');
 // Routes
 router.get('/', verifyUser, getSurvey);
 router.post('/create', verifyUser, createSurvey);
-router.patch('/:id_unit', verifyUser, update);
+router.patch('/:uuid', verifyUser, update);
+router.delete('/:uuid', verifyUser, deleteSurveyById);
 
 module.exports = router;

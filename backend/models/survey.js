@@ -20,6 +20,10 @@ const survey = sequelize.define('survey', {
         type: DataTypes.TEXT,
         allowNull: false,
     },
+    judul: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+    },
     created_at: {
         type: DataTypes.DATE,
         allowNull: false,

@@ -48,14 +48,7 @@ GET  http://localhost:5000/unit
 GET http://localhost:5000/survey/
 
 ### cek survey 
-POST  http://localhost:5000/survey/create
-Content-Type: application/json
 
-{
-    "url": "kesehatan1",
-    "pertanyaan": "Apa kabar?",
-    "pertanyaan": "losp"
-}
 
 ###
 DELETE http://localhost:5000/akun/cfdce369-ccc2-425c-92f8-18f4ed6a59ca

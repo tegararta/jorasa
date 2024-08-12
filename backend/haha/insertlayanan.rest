@@ -31,3 +31,6 @@ Content-Type: application/json
 {
     "nama_layanan": "dokter12"
 }
+
+###
+DELETE http://localhost:5000/layanan/d66b1419-c6d6-4c9b-a298-4fb267566676

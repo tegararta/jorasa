@@ -7,7 +7,7 @@ const getSurvey = async (req, res) => {
         let respon;
         if (req.role === 'admin') {
             respon = await survey.findAll({
-                attributes: ['uuid', 'url', 'id_user', 'created_at'],
+                attributes: ['uuid', 'url', 'judul', 'id_user', 'created_at'],
                 include: [{
                     model: user,
                     attributes: ['id_user', 'username'],
@@ -23,7 +23,7 @@ const getSurvey = async (req, res) => {
                     model: user,
                     attributes: ['id_user', 'username']
                 }],
-                attributes: ['uuid', 'url', 'id_user', 'created_at']
+                attributes: ['uuid', 'url', 'judul', 'id_user', 'created_at']
             });
         }
         res.status(200).json(respon);
@@ -32,88 +32,46 @@ const getSurvey = async (req, res) => {
     }
 };
 
-// Get user by ID
-const getUserById = async (req, res) => {
-    try {
-        const respon = await survey.findOne({
-            where: {
-                id_user: req.params.uuid
-            },
-            attributes:['uuid', 'username', 'email', 'role']
-        });
-        res.status(200).json(respon);
-    } catch (error) {
-        console.error('Error fetching accounts:', error);
-        res.status(500).json({ error: 'Failed to fetch accounts' });
-    }
-};
-
-// Create a new user
+// Create survey
 const createSurvey = async (req, res) => {
-    const { url, id_user, pertanyaan } = req.body;
-
+    const { url, id_user, judul, pertanyaan } = req.body;
     try {
+        // Buat survey baru
         const newSurvey = await survey.create({
             url: url,
+            judul: judul,
             id_user: req.id_user 
         });
 
-        await Pertanyaan.create({
-            id_survey: newSurvey.id_survey,
-            pertanyaan: pertanyaan,
-        })
+        // Iterasi melalui array pertanyaan untuk menyimpan tiap pertanyaan
+        await Promise.all(pertanyaan.map(async (q) => {
+            await Pertanyaan.create({
+                pertanyaan: q,
+                id_survey: newSurvey.id_survey,
+            });
+        }));
 
-        res.status(201).json({ msg: "Berhasil" });
+        res.status(201).json({ msg: "Berhasil membuat survey dan pertanyaan" });
     } catch (error) {
-        console.error('Error :', error);
-        res.status(500).json({ error: 'Failed to create ' });
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Gagal membuat survey' });
     }
 };
+
 
 
 // Update user by ID
 const update = async (req, res) => {
-    const { username, password, confPassword, email, role } = req.body;
-
-    // Pengecekan apakah password dan confPassword sama
-    if (password && password !== confPassword) {
-        return res.status(400).json({ msg: "Kata sandi tidak cocok" });
-    }
-
+    const { judul } = req.body;
     try {
-        // Temukan pengguna berdasarkan ID
-        const User = await user.findOne({
-            where: {
-                uuid: req.params.id_user,
-            },
+        await survey.update({
+            judul: judul
+        }, {
+            where: { uuid: req.params.uuid }
         });
-
-        if (!User) {
-            return res.status(404).json({ msg: "Pengguna tidak ditemukan" });
-        }
-
-        // Variabel untuk menyimpan data yang akan diperbarui
-        const updatedData = {
-            username: username || User.username,
-            email: email || User.email,
-            role: role || User.role,
-            updatedAt: new Date()
-        };
-
-        // Jika password ada, hash password baru
-        if (password) {
-            updatedData.password = await argon2.hash(password);
-        } else {
-            updatedData.password = User.password; // Menggunakan password lama jika tidak ada perubahan
-        }
-
-        // Update informasi pengguna
-        await User.update(updatedData);
-
-        res.status(200).json({ msg: "Pengguna berhasil diperbarui" });
+        res.status(200).json({ msg: 'Judul berhasil diupdate' });
     } catch (error) {
-        console.error('Error updating account:', error);
-        res.status(500).json({ error: 'Gagal memperbarui akun' });
+        res.status(500).json({ msg: error.message });
     }
 };
 
@@ -122,7 +80,7 @@ const update = async (req, res) => {
 const deleteSurveyById = async (req, res) => {
     const respon = await user.findOne({
         where: {
-            uuid: req.params.id_user
+            uuid: req.params.uuid
         },
     })
     if (!respon) {
@@ -131,11 +89,11 @@ const deleteSurveyById = async (req, res) => {
     try { 
         await user.destroy({
             where: {
-                uuid: req.params.id_user
+                uuid: req.params.uuid
             }
         });
         
-        res.status(201).json({ msg: "Berhasil dihapus" });
+        res.status(204).json();
     } catch (error) {
         console.error('Error creating account:', error);
         res.status(500).json({ error: 'Failed to create account' });
@@ -144,7 +102,6 @@ const deleteSurveyById = async (req, res) => {
 
 module.exports = {
     getSurvey,
-    getUserById,
     createSurvey,
     update,
     deleteSurveyById,

@@ -1,0 +1,18 @@
+### cek survey 
+GET  http://localhost:5000/survey/
+
+### cek survey 
+GET  http://localhost:5000/survey/
+
+### Bikin survey
+POST  http://localhost:5000/survey/create
+Content-Type: application/json
+
+{
+    "url": "kesehatan1",
+    "judul": "Jombang08/24",
+    "pertanyaan": ["Apa kabar?", "Harimu gimana?"]
+}
+
+### cek survey 
+DELETE http://localhost:5000/survey/0f5a38b8-bd0a-44f5-8403-68b5982c2bce
