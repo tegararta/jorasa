@@ -1,18 +1,46 @@
 const argon2 = require('argon2');
+const { Op } = require('sequelize');
 const user = require('../models/user'); // Sesuaikan nama model
-const unitkerja = require('../models/unit_kerja');
+const Unitkerja = require('../models/unit_kerja');
 
 const getUsers = async (req, res) => {
     try {
-        const respon = await user.findAll({
-            attributes:['uuid','username', 'email', 'role']
+        const response = await user.findAll({
+            include: {
+                model: Unitkerja,
+                attributes: ['nama_unit']
+            },
+            attributes: ['uuid', 'username', 'email', 'role']
         });
-        res.json(respon);
+        res.status(200).json(response);
     } catch (error) {
-        console.error('Error fetching accounts:', error);
-        res.status(500).json({ error: 'Failed to fetch accounts' });
+        console.error('Error fetching users:', error);
+        res.status(500).json({ error: 'Failed to fetch users' });
     }
 };
+
+const getUnit = async (req, res) => {
+    try {
+        const response = await user.findAll({
+            include: {
+                model: Unitkerja,
+                attributes: ['nama_unit']
+            },
+            attributes: ['uuid', 'username', 'email', 'role'],
+            where: {
+                role: {
+                    [Op.ne]: 'Admin'  // Exclude users with the role of 'Admin'
+                }
+            }
+        });
+        res.status(200).json(response);
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).json({ error: 'Failed to fetch users' });
+    }
+};
+
+
 
 // Get user by ID
 const getUserById = async (req, res) => {
@@ -123,27 +151,31 @@ const update = async (req, res) => {
 
 // Delete user by ID
 const deleteUsersById = async (req, res) => {
-    const respon = await user.findOne({
-        where: {
-            uuid: req.params.uuid
-        },
-    })
-    if (!respon) {
-        return res.status(404).json({msg: "Tidak di temukan"})
-    }
-    try { 
+    try {
+        // Check if the user exists
+        const userToDelete = await user.findOne({
+            where: {
+                uuid: req.params.uuid
+            }
+        });
+
+        if (!userToDelete) {
+            return res.status(404).json({ msg: "Pengguna tidak di temukan" });
+        }
+
+        // Perform the deletion
         await user.destroy({
             where: {
                 uuid: req.params.uuid
             }
         });
-        
-        res.status(201).json({ msg: "Berhasil dihapus" });
+        res.status(204).json();
     } catch (error) {
-        console.error('Error creating account:', error);
-        res.status(500).json({ error: 'Failed to create account' });
+        console.error('Error deleting user:', error);
+        res.status(500).json({ error: 'Failed to delete user' });
     }
 };
+
 
 module.exports = {
     getUsers,
@@ -151,5 +183,6 @@ module.exports = {
     createUsers,
     update,
     deleteUsersById,
+    getUnit
 }
 

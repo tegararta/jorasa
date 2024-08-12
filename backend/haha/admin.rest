@@ -27,9 +27,6 @@ Content-Type: application/json
 GET http://localhost:5000/userOn/
 
 ###
-DELETE http://localhost:5000/users/42865442-e6d5-431c-b50f-d0dfa4ecca3f
-
-###
 DELETE http://localhost:5000/logout
 
 ### Admin
@@ -59,3 +56,6 @@ Content-Type: application/json
     "pertanyaan": "Apa kabar?",
     "pertanyaan": "losp"
 }
+
+###
+DELETE http://localhost:5000/akun/cfdce369-ccc2-425c-92f8-18f4ed6a59ca

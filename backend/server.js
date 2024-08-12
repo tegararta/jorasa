@@ -30,7 +30,7 @@ app.use(express.json());
 app.use(session({
     secret: process.env.ACCESS,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     store: store,
     cookie:{
         secure: 'auto'
@@ -39,7 +39,7 @@ app.use(session({
 app.use(cors({ 
     credentials: true,
     origin: 'http://localhost:3000',
-    methods: 'GET,POST,PUT,DELETE',
+    methods: 'GET,POST,PATCH,DELETE',
     allowedHeaders: 'Content-Type,Authorization'
 }));
 // tabel menyimpan cookie aktifkan
@@ -58,9 +58,9 @@ const startServer = async () => {
         app.use(middlewareLogReq);
         app.use(authRoutes);
         app.use('/layanan', layananRoutes);
-        app.use('/akun', adminRoutes);
+        app.use('/users', adminRoutes);
         app.use('/unit', unitkerjaRoutes);
-        app.use('/survey', surveyRoutes);
+        app.use('/survey', surveyRoutes);   
 
         // Start server on port 5000
         app.listen(5000, () => {

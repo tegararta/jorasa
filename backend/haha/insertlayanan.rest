@@ -3,8 +3,8 @@ POST  http://localhost:5000/login
 Content-Type: application/json
 
 {
-    "username": "hukum",
-    "password": "1213"
+    "username": "kesehatan",
+    "password": "12"
 }
 
 ### cek login
@@ -22,4 +22,12 @@ Content-Type: application/json
 
 {
     "nama_layanan": "parkir"
+}
+
+###
+PATCH http://localhost:5000/layanan/d4ff7353-a1b3-433f-b927-75ce64d2401b
+Content-Type: application/json
+
+{
+    "nama_layanan": "dokter12"
 }

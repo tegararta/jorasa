@@ -32,7 +32,7 @@ const getLayanan = async (req, res) => {
 };
 
 const createLayanan = async (req, res) => {
-    const { nama_layanan, id_unit} = req.body;
+    const { nama_layanan, id_unit } = req.body;
     try {
         await layanan.create({
             nama_layanan: nama_layanan,
@@ -68,8 +68,47 @@ const getLayananById = async (req, res) => {
     }
 };
 
+const updateLayanan = async (req, res) => {
+    const { nama_layanan } = req.body;
+    try {
+        const respon = await layanan.update({
+            nama_layanan: nama_layanan
+        }, {
+            where: { uuid: req.params.uuid },
+            include: [{
+                model: unitkerja,
+                attributes: ['nama_unit']
+            }],
+            attributes: ['uuid', 'nama_layanan']
+        });
+        if (!respon) {
+            return res.status(404).json({ msg: 'Layanan tidak tersedia' });
+        }
+        res.status(200).json({ msg: 'Layanan berhasil diupdate' });
+    } catch (error) {
+        res.status(500).json({ msg: error.message });
+    }
+
+}
+
+const deleteLayanan = async (req, res) => {
+    try {
+        await layanan.destroy({
+            where: {
+                uuid: req.params.uuid
+            }
+        });
+        res.status(204).json();
+    } catch (error) {
+        console.error('Error deleting Layanan:', error);
+        res.status(500).json({ error: 'Failed to delete Layanan' });
+    }
+}
+
 module.exports = {
     getLayanan,
     createLayanan,
     getLayananById,
+    updateLayanan,
+    deleteLayanan
 }
