@@ -12,18 +12,6 @@ function EditPassword({ onClose }) {
       alert('Kata sandi baru dan konfirmasi kata sandi tidak cocok');
       return;
     }
-    // Kirim data ke server
-    // fetch('/api/change-password', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ currentPassword, newPassword }),
-    // })
-    //   .then(response => response.json())
-    //   .then(data => {
-    //     alert('Kata sandi berhasil diubah');
-    //     onClose();
-    //   })
-    //   .catch(error => alert('Terjadi kesalahan: ' + error.message));
 
     console.log('Kata sandi diperbarui:', { currentPassword, newPassword });
     onClose(); // Tutup form setelah pengiriman

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useSelector } from "react-redux";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -106,6 +107,7 @@ const Dashboard = () => {
   const [showSidebar, setShowSidebar] = useState(true);
   const [unit, setUnit] = useState([]);
   const [layanan, setLayanan] = useState([]);
+  const { user } = useSelector((state) => state.auth);
 
   const getUnitAndLayanan = async () => {
     try {
@@ -132,11 +134,14 @@ const Dashboard = () => {
     <div className="flex bg-gray-100">
       <div className="flex-grow">
         <div className="grid grid-cols-3 gap-6">
-          <div className="bg-white rounded-lg shadow-md p-2 text-center w-full">
-            {/* nomor dibawah ini berikan menghitung banyak dari  */}
-            <h2 className="text-2xl font-bold mt-1">{unit.length}</h2> 
-            <p className="text-gray-500">Unit Kerja</p>
-          </div>
+          {user && user.role === "admin" && (
+            <div className="bg-white rounded-lg shadow-md p-2 text-center w-full">
+              {/* nomor dibawah ini berikan menghitung banyak dari  */}
+              <h2 className="text-2xl font-bold mt-1">{unit.length}</h2>
+              <p className="text-gray-500">Unit Kerja</p>
+            </div>
+
+          )}
           <div className="bg-white rounded-lg shadow-md p-2 text-center w-full">
             <h2 className="text-2xl font-bold mt-1">{layanan.length}</h2>
             <p className="text-gray-500">Layanan</p>
