@@ -57,19 +57,10 @@ function BuatSurvey() {
   return (
     <div className="flex flex-col lg:flex-row min-h-screen container mx-auto gap-6 p-6">
       {/* Form Section */}
-      <div className="bg-white rounded-lg shadow-xl p-6 lg:w-1/2">
-        <h2 className="text-lg font-bold text-center mb-4 bg-gradient-to-r from-green-500 to-rose-700 p-2 rounded-md text-white">
+      <div className="bg-white mb-10 rounded-lg shadow-xl p-9 lg:w-1/2">
+        <h2 className="text-lg font-bold mb-4 text-center bg-gradient-to-r from-[#4a993d] to-[#A8D1A1] p-2 rounded-md text-black">
           Form Buat Survey
         </h2>
-        <div className="mb-4">
-          <input
-            type="text"
-            placeholder="Masukkan Judul Survey"
-            className="border rounded-md py-2 px-3 w-full focus:outline-none focus:ring-2 focus:ring-green-700"
-            value={surveyTitle}
-            onChange={(event) => setSurveyTitle(event.target.value)}
-          />
-        </div>
         <div className="mb-4">
           <input
             type="text"
@@ -88,7 +79,19 @@ function BuatSurvey() {
 
       {/* List Section */}
       <div className="bg-white rounded-lg shadow-xl p-6 lg:w-1/2">
-        <h2 className="text-lg font-bold mb-4 text-center bg-gradient-to-r from-red-700 to-red-900 p-2 rounded-md text-white">
+      <h2 className="text-lg font-bold mb-4 text-center bg-gradient-to-r from-[#4a993d] to-[#A8D1A1] p-2 rounded-md text-black">
+          Judul Survey
+        </h2>
+      <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Masukkan Judul Survey"
+            className="border rounded-md py-2 px-3 w-full focus:outline-none focus:ring-2 focus:ring-green-700"
+            value={surveyTitle}
+            onChange={(event) => setSurveyTitle(event.target.value)}
+          />
+        </div>
+        <h2 className="text-lg font-bold mb-4 text-center bg-gradient-to-r from-[#A8D1A1] to-[#4a993d] p-2 rounded-md text-black">
           List Pertanyaan
         </h2>
         <div className="overflow-x-auto">
