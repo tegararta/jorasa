@@ -58,13 +58,14 @@ const UnitKerja = () => {
   };
 
   const handleAddUser = async () => {
+    console.log("suksesm");
+    
     try {
-      await axios.post("http://localhost:5000/akun/create", newUser, {
+      await axios.post("http://localhost:5000/users/create", newUser, {
         headers: {
           'Content-Type': 'application/json'
         }
       });
-      setShowModal(false);
       setNewUser({
         username: '',
         password: '',
@@ -74,8 +75,10 @@ const UnitKerja = () => {
         nama_unit: '',
         alamat: '',
       });
+      setShowModal(false);
       // Refresh user list
-      const response = await axios.get("http://localhost:5000/akun");
+      setShowModal(false)
+      const response = await axios.get("http://localhost:5000/users");
       setUsers(response.data);
     } catch (error) {
       console.error("Error creating user: ", error);
@@ -86,9 +89,9 @@ const UnitKerja = () => {
     const confirmDelete = window.confirm("Anda yakin ingin menghapus pengguna ini?");
     if (confirmDelete) {
       try {
-        await axios.delete(`http://localhost:5000/akun/${uuid}`);
+        await axios.delete(`http://localhost:5000/users/${uuid}`);
         // Refresh user list
-        const response = await axios.get("http://localhost:5000/akun");
+        const response = await axios.get("http://localhost:5000/users");
         setUsers(response.data);
       } catch (error) {
         console.error("Error deleting user: ", error);
