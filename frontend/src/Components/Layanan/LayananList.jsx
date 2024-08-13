@@ -36,6 +36,7 @@ const LayananList = ({
               <th className="border border-slate-600 py-3 px-6 text-left">No</th>
               <th className="border border-slate-600 py-3 px-6 text-left">Nama Layanan</th>
               <th className="border border-slate-600 py-3 px-6 text-left">Banyak Ulasan</th>
+              <th className="border border-slate-600 py-3 px-6 text-left">Tanggal Buat</th>
               <th className="border border-slate-600 py-3 px-6 text-left">Aksi</th>
             </tr>
           </thead>
@@ -45,6 +46,7 @@ const LayananList = ({
                 <td className="border border-slate-700 py-3 px-6 text-left">{startIndex + index + 1}</td>
                 <td className="border border-slate-700 py-3 px-6 text-left whitespace-nowrap">{layanan.nama_layanan}</td>
                 <th className="border border-slate-900 py-3 px-6 text-left">99</th>
+                <td className="border border-slate-700 py-3 px-6 text-left whitespace-nowrap">{layanan.createdAt}</td>
                 <td className="border border-slate-700 py-3 px-6 text-left whitespace-nowrap">
                   <button
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2 transition duration-200"

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import QRCode from 'qrcode.react'; // Install library ini jika belum terinstal
 
 const SurveyLink = () => {
-  const surveyLink = 'https://example.com/survey'; // Ganti dengan link survei yang sebenarnya
+  const surveyLink = 'http://localhost:3000/survey'; // Ganti dengan link survei yang sebenarnya
 
   return (
     <div className="container mx-auto p-4">

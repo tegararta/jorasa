@@ -55,79 +55,86 @@ function BuatSurvey() {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="bg-[#FFFFFF] p-4 rounded-md mb-4 shadow-lg">
-        <h2 className="text-lg font-bold text-center mb-2 bg-[#A8D1A1] p-2 rounded-md" style={{ color: '#416829' }}>
+    <div className="flex flex-col lg:flex-row min-h-screen container mx-auto gap-6 p-6">
+      {/* Form Section */}
+      <div className="bg-white rounded-lg shadow-xl p-6 lg:w-1/2">
+        <h2 className="text-lg font-bold text-center mb-4 bg-gradient-to-r from-green-500 to-rose-700 p-2 rounded-md text-white">
           Form Buat Survey
         </h2>
         <div className="mb-4">
           <input
             type="text"
             placeholder="Masukkan Judul Survey"
-            className="border rounded-md py-2 px-3 w-full"
+            className="border rounded-md py-2 px-3 w-full focus:outline-none focus:ring-2 focus:ring-green-700"
             value={surveyTitle}
             onChange={(event) => setSurveyTitle(event.target.value)}
           />
         </div>
-        <div className="mb-4 mt-5">
+        <div className="mb-4">
           <input
             type="text"
             placeholder="Masukkan Pertanyaan"
-            className="border rounded-md py-2 px-3 w-full"
+            className="border rounded-md py-2 px-3 w-full focus:outline-none focus:ring-2 focus:ring-green-700"
             value={newQuestion}
             onChange={(event) => setNewQuestion(event.target.value)}
           />
         </div>
         <div className="flex justify-center">
-          <button onClick={addQuestion} className="bg-[#416829] hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full">
+          <button onClick={addQuestion} className="bg-green-700 hover:bg-green-800 text-white font-bold py-2 px-6 rounded-full transition duration-300 ease-in-out">
             Tambah Pertanyaan
           </button>
         </div>
       </div>
-      <div className="bg-[#FFFFFF] p-4 rounded-md shadow-lg">
-        <h2 className="text-lg font-bold mb-2 text-center bg-[#A8D1A1] p-2 rounded-md" style={{ color: '#416829' }}>List Pertanyaan</h2>
-        <table className="min-w-full bg-white">
-          <tbody>
-            {questions.map((question, index) => (
-              <tr key={index}>
-                <td className="py-2 px-4 border-b w-1/12 text-center">{index + 1}.</td>
-                <td className="py-2 px-4 border-b w-10/12">
-                  {editingIndex === index ? (
-                    <input
-                      type="text"
-                      value={tempQuestion}
-                      onChange={(event) => setTempQuestion(event.target.value)}
-                      className="border rounded-md py-2 px-3 w-full"
-                    />
-                  ) : (
-                    <p>{question}</p>
-                  )}
-                </td>
-                <td className="py-2 px-4 border-b w-1/12 flex justify-end space-x-2">
-                  {editingIndex === index ? (
-                    <button onClick={() => saveQuestion(index)} className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md">
-                      Simpan
+
+      {/* List Section */}
+      <div className="bg-white rounded-lg shadow-xl p-6 lg:w-1/2">
+        <h2 className="text-lg font-bold mb-4 text-center bg-gradient-to-r from-red-700 to-red-900 p-2 rounded-md text-white">
+          List Pertanyaan
+        </h2>
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white">
+            <tbody>
+              {questions.map((question, index) => (
+                <tr key={index}>
+                  <td className="py-2 px-4 border-b text-center w-1/12">{index + 1}.</td>
+                  <td className="py-2 px-4 border-b w-10/12">
+                    {editingIndex === index ? (
+                      <input
+                        type="text"
+                        value={tempQuestion}
+                        onChange={(event) => setTempQuestion(event.target.value)}
+                        className="border rounded-md py-2 px-3 w-full focus:outline-none focus:ring-2 focus:ring-green-700"
+                      />
+                    ) : (
+                      <p>{question}</p>
+                    )}
+                  </td>
+                  <td className="py-2 px-4 border-b w-1/12 flex justify-end space-x-2">
+                    {editingIndex === index ? (
+                      <button onClick={() => saveQuestion(index)} className="bg-green-700 hover:bg-green-800 text-white font-bold py-2 px-4 rounded-md">
+                        Simpan
+                      </button>
+                    ) : (
+                      <button onClick={() => editQuestion(index)} className="bg-green-700 hover:bg-green-800 text-white font-bold py-2 px-4 rounded-md">
+                        Edit
+                      </button>
+                    )}
+                    <button onClick={() => deleteQuestion(index)} className="bg-red-700 hover:bg-red-800 text-white font-bold py-2 px-4 rounded-md">
+                      Hapus
                     </button>
-                  ) : (
-                    <button onClick={() => editQuestion(index)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md">
-                      Edit
-                    </button>
-                  )}
-                  <button onClick={() => deleteQuestion(index)} className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-md">
-                    Hapus
-                  </button>
-                </td>
-              </tr>
-            ))}
-            {questions.length === 0 && (
-              <tr>
-                <td colSpan="3" className="py-2 px-4 border-b text-center">Tidak ada pertanyaan.</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+                  </td>
+                </tr>
+              ))}
+              {questions.length === 0 && (
+                <tr>
+                  <td colSpan="3" className="py-2 px-4 border-b text-center">Tidak ada pertanyaan.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
         <div className="flex justify-center mt-4">
-          <button onClick={createSurvey} className="bg-[#416829] hover:bg-[#000000] text-white font-bold py-2 px-4 rounded-full">
+          <button onClick={createSurvey} className="bg-green-700 hover:bg-green-800 text-white font-bold py-2 px-6 rounded-full transition duration-300 ease-in-out">
             Buat Survey
           </button>
         </div>
