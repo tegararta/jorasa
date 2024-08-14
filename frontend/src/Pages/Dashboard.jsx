@@ -11,7 +11,7 @@ import {
   Legend,
   ArcElement,
 } from 'chart.js';
-import { Bar, Pie } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
 
 ChartJS.register(
   CategoryScale,
@@ -51,31 +51,45 @@ const dataBar = {
   ],
 };
 
-const optionsPie = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: 'top',
-    },
-    title: {
-      display: true,
-      text: 'Penilaian Unit Kerja',
-    },
-  },
-};
+// const optionsPie = {
+//   responsive: true,
+//   plugins: {
+//     legend: {
+//       position: 'top',
+//     },
+//     title: {
+//       display: true,
+//       text: 'Penilaian Unit Kerja',
+//     },
+//   },
+// };
 
-const pieData = {
+// const pieData = {
+//   labels: ['Unit Kerja 1', 'Unit Kerja 2', 'Unit Kerja 3', 'Unit Kerja 4'],
+//   datasets: [
+//     {
+//       label: 'Penilaian',
+//       data: [27.7, 34.7, 9.2, 28.4],
+//       backgroundColor: ['#4299e1', '#f4b400', '#4dc3ff', '#ff6384'],
+//       borderColor: ['#4299e1', '#f4b400', '#4dc3ff', '#ff6384'],
+//       borderWidth: 1,
+//     },
+//   ],
+// };
+
+const penilaianData = {
   labels: ['Unit Kerja 1', 'Unit Kerja 2', 'Unit Kerja 3', 'Unit Kerja 4'],
   datasets: [
     {
       label: 'Penilaian',
       data: [27.7, 34.7, 9.2, 28.4],
-      backgroundColor: ['#4299e1', '#f4b400', '#4dc3ff', '#ff6384'],
+      backgroundColor: ['rgba(66, 153, 225, 0.2)', 'rgba(244, 180, 0, 0.2)', 'rgba(77, 195, 255, 0.2)', 'rgba(255, 99, 132, 0.2)'], // Warna transparan
       borderColor: ['#4299e1', '#f4b400', '#4dc3ff', '#ff6384'],
       borderWidth: 1,
     },
   ],
 };
+
 
 const genderData = {
   labels: ['Laki-laki', 'Perempuan'],
@@ -83,8 +97,8 @@ const genderData = {
     {
       label: 'Jumlah Responden',
       data: [120, 80], // Data dummy untuk jumlah responden berdasarkan jenis kelamin
-      backgroundColor: ['#36A2EB', '#FF6384'],
-      borderColor: ['#36A2EB', '#FF6384'],
+      backgroundColor: ['rgba(54, 162, 235, 0.2)', 'rgba(255, 99, 132, 0.2)'], // Warna transparan
+      borderColor: ['#36A2EB', '#FF6384'], // Warna border tetap solid
       borderWidth: 1,
     },
   ],
@@ -155,7 +169,7 @@ const Dashboard = () => {
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-bold mb-4 text-center">Penilaian Unit Kerja</h2>
             <div className="flex items-center justify-center w-full h-64">
-              <Pie data={pieData} />
+              <Bar options={{ ...optionsBar, plugins: { ...optionsBar.plugins, title: { display: true, text: 'Penilaian Unit Kerja' } } }} data={penilaianData} />
             </div>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
@@ -166,7 +180,7 @@ const Dashboard = () => {
         <div className='grid grid-cols-2 gap-6 mt-6'>
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-bold text-center">Jumlah Responden Berdasarkan Jenis Kelamin</h2>
-            <Bar options={optionsBar} data={genderData} />
+            <Bar options={{ ...optionsBar, plugins: { ...optionsBar.plugins, title: { display: true, text: 'Jumlah Responden Berdasarkan Jenis Kelamin' } } }} data={genderData} />
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-bold text-center">Jumlah Responden Berdasarkan Usia</h2>
