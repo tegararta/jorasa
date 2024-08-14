@@ -31,7 +31,7 @@ const getSurvey = async (req, res) => {
                 where: {
                     id_user: req.id_user,
                 },
-                attributes: ['url', 'judul', 'created_at'],
+                attributes: ['uuid', 'url', 'judul', 'created_at'],
                 include: [
                     {
                         model: pertanyaan,
