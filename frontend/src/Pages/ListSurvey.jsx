@@ -1,12 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import QRCode from 'qrcode.react';
 
 const ListSurvey = () => {
-  const [surveys, setSurveys] = useState(JSON.parse(localStorage.getItem('surveys')) || []);
+  const [surveys, setSurveys] = useState([]);
   const [openSurveyIndex, setOpenSurveyIndex] = useState(null);
   const [showSurveyLink, setShowSurveyLink] = useState(false);
   const [selectedSurveyLink, setSelectedSurveyLink] = useState('');
   const [confirmDelete, setConfirmDelete] = useState({ show: false, index: null });
+
+  useEffect(() => {
+    const fetchSurveys = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/survey/');
+        setSurveys(response.data);
+      } catch (error) {
+        console.error('Error fetching surveys:', error);
+      }
+    };
+
+    fetchSurveys();
+  }, []);
 
   const toggleDropdown = (index) => {
     setOpenSurveyIndex(openSurveyIndex === index ? null : index);
@@ -16,13 +30,23 @@ const ListSurvey = () => {
     setConfirmDelete({ show: true, index });
   };
 
-  const deleteSurvey = (index) => {
-    const updatedSurveys = [...surveys];
-    updatedSurveys.splice(index, 1);
-    setSurveys(updatedSurveys);
-    localStorage.setItem('surveys', JSON.stringify(updatedSurveys));
-    setConfirmDelete({ show: false, index: null });
-  };
+  const deleteSurvey = async (index) => {
+    const surveyToDelete = surveys[index];
+    const uuid = surveyToDelete.uuid;
+    console.log(uuid);
+     // Pastikan UUID ada dalam data survei
+
+    try {
+        await axios.delete(`http://localhost:5000/survey/delete/${uuid}`);
+        const updatedSurveys = [...surveys];
+        updatedSurveys.splice(index, 1);
+        setSurveys(updatedSurveys);
+        setConfirmDelete({ show: false, index: null });
+    } catch (error) {
+        console.error("Failed to delete survey:", error);
+        // Anda bisa menambahkan notifikasi kesalahan di sini
+    }
+};
 
   const showLink = (link) => {
     setSelectedSurveyLink(link);
@@ -39,7 +63,8 @@ const ListSurvey = () => {
           <thead>
             <tr>
               <th className="py-2 px-4 border-b">No</th>
-              <th className="py-2 px-4 border-b">Judul Survey</th> 
+              <th className="py-2 px-4 border-b">Unit Kerja</th>
+              <th className="py-2 px-4 border-b">Judul Survey</th>
               <th className="py-2 px-4 border-b">Jumlah Pertanyaan</th>
               <th className="py-2 px-4 border-b">Aksi</th>
             </tr>
@@ -50,8 +75,9 @@ const ListSurvey = () => {
                 <React.Fragment key={index}>
                   <tr>
                     <td className="py-2 px-4 border-b text-center">{index + 1}</td>
-                    <td className="py-2 px-4 border-b">{survey.title}</td>
-                    <td className="py-2 px-4 border-b text-center">{survey.questions.length}</td>
+                    <td className="py-2 px-4 border-b">{survey.user.unit_kerjas[0]?.nama_unit || 'N/A'}</td>
+                    <td className="py-2 px-4 border-b">{survey.judul}</td>
+                    <td className="py-2 px-4 border-b text-center">{survey.pertanyaans.length}</td>
                     <td className="py-2 px-4 border-b text-center">
                       <div className="flex flex-col items-center space-y-2">
                         <button
@@ -67,7 +93,7 @@ const ListSurvey = () => {
                           Hapus
                         </button>
                         <button
-                          onClick={() => showLink('https://example.com/survey')}
+                          onClick={() => showLink(`http://localhost:5000/survey/${survey.url}`)}
                           className="bg-[#416829] hover:bg-green-700 text-white font-bold py-1 px-3 rounded-full text-sm"
                         >
                           Tampilkan Link
@@ -77,10 +103,10 @@ const ListSurvey = () => {
                   </tr>
                   {openSurveyIndex === index && (
                     <tr>
-                      <td colSpan="4" className="py-2 px-4 border-b">
+                      <td colSpan="5" className="py-2 px-4 border-b">
                         <ul className="list-disc pl-5">
-                          {survey.questions.map((question, qIndex) => (
-                            <li key={qIndex}>{question}</li>
+                          {survey.pertanyaans.map((question, qIndex) => (
+                            <li key={qIndex}>{question.pertanyaan}</li>
                           ))}
                         </ul>
                       </td>
@@ -90,7 +116,7 @@ const ListSurvey = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="4" className="py-2 px-4 border-b text-center">Tidak ada survey.</td>
+                <td colSpan="5" className="py-2 px-4 border-b text-center">Tidak ada survey.</td>
               </tr>
             )}
           </tbody>

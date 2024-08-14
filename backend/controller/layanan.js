@@ -6,7 +6,7 @@ const getLayanan = async (req, res) => {
         let respon;
         if (req.role === 'admin') {
             respon = await layanan.findAll({
-                attributes: ['uuid', 'nama_layanan', 'id_unit'],
+                attributes: ['nama_layanan', 'id_unit'],
                 include: [{
                     model: unitkerja,
                     attributes: ['nama_unit'],
@@ -22,7 +22,7 @@ const getLayanan = async (req, res) => {
                     model: unitkerja,
                     attributes: ['nama_unit']
                 }],
-                attributes: ['uuid', 'nama_layanan', 'id_unit']
+                attributes: ['nama_layanan', 'id_unit']
             });
         }
         res.status(200).json(respon);
@@ -32,7 +32,7 @@ const getLayanan = async (req, res) => {
 };
 
 const createLayanan = async (req, res) => {
-    const { nama_layanan, id_unit } = req.body;
+    const { nama_layanan } = req.body;
     try {
         await layanan.create({
             nama_layanan: nama_layanan,
@@ -55,7 +55,7 @@ const getLayananById = async (req, res) => {
                 model: unitkerja,
                 attributes: ['nama_unit']
             }],
-            attributes: ['uuid', 'nama_layanan']
+            attributes: [ 'nama_layanan']
         });
 
         if (!respon) {
@@ -79,7 +79,7 @@ const updateLayanan = async (req, res) => {
                 model: unitkerja,
                 attributes: ['nama_unit']
             }],
-            attributes: ['uuid', 'nama_layanan']
+            attributes: [ 'nama_layanan']
         });
         if (!respon) {
             return res.status(404).json({ msg: 'Layanan tidak tersedia' });
@@ -99,6 +99,7 @@ const deleteLayanan = async (req, res) => {
         });
         res.status(204).json();
     } catch (error) {
+        
         console.error('Error deleting Layanan:', error);
         res.status(500).json({ error: 'Failed to delete Layanan' });
     }

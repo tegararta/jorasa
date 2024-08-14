@@ -86,10 +86,10 @@ const createUsers = async (req, res) => {
             });
     
             // Menggunakan id_user dari user yang baru dibuat untuk membuat unit_kerja
-            await unitkerja.create({
+            await Unitkerja.create({
                 nama_unit: nama_unit,
                 alamat: alamat,
-                id_user: newUser.id_user  // Menghubungkan dengan user yang baru dibuat
+                id_user: newUser.id_user  
             });
     
             res.status(201).json({ msg: "Akun dinas berhasil ditambahkan" });

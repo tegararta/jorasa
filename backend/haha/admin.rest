@@ -1,16 +1,16 @@
 GET  http://localhost:5000/akun
 
 ###
-POST  http://localhost:5000/akun/create
+POST  http://localhost:5000/users/create
 Content-Type: application/json
 
 {
-    "username": "hukum",
-    "password": "1213",
-    "confPassword": "1213",
+    "username": "hukum1",
+    "password": "12",
+    "confPassword": "12",
     "email": "hukum@gmail.com",
     "role": "user",
-    "nama_unit": "hukum",
+    "nama_unit": "hukum1",
     "alamat": "kota"
 }
 
