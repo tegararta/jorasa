@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios'; // Import Axios
 
 function BuatSurvey() {
   const [questions, setQuestions] = useState([]);
@@ -41,17 +42,36 @@ function BuatSurvey() {
     }
   };
 
-  const createSurvey = () => {
+  const createSurvey = async () => {
     if (surveyTitle.trim() === '' || questions.length === 0) {
       alert('Judul survey dan pertanyaan tidak boleh kosong');
       return;
     }
 
-    const newSurvey = { title: surveyTitle, questions };
-    const storedSurveys = JSON.parse(localStorage.getItem('surveys')) || [];
-    localStorage.setItem('surveys', JSON.stringify([...storedSurveys, newSurvey]));
+    const newSurvey = { 
+      url: surveyTitle.toLowerCase().replace(/\s+/g, ''), // Buat URL dari judul survey
+      judul: surveyTitle, 
+      pertanyaan: questions 
+    };
 
-    navigate('/listsurvey'); // Arahkan ke halaman daftar survey
+    try {
+      // Mengirim data ke endpoint backend
+      const response = await axios.post('http://localhost:5000/survey/create', newSurvey, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.status === 201 || response.status === 200) {
+        alert('Survey berhasil dibuat!');
+        navigate('/listsurvey'); // Arahkan ke halaman daftar survey
+      } else {
+        alert('Gagal membuat survey.');
+      }
+    } catch (error) {
+      console.error('Error creating survey:', error);
+      alert('Terjadi kesalahan saat membuat survey.');
+    }
   };
 
   return (
@@ -79,10 +99,10 @@ function BuatSurvey() {
 
       {/* List Section */}
       <div className="bg-white rounded-lg shadow-xl p-6 lg:w-1/2">
-      <h2 className="text-lg font-bold mb-4 text-center bg-gradient-to-r from-[#4a993d] to-[#A8D1A1] p-2 rounded-md text-black">
+        <h2 className="text-lg font-bold mb-4 text-center bg-gradient-to-r from-[#4a993d] to-[#A8D1A1] p-2 rounded-md text-black">
           Judul Survey
         </h2>
-      <div className="mb-4">
+        <div className="mb-4">
           <input
             type="text"
             placeholder="Masukkan Judul Survey"

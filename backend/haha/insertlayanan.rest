@@ -3,8 +3,8 @@ POST  http://localhost:5000/login
 Content-Type: application/json
 
 {
-    "username": "kesehatan",
-    "password": "12"
+    "username": "hukum",
+    "password": "1213"
 }
 
 ### cek login
@@ -33,4 +33,4 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:5000/layanan/d66b1419-c6d6-4c9b-a298-4fb267566676
+DELETE http://localhost:5000/layanan/13905f01-62ef-4be6-9040-4a19fb5d9db4

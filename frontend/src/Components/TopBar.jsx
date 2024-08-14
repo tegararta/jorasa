@@ -47,7 +47,7 @@ function TopBar() {
 
   return (
     <div>
-      <div className="bg-white py-6 px-10 flex items-center justify-between">
+      <div className="bg-white py-6 px-10 flex items-center justify-between sho">
         <div className="flex items-center ml-auto">
           <span className="mr-2 text-[#416829] font-semibold">
             Halo, {user.username}

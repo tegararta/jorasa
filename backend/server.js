@@ -64,8 +64,8 @@ const startServer = async () => {
 
         // Start server on port 5000
         app.listen(5000, () => {
-            console.log('Server started on port 5000');
-        });
+        console.log('Server started on port 5000');
+    });
     } catch (error) {
         console.error('Unable to connect to the database:', error);
         process.exit(1);

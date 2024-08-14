@@ -18,6 +18,8 @@ const LayananList = ({
   const startIndex = (currentPage - 1) * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
   const currentLayanan = filteredLayanan.slice(startIndex, endIndex);
+  console.log(layanan.createdAt);
+  
 
   return (
     <div className="w-full bg-white mb-auto rounded-lg shadow-xl p-6">
@@ -46,7 +48,7 @@ const LayananList = ({
                 <td className="border border-slate-700 py-3 px-6 text-left">{startIndex + index + 1}</td>
                 <td className="border border-slate-700 py-3 px-6 text-left whitespace-nowrap">{layanan.nama_layanan}</td>
                 <th className="border border-slate-900 py-3 px-6 text-left">99</th>
-                <td className="border border-slate-700 py-3 px-6 text-left whitespace-nowrap">{layanan.createdAt}</td>
+                <td className="border border-slate-700 py-3 px-6 text-left whitespace-nowrap">{new Date(layanan.createdAt).toLocaleDateString('id-ID')}</td>
                 <td className="border border-slate-700 py-3 px-6 text-left whitespace-nowrap">
                   <button
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2 transition duration-200"

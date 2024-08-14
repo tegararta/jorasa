@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useSelector } from "react-redux";
 import QRCode from 'qrcode.react';
 
 const ListSurvey = () => {
   const [surveys, setSurveys] = useState([]);
+  const { user } = useSelector((state) => state.auth);
   const [openSurveyIndex, setOpenSurveyIndex] = useState(null);
   const [showSurveyLink, setShowSurveyLink] = useState(false);
   const [selectedSurveyLink, setSelectedSurveyLink] = useState('');
@@ -63,9 +65,12 @@ const ListSurvey = () => {
           <thead>
             <tr>
               <th className="py-2 px-4 border-b">No</th>
-              <th className="py-2 px-4 border-b">Unit Kerja</th>
+              {user && user.role === "admin" && (
+                <th className="py-2 px-4 border-b">Unit Kerja</th>
+              )}
               <th className="py-2 px-4 border-b">Judul Survey</th>
               <th className="py-2 px-4 border-b">Jumlah Pertanyaan</th>
+              <th className="py-2 px-4 border-b">Tanggal</th>
               <th className="py-2 px-4 border-b">Aksi</th>
             </tr>
           </thead>
@@ -75,9 +80,14 @@ const ListSurvey = () => {
                 <React.Fragment key={index}>
                   <tr>
                     <td className="py-2 px-4 border-b text-center">{index + 1}</td>
+                    {user && user.role === "admin" && (
                     <td className="py-2 px-4 border-b">{survey.user.unit_kerjas[0]?.nama_unit || 'N/A'}</td>
+                    )}
                     <td className="py-2 px-4 border-b">{survey.judul}</td>
                     <td className="py-2 px-4 border-b text-center">{survey.pertanyaans.length}</td>
+                    <td className="py-2 px-4 border-b text-center">
+                      {new Date(survey.created_at).toLocaleDateString('id-ID')}
+                    </td>
                     <td className="py-2 px-4 border-b text-center">
                       <div className="flex flex-col items-center space-y-2">
                         <button

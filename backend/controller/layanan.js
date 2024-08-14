@@ -6,7 +6,7 @@ const getLayanan = async (req, res) => {
         let respon;
         if (req.role === 'admin') {
             respon = await layanan.findAll({
-                attributes: ['nama_layanan', 'id_unit'],
+                attributes: ['uuid', 'nama_layanan', 'id_unit'],
                 include: [{
                     model: unitkerja,
                     attributes: ['nama_unit'],
@@ -22,7 +22,7 @@ const getLayanan = async (req, res) => {
                     model: unitkerja,
                     attributes: ['nama_unit']
                 }],
-                attributes: ['nama_layanan', 'id_unit']
+                attributes: ['uuid', 'nama_layanan', 'createdAt']
             });
         }
         res.status(200).json(respon);
