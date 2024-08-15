@@ -18,6 +18,7 @@ const Layanan = () => {
     uuid: '',
     nama_layanan: '',
   });
+  const [modal, setModal] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
 
   const getLayanan = async () => {
@@ -44,6 +45,7 @@ const Layanan = () => {
       });
       toast.success('Layanan added successfully!');
       getLayanan();
+      setModal(false); // Close modal after adding Layanan
     } catch (error) {
       console.error(error);
       toast.error('Failed to add Layanan.');
@@ -51,28 +53,29 @@ const Layanan = () => {
   };
 
   const handleMenu = async (uuid) => {
-  try {
-    const response = await axios.get(`http://localhost:5000/layanan/${uuid}`);    
-    setEditLayanan(response.data); // Menyimpan data yang diambil ke dalam state editLayanan
-    setShowMenu(true); // Menampilkan modal edit setelah data berhasil diambil
-  } catch (error) {
-    console.error(error);
-    toast.error('Failed to fetch Layanan details.');
-  }
-};
-
-const handleEditChange = (e) => {
-  const updatedLayanan = {
-    ...editLayanan,
-    [e.target.name]: e.target.value,
+    try {
+      const response = await axios.get(`http://localhost:5000/layanan/${uuid}`);    
+      setEditLayanan(response.data); // Menyimpan data yang diambil ke dalam state editLayanan
+      setShowMenu(true); // Menampilkan modal edit setelah data berhasil diambil
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to fetch Layanan details.');
+    }
   };
-  setEditLayanan(updatedLayanan);
-};
+
+  const handleEditChange = (e) => {
+    const updatedLayanan = {
+      ...editLayanan,
+      [e.target.name]: e.target.value,
+    };
+    setEditLayanan(updatedLayanan);
+  };
 
   const handleEdit = async () => {
     try {
       await axios.patch(`http://localhost:5000/layanan/${editLayanan.uuid}`, editLayanan);
       setEditLayanan({
+        uuid: '',
         nama_layanan: '',
       });
       setShowMenu(false);
@@ -96,6 +99,10 @@ const handleEditChange = (e) => {
         toast.error('Failed to delete Layanan.');
       }
     }
+  };
+
+  const viewADD = () => {
+    setModal(!modal);
   };
 
   const handleSearch = (e) => {
@@ -126,12 +133,16 @@ const handleEditChange = (e) => {
         handleRowsPerPageChange={handleRowsPerPageChange}
         handleMenu={handleMenu}
         handleDelete={handleDelete}
+        viewADD={viewADD}
       />
-      <LayananForm
-        Addlayanan={Addlayanan}
-        handleNewLayananChange={handleNewLayananChange}
-        handleAddLayanan={handleAddLayanan}
-      />
+      {modal && (
+        <LayananForm
+          Addlayanan={Addlayanan}
+          handleNewLayananChange={handleNewLayananChange}
+          handleAddLayanan={handleAddLayanan}
+          closeModal={() => setModal(false)}
+        />
+      )}
       <Notifikasi />
       {showMenu && (
         <LayananModal
