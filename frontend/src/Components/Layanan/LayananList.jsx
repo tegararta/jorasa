@@ -18,8 +18,6 @@ const LayananList = ({
   const startIndex = (currentPage - 1) * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
   const currentLayanan = filteredLayanan.slice(startIndex, endIndex);
-  console.log(layanan.createdAt);
-  
 
   return (
     <div className="w-full bg-white mb-auto rounded-lg shadow-xl p-6">

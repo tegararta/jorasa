@@ -11,15 +11,15 @@ const ListSurvey = () => {
   const [selectedSurveyLink, setSelectedSurveyLink] = useState('');
   const [confirmDelete, setConfirmDelete] = useState({ show: false, index: null });
 
+  const fetchSurveys = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/survey/');
+      setSurveys(response.data);
+    } catch (error) {
+      console.error('Error fetching surveys:', error);
+    }
+  };
   useEffect(() => {
-    const fetchSurveys = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/survey/');
-        setSurveys(response.data);
-      } catch (error) {
-        console.error('Error fetching surveys:', error);
-      }
-    };
 
     fetchSurveys();
   }, []);
@@ -35,8 +35,6 @@ const ListSurvey = () => {
   const deleteSurvey = async (index) => {
     const surveyToDelete = surveys[index];
     const uuid = surveyToDelete.uuid;
-    console.log(uuid);
-     // Pastikan UUID ada dalam data survei
 
     try {
         await axios.delete(`http://localhost:5000/survey/delete/${uuid}`);

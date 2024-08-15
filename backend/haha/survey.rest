@@ -15,4 +15,4 @@ Content-Type: application/json
 }
 
 ### cek survey 
-DELETE http://localhost:5000/survey/delete/15ee5343-4850-41e5-85e1-3fa997304ce
+DELETE http://localhost:5000/survey/delete/e8c9c4d0-2f53-407e-b867-4036db7b0511
