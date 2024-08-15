@@ -51,28 +51,28 @@ const Layanan = () => {
   };
 
   const handleMenu = async (uuid) => {
-    try {
-      const response = await axios.get(`http://localhost:5000/layanan/${uuid}`);
-      setEditLayanan(response.data);
-      setShowMenu(true);
-    } catch (error) {
-      console.error(error);
-      toast.error('Failed to fetch Layanan details.');
-    }
-  };
+  try {
+    const response = await axios.get(`http://localhost:5000/layanan/${uuid}`);    
+    setEditLayanan(response.data); // Menyimpan data yang diambil ke dalam state editLayanan
+    setShowMenu(true); // Menampilkan modal edit setelah data berhasil diambil
+  } catch (error) {
+    console.error(error);
+    toast.error('Failed to fetch Layanan details.');
+  }
+};
 
-  const handleEditChange = (e) => {
-    setEditLayanan({
-      ...editLayanan,
-      [e.target.name]: e.target.value,
-    });
+const handleEditChange = (e) => {
+  const updatedLayanan = {
+    ...editLayanan,
+    [e.target.name]: e.target.value,
   };
+  setEditLayanan(updatedLayanan);
+};
 
   const handleEdit = async () => {
     try {
       await axios.patch(`http://localhost:5000/layanan/${editLayanan.uuid}`, editLayanan);
       setEditLayanan({
-        uuid: '',
         nama_layanan: '',
       });
       setShowMenu(false);

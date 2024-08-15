@@ -53,9 +53,9 @@ const getLayananById = async (req, res) => {
             where: { uuid: req.params.uuid },
             include: [{
                 model: unitkerja,
-                attributes: ['nama_unit']
+                attributes: ['uuid', 'nama_unit']
             }],
-            attributes: [ 'nama_layanan']
+            attributes: [ 'uuid', 'nama_layanan']
         });
 
         if (!respon) {
