@@ -78,7 +78,7 @@ function BuatSurvey() {
     <div className="flex flex-col lg:flex-row min-h-screen container mx-auto gap-6 p-6">
       {/* Form Section */}
       <div className="bg-white mb-10 rounded-lg shadow-xl p-9 lg:w-1/2">
-        <h2 className="text-lg font-bold mb-4 text-center bg-gradient-to-r from-[#4a993d] to-[#A8D1A1] p-2 rounded-md text-black">
+        <h2 className="text-lg font-bold mb-4 text-center bg-gradient-to-r from-[#4a993d] to-[#A8D1A1] p-2 rounded-md text-white">
           Form Buat Survey
         </h2>
         <div className="mb-4">
@@ -99,7 +99,7 @@ function BuatSurvey() {
 
       {/* List Section */}
       <div className="bg-white rounded-lg shadow-xl p-6 lg:w-1/2">
-        <h2 className="text-lg font-bold mb-4 text-center bg-gradient-to-r from-[#4a993d] to-[#A8D1A1] p-2 rounded-md text-black">
+        <h2 className="text-lg font-bold mb-4 text-center bg-gradient-to-r from-[#4a993d] to-[#A8D1A1] p-2 rounded-md text-white">
           Judul Survey
         </h2>
         <div className="mb-4">
@@ -111,7 +111,7 @@ function BuatSurvey() {
             onChange={(event) => setSurveyTitle(event.target.value)}
           />
         </div>
-        <h2 className="text-lg font-bold mb-4 text-center bg-gradient-to-r from-[#A8D1A1] to-[#4a993d] p-2 rounded-md text-black">
+        <h2 className="text-lg font-bold mb-4 text-center bg-gradient-to-r from-[#A8D1A1] to-[#4a993d] p-2 rounded-md text-white">
           List Pertanyaan
         </h2>
         <div className="overflow-x-auto">

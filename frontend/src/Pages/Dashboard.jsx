@@ -51,40 +51,14 @@ const dataBar = {
   ],
 };
 
-// const optionsPie = {
-//   responsive: true,
-//   plugins: {
-//     legend: {
-//       position: 'top',
-//     },
-//     title: {
-//       display: true,
-//       text: 'Penilaian Unit Kerja',
-//     },
-//   },
-// };
-
-// const pieData = {
-//   labels: ['Unit Kerja 1', 'Unit Kerja 2', 'Unit Kerja 3', 'Unit Kerja 4'],
-//   datasets: [
-//     {
-//       label: 'Penilaian',
-//       data: [27.7, 34.7, 9.2, 28.4],
-//       backgroundColor: ['#4299e1', '#f4b400', '#4dc3ff', '#ff6384'],
-//       borderColor: ['#4299e1', '#f4b400', '#4dc3ff', '#ff6384'],
-//       borderWidth: 1,
-//     },
-//   ],
-// };
-
 const penilaianData = {
   labels: ['Unit Kerja 1', 'Unit Kerja 2', 'Unit Kerja 3', 'Unit Kerja 4'],
   datasets: [
     {
       label: 'Penilaian',
       data: [27.7, 34.7, 9.2, 28.4],
-      backgroundColor: ['rgba(66, 153, 225, 0.2)', 'rgba(244, 180, 0, 0.2)', 'rgba(77, 195, 255, 0.2)', 'rgba(255, 99, 132, 0.2)'], // Warna transparan
-      borderColor: ['#4299e1', '#f4b400', '#4dc3ff', '#ff6384'],
+      backgroundColor: ['rgba(244, 180, 0, 0.2)'], // Warna transparan
+      borderColor: ['#f4b400'],
       borderWidth: 1,
     },
   ],
@@ -97,8 +71,8 @@ const genderData = {
     {
       label: 'Jumlah Responden',
       data: [120, 80], // Data dummy untuk jumlah responden berdasarkan jenis kelamin
-      backgroundColor: ['rgba(54, 162, 235, 0.2)', 'rgba(255, 99, 132, 0.2)'], // Warna transparan
-      borderColor: ['#36A2EB', '#FF6384'], // Warna border tetap solid
+      backgroundColor: ['rgba(54, 162, 235, 0.2)'], // Warna transparan
+      borderColor: ['#36A2EB'], // Warna border tetap solid
       borderWidth: 1,
     },
   ],
