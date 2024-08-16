@@ -2,7 +2,7 @@ const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/db');
 const User = require('./user');
 
-const survey = sequelize.define('survey', {
+const Survey = sequelize.define('survey', {
     id_survey: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -13,8 +13,8 @@ const survey = sequelize.define('survey', {
         defaultValue: DataTypes.UUIDV4,
         allowNull: false,
         validate: {
-            notEmpty: true
-        }
+            notEmpty: true,
+        },
     },
     url: {
         type: DataTypes.TEXT,
@@ -29,16 +29,21 @@ const survey = sequelize.define('survey', {
         allowNull: false,
         defaultValue: DataTypes.NOW,
     },
-    id_user:{
+    id_user: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        validate:{
-            notEmpty: true
-        }
-    }
+        validate: {
+            notEmpty: true,
+        },
+    },
+    is_active: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true, 
+    },
 });
-User.hasMany(survey, { foreignKey: 'id_user' });
-survey.belongsTo(User, { foreignKey: 'id_user' });
 
+User.hasMany(Survey, { foreignKey: 'id_user' });
+Survey.belongsTo(User, { foreignKey: 'id_user' });
 
-module.exports = survey;
+module.exports = Survey;

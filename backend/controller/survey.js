@@ -7,9 +7,14 @@ const UnitKerja = require('../models/unit_kerja');
 const getSurvey = async (req, res) => {
     try {
         let respon;
+        const active = {
+            is_active: true,
+        };
+
         if (req.role === 'admin') {
             respon = await survey.findAll({
-                attributes: ['uuid', 'url', 'judul', 'id_user', 'created_at'],
+                where: active,
+                attributes: ['uuid', 'url', 'judul', 'created_at'],
                 include: [
                     {
                         model: pertanyaan,
@@ -17,11 +22,11 @@ const getSurvey = async (req, res) => {
                         required: false,
                     },
                     {
-                        model: user, // Menyertakan User untuk mengakses UnitKerja
-                        attributes: ['id_user'], // Atribut yang diambil dari User
+                        model: user,
+                        attributes: ['username'],
                         include: [{
                             model: UnitKerja,
-                            attributes: ['nama_unit'], // Atribut yang diambil dari UnitKerja
+                            attributes: ['nama_unit'],
                         }],
                     },
                 ],
@@ -29,7 +34,8 @@ const getSurvey = async (req, res) => {
         } else {
             respon = await survey.findAll({
                 where: {
-                    id_user: req.id_user,
+                    ...active,
+                    id_user: req.id_user, // Hanya ambil survey milik pengguna saat ini
                 },
                 attributes: ['uuid', 'url', 'judul', 'created_at'],
                 include: [
@@ -45,6 +51,7 @@ const getSurvey = async (req, res) => {
         res.status(500).json({ msg: error.message });
     }
 };
+
 
 // Create survey
 const createSurvey = async (req, res) => {
@@ -92,29 +99,32 @@ const update = async (req, res) => {
 
 // Delete user by ID
 const deleteSurvey = async (req, res) => {
-    const respon = await survey.findOne({
-        where: {
-            uuid: req.params.uuid
-        },
-    })
-    console.log(respon);
-    
-    if (!respon) {
-        return res.status(404).json({msg: "Tidak di temukan"})
-    }
-    try { 
-        await survey.destroy({
-            where: {
-                uuid: req.params.uuid
-            }
-        });
-        
-        res.status(204).json();
+    try {
+        if (req.role === 'admin') {
+            // Jika pengguna adalah admin, benar-benar hapus survei
+            await survey.destroy({
+                where: {
+                    uuid: req.params.uuid
+                }
+            });
+            res.status(204).json({ msg: "Survey berhasil dihapus" });
+        } else {
+            // Jika bukan admin, hanya nonaktifkan survei
+            await survey.update({
+                is_active: false
+            }, {
+                where: {
+                    uuid: req.params.uuid
+                }
+            });
+            res.status(200).json({ msg: "Survey berhasil dinonaktifkan" });
+        }
     } catch (error) {
-        console.error('Error creating account:', error);
-        res.status(500).json({ error: 'Failed to create account' });
+        console.error('Error deleting survey:', error);
+        res.status(500).json({ error: 'Gagal menghapus survey' });
     }
 };
+
 
 module.exports = {
     getSurvey,

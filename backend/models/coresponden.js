@@ -34,13 +34,6 @@ const coresponden = sequelize.define('coresponden', {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    id_layanan: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: 'layanans',
-            key: 'id_layanan'
-        }
-    },
 });
 
 module.exports = coresponden;

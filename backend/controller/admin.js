@@ -8,7 +8,7 @@ const getUsers = async (req, res) => {
         const response = await user.findAll({
             include: {
                 model: Unitkerja,
-                attributes: ['nama_unit']
+                attributes: ['nama_unit', 'alamat']
             },
             attributes: ['uuid', 'username', 'email', 'role']
         });
@@ -105,12 +105,10 @@ const createUsers = async (req, res) => {
 // Update user by ID
 const update = async (req, res) => {
     const { username, password, confPassword, email, role } = req.body;
-
     // Pengecekan apakah password dan confPassword sama
     if (password && password !== confPassword) {
         return res.status(400).json({ msg: "Kata sandi tidak cocok" });
     }
-
     try {
         // Temukan pengguna berdasarkan ID
         const User = await user.findOne({

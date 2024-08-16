@@ -1,4 +1,17 @@
-GET  http://localhost:5000/akun
+GET  http://localhost:5000/users
+
+###
+POST  http://localhost:5000/users/create
+Content-Type: application/json
+
+{
+    "username": "admin",
+    "password": "12",
+    "confPassword": "12",
+    "email": "admin@gmail.com",
+    "role": "admin"
+}
+
 
 ###
 POST  http://localhost:5000/users/create
@@ -20,7 +33,7 @@ Content-Type: application/json
 
 {
     "username": "admin",
-    "password": "1213"
+    "password": "12"
 }
 
 ### cek login 

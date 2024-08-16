@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { FaEye, FaTrash } from 'react-icons/fa';
 
 const UnitKerja = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -288,6 +289,7 @@ const UnitKerja = () => {
             <th className="py-2 px-4 border-b">Username</th>
             <th className="py-2 px-4 border-b">Unit Kerja</th>
             <th className="py-2 px-4 border-b">Email</th>
+            <th className="py-2 px-4 border-b">Alamat</th>
             <th className="py-2 px-4 border-">Role</th>
             <th className="py-2 px-4 border-b">Aksi</th>
           </tr>
@@ -305,21 +307,24 @@ const UnitKerja = () => {
                   : 'Administator'}
               </td>
               <td className="py-2 px-4 border-b">{user.email}</td>
+              <td className="py-2 px-4 border-b">{user.unit_kerjas[0]?.alamat  || "Pusat"}</td>
               <td className="py-2 px-4 border-b">{user.role}</td>
               <td className="py-2 px-4 border-b">
-                <button
-                  onClick={() => handleShowLayanan(user.unit_kerjas[0]?.nama_unit)}
-                  className="bg-green-500 text-white py-1 px-3 rounded-md shadow-md hover:bg-green-600 mr-2"
-                >
-                  Lihat Layanan
-                </button>
-                <button
-                  onClick={() => handleDeleteUser(user.uuid)}
-                  className="bg-red-500 text-white py-1 px-3 rounded-md shadow-md hover:bg-red-600"
-                >
-                  Hapus
-                </button>
-              </td>
+        {user.role !== "admin" && (
+          <button
+            onClick={() => handleShowLayanan(user.unit_kerjas[0]?.nama_unit)}
+            className="bg-green-500 text-white py-1 px-3 rounded-md shadow-md hover:bg-green-600 mr-2"
+          >
+            <FaEye className="inline-block mr-1" />
+          </button>
+        )}
+        <button
+          onClick={() => handleDeleteUser(user.uuid)}
+          className="bg-red-500 text-white py-1 px-3 rounded-md shadow-md hover:bg-red-600"
+        >
+          <FaTrash className="inline-block mr-1" />
+        </button>
+      </td>
             </tr>
           ))}
         </tbody>
