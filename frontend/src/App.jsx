@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Login, Beranda, Dashboard, Saran, DetailSaran, BuatSurvey, DataResponden, TentangKami, EditPassword, LaporanSurvey, UnitKerja, Layanan, SurveyLink, ListSurvey } from './Pages';
 import { Survey, DataDiri } from './Responden';
+import SurveyPage from './Pages/SurveyPage';
 import './App.css';
 import { Layout } from './Components'; // Pastikan path benar
 
@@ -15,7 +16,7 @@ const App = () => {
         <Route path="/editpassword" element={<Layout><EditPassword /></Layout>} />
         <Route path="/saran" element={<Layout><Saran /></Layout>} />
         <Route path="/detailsaran" element={<Layout><DetailSaran /></Layout>} />
-        <Route path="/SurveyJoRasa" element={<Survey />} />
+        <Route path="/SurveyJoRasa/:uuid" element={<SurveyPage />} />
         <Route path="/survey" element={<DataDiri />} />
         <Route path="/buatsurvey" element={<Layout><BuatSurvey /></Layout>} />
         <Route path="/unitkerja" element={<Layout><UnitKerja /></Layout>} />

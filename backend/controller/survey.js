@@ -1,8 +1,8 @@
-const user = require('../models/user'); // Sesuaikan nama model
+const User = require('../models/user'); // Sesuaikan nama model
 const survey = require('../models/survey');
 const Pertanyaan = require('../models/pertanyaan');
-const pertanyaan = require('../models/pertanyaan');
 const UnitKerja = require('../models/unit_kerja');
+const Layanan = require('../models/layanan');
 
 const getSurvey = async (req, res) => {
     try {
@@ -17,12 +17,12 @@ const getSurvey = async (req, res) => {
                 attributes: ['uuid', 'url', 'judul', 'created_at'],
                 include: [
                     {
-                        model: pertanyaan,
+                        model: Pertanyaan,
                         attributes: ['pertanyaan'],
                         required: false,
                     },
                     {
-                        model: user,
+                        model: User,
                         attributes: ['username'],
                         include: [{
                             model: UnitKerja,
@@ -40,7 +40,7 @@ const getSurvey = async (req, res) => {
                 attributes: ['uuid', 'url', 'judul', 'created_at'],
                 include: [
                     {
-                        model: pertanyaan,
+                        model: Pertanyaan,
                         attributes: ['pertanyaan'],
                     },
                 ],
@@ -61,7 +61,7 @@ const createSurvey = async (req, res) => {
         const newSurvey = await survey.create({
             url: url,
             judul: judul,
-            id_user: req.id_user 
+            id_user: req.id_user
         });
 
         // Iterasi melalui array pertanyaan untuk menyimpan tiap pertanyaan
@@ -81,7 +81,7 @@ const createSurvey = async (req, res) => {
 
 
 
-// Update user by ID
+// Update User by ID
 const update = async (req, res) => {
     const { judul } = req.body;
     try {
@@ -96,8 +96,33 @@ const update = async (req, res) => {
     }
 };
 
+const getSurveyuuid = async (req, res) => {
+    try {
+        const Survey = await survey.findOne({
+            where: { uuid: req.params.uuid },
+            attributes: ['uuid', 'url', 'judul', 'created_at'],
+            include: [
+                {
+                    model: Pertanyaan,
+                    attributes: ['uuid', 'pertanyaan']
+                },
+                {
+                    model: User,
+                    attributes: ['username'],
+                    include: [{
+                        model: UnitKerja,
+                        attributes: ['nama_unit'],
+                    }],
+                },
+            ],
+        });
+        res.status(200).json(Survey);
+    } catch (error) {
+        res.status(500).json({ msg: error.message });
+    }
+};
 
-// Delete user by ID
+// Delete User by ID
 const deleteSurvey = async (req, res) => {
     try {
         if (req.role === 'admin') {
@@ -109,7 +134,6 @@ const deleteSurvey = async (req, res) => {
             });
             res.status(204).json({ msg: "Survey berhasil dihapus" });
         } else {
-            // Jika bukan admin, hanya nonaktifkan survei
             await survey.update({
                 is_active: false
             }, {
@@ -130,6 +154,7 @@ module.exports = {
     getSurvey,
     createSurvey,
     update,
+    getSurveyuuid,
     deleteSurvey,
 }
 

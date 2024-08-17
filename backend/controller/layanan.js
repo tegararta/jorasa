@@ -51,11 +51,11 @@ const getLayananById = async (req, res) => {
     try {
         const respon = await layanan.findOne({
             where: { uuid: req.params.uuid },
+            attributes: [ 'uuid', 'nama_layanan'],
             include: [{
                 model: unitkerja,
                 attributes: ['uuid', 'nama_unit']
-            }],
-            attributes: [ 'uuid', 'nama_layanan']
+            }]
         });
 
         if (!respon) {

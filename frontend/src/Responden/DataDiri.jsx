@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 
-function DataDiri() {
+function DataDiri({onSubmit}) {
   const [nama, setNama] = useState("");
   const [noHp, setNoHp] = useState("62");
   const [umur, setUmur] = useState("");
@@ -62,20 +62,23 @@ function DataDiri() {
 
   const handleSubmit = () => {
     if (isFormComplete) {
-      // Handle form submission
-      console.log("Nama:", nama);
-      console.log("No. HP:", noHp);
-      console.log("Umur:", umur);
-      console.log("Jenis Kelamin:", jenisKelamin);
-      console.log("Layanan:", selectedLayanan);
-      // Redirect to survey page
-      navigate('/SurveyJoRasa', {
-        state: { nama, noHp, umur, jenisKelamin, layanan: selectedLayanan },
-      });
+      const respondenData = {
+        nama,
+        noHp,
+        umur,
+        jenisKelamin,
+        layanan: selectedLayanan,
+      };
+
+      // Kirim data ke SurveyPage
+      onSubmit(respondenData);
     } else {
       alert("Harap lengkapi semua field sebelum melanjutkan.");
     }
   };
+
+  console.log(layanan);
+  
 
   return (
     <div className="bg-[#A8D1A1] min-h-screen flex justify-center items-center">

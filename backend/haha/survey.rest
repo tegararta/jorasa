@@ -2,7 +2,7 @@
 GET  http://localhost:5000/survey/
 
 ### cek survey 
-GET  http://localhost:5000/survey/
+GET  http://localhost:5000/survey/91df9f2d-b48e-43ac-8201-33465ddd7d88
 
 ### Bikin survey
 POST  http://localhost:5000/survey/create
@@ -15,4 +15,4 @@ Content-Type: application/json
 }
 
 ### cek survey 
-DELETE http://localhost:5000/survey/delete/e8c9c4d0-2f53-407e-b867-4036db7b0511
+DELETE http://localhost:5000/survey/delete/91df9f2d-b48e-43ac-8201-33465ddd7d88
