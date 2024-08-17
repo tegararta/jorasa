@@ -99,7 +99,7 @@ const update = async (req, res) => {
 const getSurveyuuid = async (req, res) => {
     try {
         const Survey = await survey.findOne({
-            where: { uuid: req.params.uuid },
+            where: { url: req.params.uuid },
             attributes: ['uuid', 'url', 'judul', 'created_at'],
             include: [
                 {
@@ -108,10 +108,14 @@ const getSurveyuuid = async (req, res) => {
                 },
                 {
                     model: User,
-                    attributes: ['username'],
+                    attributes: ['role'],
                     include: [{
                         model: UnitKerja,
                         attributes: ['nama_unit'],
+                        include: [{
+                            model: Layanan,
+                            attributes: ['nama_layanan']
+                        }]
                     }],
                 },
             ],

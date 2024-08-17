@@ -15,6 +15,7 @@ survey.hasMany(pertanyaan, { foreignKey: 'id_survey'})
 unit_kerja.hasOne(user, { foreignKey: 'id_user' });
 survey.belongsTo(user, { foreignKey: 'id_user' });
 layanan.belongsTo(unit_kerja, { foreignKey: 'id_unit' });
+unit_kerja.hasMany(layanan, { foreignKey: 'id_unit' })
 coresponden.belongsTo(survey, { foreignKey: 'id_survey' });
 pertanyaan.belongsTo(survey, { foreignKey: 'id_survey' });
 jawaban.belongsTo(pertanyaan, { foreignKey: 'id_pertanyaan' });

@@ -14,7 +14,7 @@ GET http://localhost:5000/userOn/
 DELETE http://localhost:5000/logout
 
 ### getLayanan all or id
-GET  http://localhost:5000/layanan/61a1e81e-9f8c-47e1-83f7-e70ca7402540
+GET  http://localhost:5000/layanan/
 
 ###
 POST   http://localhost:5000/layanan

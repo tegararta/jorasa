@@ -101,7 +101,7 @@ const ListSurvey = () => {
                           Hapus
                         </button>
                         <button
-                          onClick={() => showLink(`http://localhost:3000/SurveyJoRasa/${survey.uuid}`)}
+                          onClick={() => showLink(`http://localhost:3000/SurveyJoRasa/${survey.url}`)}
                           className="bg-[#416829] hover:bg-green-700 text-white font-bold py-1 px-3 rounded-full text-sm"
                         >
                           Tampilkan Link

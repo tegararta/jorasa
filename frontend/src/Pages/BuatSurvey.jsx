@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios'; // Import Axios
+import axios from 'axios';
+import { v4 as uuidv4 } from 'uuid'; // Import uuid
 
 function BuatSurvey() {
   const [questions, setQuestions] = useState([]);
@@ -48,14 +49,15 @@ function BuatSurvey() {
       return;
     }
 
+    const uniqueUrl = uuidv4(); // Generate a unique URL
+
     const newSurvey = { 
-      url: surveyTitle.toLowerCase().replace(/\s+/g, ''), // Buat URL dari judul survey
+      url: uniqueUrl, 
       judul: surveyTitle, 
       pertanyaan: questions 
     };
 
     try {
-      // Mengirim data ke endpoint backend
       const response = await axios.post('http://localhost:5000/survey/create', newSurvey, {
         headers: {
           'Content-Type': 'application/json'
@@ -64,7 +66,7 @@ function BuatSurvey() {
 
       if (response.status === 201 || response.status === 200) {
         alert('Survey berhasil dibuat!');
-        navigate('/listsurvey'); // Arahkan ke halaman daftar survey
+        navigate('/listsurvey'); 
       } else {
         alert('Gagal membuat survey.');
       }

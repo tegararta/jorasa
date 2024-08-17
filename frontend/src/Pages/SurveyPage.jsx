@@ -7,10 +7,12 @@ const SurveyPage = () => {
   const { uuid } = useParams(); // Mengambil parameter uuid dari URL
   const [respondenData, setRespondenData] = useState(null);
 
+  
+
   return (
     <div>
       {!respondenData ? (
-        <DataDiri onSubmit={(data) => setRespondenData(data)} />
+        <DataDiri surveyUuid={uuid} onSubmit={(data) => setRespondenData(data)} />
       ) : (
         <Survey surveyUuid={uuid} respondenData={respondenData} />
       )}

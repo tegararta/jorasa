@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
-function DataDiri({onSubmit}) {
+function DataDiri({surveyUuid, onSubmit}) {
   const [nama, setNama] = useState("");
   const [noHp, setNoHp] = useState("62");
   const [umur, setUmur] = useState("");
@@ -11,16 +12,19 @@ function DataDiri({onSubmit}) {
   const [isFormComplete, setIsFormComplete] = useState(false);
   const navigate = useNavigate();
 
+  const getLayanan = async () => {
+    try {
+      const response = await axios.get(`http://localhost:5000/survey/${surveyUuid}`);
+      const layanan = response.data.user.unit_kerjas[0].layanans;
+      setLayanan(layanan)
+      
+    } catch (error) {
+      console.error(error);
+    }
+  }  
   useEffect(() => {
-    // Dummy data untuk layanan
-    const dummyLayanan = [
-      { id: 1, name: 'Layanan 1' },
-      { id: 2, name: 'Layanan 2' },
-      { id: 3, name: 'Layanan 3' },
-    ];
 
-    // Simulasikan pengambilan data dari backend
-    setLayanan(dummyLayanan);
+    getLayanan();
   }, []);
 
   useEffect(() => {
@@ -77,9 +81,6 @@ function DataDiri({onSubmit}) {
     }
   };
 
-  console.log(layanan);
-  
-
   return (
     <div className="bg-[#A8D1A1] min-h-screen flex justify-center items-center">
       <div className="bg-white shadow-md rounded-md p-8 w-96">
@@ -133,7 +134,7 @@ function DataDiri({onSubmit}) {
             <option value="">Pilih Layanan</option>
             {layanan.map((service) => (
               <option key={service.id} value={service.id}>
-                {service.name}
+                {service.nama_layanan}
               </option>
             ))}
           </select>

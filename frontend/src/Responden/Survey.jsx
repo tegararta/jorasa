@@ -14,9 +14,10 @@ function Survey({ surveyUuid, respondenData }) {
     // Fetch survey data from the API
     const fetchSurveyData = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/survey/${surveyUuid}`);
+        
         const survey = response.data;
         setSurveyData(survey);
+        const response = await axios.get(`http://localhost:5000/survey/${surveyUuid}`);
 
         // Initialize ratings for each question
         const initialRatings = {};

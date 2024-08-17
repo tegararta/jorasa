@@ -6,7 +6,7 @@ const getLayanan = async (req, res) => {
         let respon;
         if (req.role === 'admin') {
             respon = await layanan.findAll({
-                attributes: ['uuid', 'nama_layanan', 'id_unit'],
+                attributes: ['uuid', 'nama_layanan'],
                 include: [{
                     model: unitkerja,
                     attributes: ['nama_unit'],
@@ -41,8 +41,6 @@ const createLayanan = async (req, res) => {
         return res.status(201).json({ msg: "Layanan ditambahkan" });
     } catch (error) {
         console.error('Error creating layanan:', error);
-
-        // Kirim respon jika terjadi kesalahan
         return res.status(500).json({ error: 'Failed to create layanan' });
     }
 };
@@ -54,7 +52,7 @@ const getLayananById = async (req, res) => {
             attributes: [ 'uuid', 'nama_layanan'],
             include: [{
                 model: unitkerja,
-                attributes: ['uuid', 'nama_unit']
+                attributes: ['nama_unit']
             }]
         });
 
