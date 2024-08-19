@@ -2,7 +2,7 @@
 GET  http://localhost:5000/survey/
 
 ### cek survey 
-GET  http://localhost:5000/survey/hallo
+GET  http://localhost:5000/survey/2b9c111d-22dc-46c6-8431-42deca0cf677
 
 ### Bikin survey
 POST  http://localhost:5000/survey/create

@@ -1,16 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchLayanan } from '../auth/Layananslice'; // Pastikan path ini sesuai dengan lokasi file slice
 import { toast } from 'react-toastify';
 import Notifikasi from '../Components/Notifikasi/Notifikasi';
 import LayananList from '../Components/Layanan/LayananList';
 import LayananForm from '../Components/Layanan/LayananForm';
 import LayananModal from '../Components/Layanan/Modal/LayananModal';
+import axios from 'axios';
 
 const Layanan = () => {
+  const dispatch = useDispatch();
+  
+  // Mengambil data layanan dari Redux store
+  const { layanan, isLoading, isError, msg } = useSelector((state) => state.layanan);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [layanan, setLayanan] = useState([]);
   const [Addlayanan, setAddLayanan] = useState({
     nama_layanan: '',
   });
@@ -21,14 +27,10 @@ const Layanan = () => {
   const [modal, setModal] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
 
-  const getLayanan = async () => {
-    try {
-      const response = await axios.get('http://localhost:5000/layanan');
-      setLayanan(response.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // Mengambil data layanan saat komponen pertama kali di-render
+  useEffect(() => {
+    dispatch(fetchLayanan());
+  }, [dispatch]);
 
   const handleNewLayananChange = (e) => {
     setAddLayanan({
@@ -44,8 +46,8 @@ const Layanan = () => {
         nama_layanan: '',
       });
       toast.success('Layanan added successfully!');
-      getLayanan();
-      setModal(false); // Close modal after adding Layanan
+      dispatch(fetchLayanan()); // Ambil ulang data layanan setelah menambah layanan baru
+      setModal(false); // Tutup modal setelah menambah layanan
     } catch (error) {
       console.error(error);
       toast.error('Failed to add Layanan.');
@@ -80,7 +82,7 @@ const Layanan = () => {
       });
       setShowMenu(false);
       toast.success('Layanan updated successfully!');
-      getLayanan();
+      dispatch(fetchLayanan()); // Ambil ulang data layanan setelah mengedit layanan
     } catch (error) {
       console.error(error);
       toast.error('Failed to update Layanan.');
@@ -93,7 +95,7 @@ const Layanan = () => {
       try {
         await axios.delete(`http://localhost:5000/layanan/${uuid}`);
         toast.success('Layanan deleted successfully!');
-        getLayanan();
+        dispatch(fetchLayanan()); // Ambil ulang data layanan setelah menghapus layanan
       } catch (error) {
         console.error(error);
         toast.error('Failed to delete Layanan.');
@@ -117,9 +119,14 @@ const Layanan = () => {
     setRowsPerPage(Number(e.target.value));
   };
 
-  useEffect(() => {
-    getLayanan();
-  }, []);
+  // Handling loading and error states
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return <div>Error: {msg}</div>;
+  }
 
   return (
     <div className="flex min-h-screen justify-between">

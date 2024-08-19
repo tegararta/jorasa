@@ -19,7 +19,6 @@ const LayananList = ({
   const startIndex = (currentPage - 1) * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
   const currentLayanan = filteredLayanan.slice(startIndex, endIndex);
-  console.log(layanan.createdAt);
   
 
   return (

@@ -26,12 +26,20 @@ const coresponden = sequelize.define('coresponden', {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    nohp: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
     usia: {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
     layanan: {
         type: DataTypes.STRING,
+        allowNull: false,
+    },
+    user: {
+        type: DataTypes.INTEGER,
         allowNull: false,
     },
 });

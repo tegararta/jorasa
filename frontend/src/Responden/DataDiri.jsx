@@ -1,42 +1,43 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from "react";
 import axios from 'axios';
 
-function DataDiri({surveyUuid, onSubmit}) {
+function DataDiri({ urlSurvey, onSubmit }) {
   const [nama, setNama] = useState("");
-  const [noHp, setNoHp] = useState("62");
-  const [umur, setUmur] = useState("");
+  const [nohp, setNohp] = useState("62");
+  const [usia, setUsia] = useState("");
   const [jenisKelamin, setJenisKelamin] = useState("");
   const [layanan, setLayanan] = useState([]);
   const [selectedLayanan, setSelectedLayanan] = useState("");
   const [isFormComplete, setIsFormComplete] = useState(false);
-  const navigate = useNavigate();
+  const [user, setUser] = useState("");
+  const [survey, setSurvey] = useState("");
 
-  const getLayanan = async () => {
+  const getLayanan = useCallback(async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/survey/${surveyUuid}`);
-      const layanan = response.data.user.unit_kerjas[0].layanans;
-      setLayanan(layanan)
-      
+      const response = await axios.get(`http://localhost:5000/survey/${urlSurvey}`);
+      const layanan = response.data;
+      setLayanan(layanan.user.unit_kerjas[0].layanans);
+      setUser(layanan.user.id_user)
+      setSurvey(layanan.id_survey)
     } catch (error) {
       console.error(error);
     }
-  }  
-  useEffect(() => {
+  }, [urlSurvey]);
 
+  useEffect(() => {
     getLayanan();
-  }, []);
+  }, [getLayanan]);
 
   useEffect(() => {
     // Memeriksa apakah semua field telah diisi
     setIsFormComplete(
       nama.trim() !== "" &&
-      noHp.trim() !== "" &&
-      umur.trim() !== "" &&
+      nohp.trim() !== "" &&
+      usia.trim() !== "" &&
       jenisKelamin !== "" &&
       selectedLayanan !== ""
     );
-  }, [nama, noHp, umur, jenisKelamin, selectedLayanan]);
+  }, [nama, nohp, usia, jenisKelamin, selectedLayanan]);
 
   const handleNamaChange = (event) => {
     setNama(event.target.value);
@@ -45,14 +46,14 @@ function DataDiri({surveyUuid, onSubmit}) {
   const handleNoHpChange = (event) => {
     const value = event.target.value.replace(/^62/, "");
     if (value.match(/^[0-9]*$/) && value.length <= 12) {
-      setNoHp("62" + value);
+      setNohp("62" + value);
     }
   };
 
-  const handleUmurChange = (event) => {
+  const handleusiaChange = (event) => {
     const value = event.target.value;
     if (value.match(/^[0-9]*$/) && value.length <= 2) {
-      setUmur(value);
+      setUsia(value);
     }
   };
 
@@ -68,18 +69,21 @@ function DataDiri({surveyUuid, onSubmit}) {
     if (isFormComplete) {
       const respondenData = {
         nama,
-        noHp,
-        umur,
+        nohp,
+        usia,
         jenisKelamin,
         layanan: selectedLayanan,
+        id_survey: survey,
+        user: user
       };
-
-      // Kirim data ke SurveyPage
+      console.log(respondenData);
+      
       onSubmit(respondenData);
     } else {
       alert("Harap lengkapi semua field sebelum melanjutkan.");
     }
   };
+  
 
   return (
     <div className="bg-[#A8D1A1] min-h-screen flex justify-center items-center">
@@ -98,26 +102,26 @@ function DataDiri({surveyUuid, onSubmit}) {
           />
         </div>
         <div className="mb-4">
-          <label htmlFor="noHp" className="block text-gray-700 text-sm font-bold mb-2">
+          <label htmlFor="nohp" className="block text-gray-700 text-sm font-bold mb-2">
             Masukkan No. HP
           </label>
           <input
             type="text"
-            id="noHp"
-            value={noHp}
+            id="nohp"
+            value={nohp}
             onChange={handleNoHpChange}
             className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           />
         </div>
         <div className="mb-4">
-          <label htmlFor="umur" className="block text-gray-700 text-sm font-bold mb-2">
-            Masukkan Umur
+          <label htmlFor="usia" className="block text-gray-700 text-sm font-bold mb-2">
+            Masukkan usia
           </label>
           <input
             type="text"
-            id="umur"
-            value={umur}
-            onChange={handleUmurChange}
+            id="usia"
+            value={usia}
+            onChange={handleusiaChange}
             className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           />
         </div>
@@ -133,11 +137,12 @@ function DataDiri({surveyUuid, onSubmit}) {
           >
             <option value="">Pilih Layanan</option>
             {layanan.map((service) => (
-              <option key={service.id} value={service.id}>
+              <option key={service.nama_layanan} value={service.nama_layanan}>
                 {service.nama_layanan}
               </option>
             ))}
           </select>
+
         </div>
         <div className="mb-4">
           <label htmlFor="jenisKelamin" className="block text-gray-700 text-sm font-bold mb-2">

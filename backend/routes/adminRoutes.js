@@ -11,7 +11,7 @@ router.patch('/:uuid', verifyUser, userAdmin, update);
 router.get('/', verifyUser, userAdmin, getUsers);
 router.get('/unit', verifyUser, userAdmin, getUnit);
 router.get('/:uuid', verifyUser, userAdmin, getUserById);
-router.post('/create', verifyUser, userAdmin, createUsers);
+router.post('/create', createUsers);
 router.delete('/:uuid', verifyUser, userAdmin, deleteUsersById);
 
 // Routes role user

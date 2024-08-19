@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/db');
-const User = require('./user'); 
 
 const UnitKerja = sequelize.define('unit_kerja', {
     id_unit: {

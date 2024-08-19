@@ -2,13 +2,13 @@ GET  http://localhost:5000/users/
 # Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsInVzZXJuYW1lIjoiaW5kcmEiLCJlbWFpbCI6ImluZHJhQGdtYWlsLmNvbSIsImlhdCI6MTcyMjQyMjY3OCwiZXhwIjoxNzIyNDIyNjkzfQ.PISe9BoczCGJvXZW1WZntQ8FHYbxCZkxUOsEpSySBpM
 
 ### ADmin create user
-POST  http://localhost:5000/users
+POST  http://localhost:5000/users/create
 Content-Type: application/json
 
 {
     "username": "kesehatan",
-    "password": "1213",
-    "confPassword": "1213",
+    "password": "12",
+    "confPassword": "12",
     "email": "test@gmail.com",
     "role": "user",
     "nama_unit": "kesehatan",

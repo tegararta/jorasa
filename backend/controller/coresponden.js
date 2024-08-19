@@ -1,32 +1,78 @@
 const Coresponden = require('../models/coresponden');
-const survey = require('../models/survey');
+const Survey = require('../models/survey');
+const User = require('../models/user');
+const UnitKerja = require('../models/unit_kerja')
+const Jawaban = require('../models/jawaban')
+const Pertanyaan = require('../models/pertanyaan')
+const Saran = require('../models/saran');
 
 const getCoresponden = async (req, res) => {
     try {
         let respon;
         if (req.role === 'admin') {
             respon = await Coresponden.findAll({
-                attributes: ['uuid', 'nama', 'usia', 'layanan'],
-                include: [{
-                    model: survey,
-                    attributes: ['uuid'],
-                    required: false
-                },
-                {
-                    model: user,
-                }
-            ]
+                attributes: ['uuid', 'nama', 'nohp', 'usia', 'layanan', 'createdAt'],
+                include: [
+                    {
+                        model: Survey,
+                        attributes: ['judul', 'uuid', 'id_user'],
+                        required: false,
+                        include: [
+                            {
+                                model: User,
+                                attributes: ['role'],
+                                include: [
+                                    {
+                                        model: UnitKerja,
+                                        attributes: ['nama_unit'],
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        model: Jawaban,
+                        attributes: ['bintang'],
+                        include: [
+                            {
+                                model: Pertanyaan,
+                                attributes: ['pertanyaan']
+                            }
+                        ]
+                    },
+                    {
+                        model: Saran,
+                        attributes: ['saran'],
+                    }
+                ],
             });
         } else {
             respon = await Coresponden.findAll({
                 where: {
-                    uuid: req.Coresponden.uuid
+                    user: req.id_user,
                 },
-                include: [{
-                    model: unitkerja,
-                    attributes: ['nama_unit']
-                }],
-                attributes: ['uuid', 'nama_Coresponden', 'createdAt']
+                attributes: ['uuid', 'nama', 'nohp', 'usia', 'layanan', 'createdAt'],
+                include: [
+                    {
+                        model: Survey,
+                        attributes: ['judul', 'uuid'],
+                        required: false,
+                    },
+                    {
+                        model: Jawaban,
+                        attributes: ['bintang'],
+                        include: [
+                            {
+                                model: Pertanyaan,
+                                attributes: ['pertanyaan']
+                            }
+                        ]
+                    },
+                    {
+                        model: Saran,
+                        attributes: ['saran'],
+                    }
+                ],
             });
         }
         res.status(200).json(respon);
@@ -36,63 +82,58 @@ const getCoresponden = async (req, res) => {
 };
 
 const createCoresponden = async (req, res) => {
-    const { nama_Coresponden } = req.body;
+    const { nama, nohp, usia, layanan, id_survey, user, ratings, suggestion } = req.body;
+
     try {
-        await Coresponden.create({
-            nama_Coresponden: nama_Coresponden,
-            id_unit: req.unitkerja.id_unit
+        // Buat Coresponden
+        const coresponden = await Coresponden.create({
+            nama,
+            nohp,
+            usia,
+            layanan,
+            id_survey,
+            user,
         });
-        return res.status(201).json({ msg: "Coresponden ditambahkan" });
+
+        // Ambil data pertanyaan dari survey berdasarkan id_survey
+        const survey = await Survey.findOne({
+            where: { id_survey },
+            include: [{ model: Pertanyaan, as: 'pertanyaans' }]
+        });
+
+        if (!survey) {
+            return res.status(404).json({ error: 'Survey not found' });
+        }
+
+        // Buat Jawaban untuk setiap pertanyaan
+        const jawabanPromises = Object.keys(ratings).map(async (questionIndex) => {
+            const rating = ratings[questionIndex];
+            const pertanyaan = survey.pertanyaans[questionIndex]; // Ambil pertanyaan yang sesuai
+
+            if (pertanyaan) {
+                return Jawaban.create({
+                    id_pertanyaan: pertanyaan.id_pertanyaan,
+                    id_coresponden: coresponden.id_coresponden,
+                    bintang: rating,
+                });
+            }
+        });
+
+        // Buat Saran
+        const saran = await Saran.create({
+            id_coresponden: coresponden.id_coresponden,
+            saran: suggestion,
+            status: true,
+        });
+        await Promise.all(jawabanPromises, saran);
+
+
+        return res.status(201).json({ msg: "Coresponden, jawaban, dan saran berhasil disimpan" });
     } catch (error) {
         console.error('Error creating Coresponden:', error);
-
-        // Kirim respon jika terjadi kesalahan
         return res.status(500).json({ error: 'Failed to create Coresponden' });
     }
 };
-
-const getCorespondenById = async (req, res) => {
-    try {
-        const respon = await Coresponden.findOne({
-            where: { uuid: req.params.uuid },
-            include: [{
-                model: unitkerja,
-                attributes: ['uuid', 'nama_unit']
-            }],
-            attributes: [ 'uuid', 'nama_Coresponden']
-        });
-
-        if (!respon) {
-            return res.status(404).json({ msg: 'Coresponden tidak tersedia' });
-        }
-
-        res.status(200).json(respon);
-    } catch (error) {
-        res.status(500).json({ msg: error.message });
-    }
-};
-
-const updateCoresponden = async (req, res) => {
-    const { nama_Coresponden } = req.body;
-    try {
-        const respon = await Coresponden.update({
-            nama_Coresponden: nama_Coresponden
-        }, {
-            where: { uuid: req.params.uuid },
-            include: [{
-                model: unitkerja,
-                attributes: ['nama_unit']
-            }],
-            attributes: [ 'nama_Coresponden']
-        });
-        if (!respon) {
-            return res.status(404).json({ msg: 'Coresponden tidak tersedia' });
-        }
-        res.status(200).json({ msg: 'Coresponden berhasil diupdate' });
-    } catch (error) {
-        res.status(500).json({ msg: error.message });
-    }
-}
 
 const deleteCoresponden = async (req, res) => {
     try {
@@ -103,16 +144,48 @@ const deleteCoresponden = async (req, res) => {
         });
         res.status(204).json();
     } catch (error) {
-        
+
         console.error('Error deleting Coresponden:', error);
         res.status(500).json({ error: 'Failed to delete Coresponden' });
+    }
+}
+
+const getSaran = async (req, res) => {
+    try {
+        let respon;
+        if (req.role === 'admin') {
+            respon = await Coresponden.findAll({
+                attributes: ['uuid', 'nama', 'nohp', 'usia', 'layanan', 'createdAt'],
+                include: [
+                    {
+                        model: Saran,
+                        attributes: ['saran'],
+                    }
+                ],
+            });
+        } else {
+            respon = await Coresponden.findAll({
+                where: {
+                    user: req.id_user,
+                },
+                attributes: ['uuid', 'nama', 'nohp', 'usia', 'layanan', 'createdAt'],
+                include: [
+                    {
+                        model: Saran,
+                        attributes: ['saran'],
+                    }
+                ],
+            });
+        }
+        res.status(200).json(respon);
+    } catch (error) {
+        res.status(500).json({ msg: error.message });
     }
 }
 
 module.exports = {
     getCoresponden,
     createCoresponden,
-    getCorespondenById,
-    updateCoresponden,
-    deleteCoresponden
+    deleteCoresponden,
+    getSaran
 }

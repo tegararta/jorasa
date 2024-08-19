@@ -1,0 +1,36 @@
+###
+GET http://localhost:5000/responden/saran
+
+###
+POST  http://localhost:5000/login
+Content-Type: application/json
+
+{
+    "username": "admin",
+    "password": "12"
+}
+
+###
+GET http://localhost:5000/userOn/
+
+###
+DELETE http://localhost:5000/logout
+
+###
+POST http://localhost:5000/responden/create
+Content-Type: application/json
+
+{
+  "nama": "John Doe",
+  "nohp": "08123456789",
+  "usia": 30,
+  "layanan": "Layanan A",
+  "id_survey": 1,
+  "user": 2,
+  "ratings": {
+    "0": 4,
+    "1": 5
+  },
+  "suggestion": "Great service, but room for improvement in response time."
+}
+

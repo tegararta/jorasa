@@ -4,7 +4,7 @@ Content-Type: application/json
 
 {
     "username": "hukum",
-    "password": "1213"
+    "password": "12"
 }
 
 ### cek login

@@ -20,6 +20,15 @@ coresponden.belongsTo(survey, { foreignKey: 'id_survey' });
 pertanyaan.belongsTo(survey, { foreignKey: 'id_survey' });
 jawaban.belongsTo(pertanyaan, { foreignKey: 'id_pertanyaan' });
 saran.belongsTo(coresponden, { foreignKey: 'id_coresponden' });
+survey.hasMany(coresponden, { foreignKey: 'id_survey' });
+
+// Coresponden model
+coresponden.hasMany(jawaban, { foreignKey: 'id_coresponden' });
+coresponden.hasMany(saran, { foreignKey: 'id_coresponden' });
+
+// Jawaban model
+jawaban.belongsTo(coresponden, { foreignKey: 'id_coresponden' });
+
 
 module.exports = {
     sequelize,

@@ -15,7 +15,8 @@ const {
     adminRoutes, 
     unitkerjaRoutes,
     layananRoutes,
-    surveyRoutes
+    surveyRoutes,
+    responden
 } = require('./routes/'); 
 const app = express();
 
@@ -38,7 +39,7 @@ app.use(session({
 }));
 app.use(cors({ 
     credentials: true,
-    origin: 'http://localhost:3000',
+    origin: ['http://localhost:3000', 'http://192.168.43.16:3000'],
     methods: 'GET,POST,PATCH,DELETE',
     allowedHeaders: 'Content-Type,Authorization'
 }));
@@ -61,6 +62,7 @@ const startServer = async () => {
         app.use('/users', adminRoutes);
         app.use('/unit', unitkerjaRoutes);
         app.use('/survey', surveyRoutes);   
+        app.use('/responden', responden);
 
         // Start server on port 5000
         app.listen(5000, () => {

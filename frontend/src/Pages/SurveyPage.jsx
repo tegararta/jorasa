@@ -1,20 +1,18 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Survey from '../Responden/Survey';
-import { DataDiri } from '../Responden';
+import DataDiri from '../Responden/DataDiri';
 
 const SurveyPage = () => {
   const { uuid } = useParams(); // Mengambil parameter uuid dari URL
   const [respondenData, setRespondenData] = useState(null);
 
-  
-
   return (
     <div>
       {!respondenData ? (
-        <DataDiri surveyUuid={uuid} onSubmit={(data) => setRespondenData(data)} />
+        <DataDiri urlSurvey={uuid} onSubmit={(data) => setRespondenData(data)} />
       ) : (
-        <Survey surveyUuid={uuid} respondenData={respondenData} />
+        <Survey urlSurvey={uuid} respondenData={respondenData} />
       )}
     </div>
   );

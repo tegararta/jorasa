@@ -18,12 +18,12 @@ POST  http://localhost:5000/users/create
 Content-Type: application/json
 
 {
-    "username": "hukum1",
+    "username": "kesehatan",
     "password": "12",
     "confPassword": "12",
     "email": "hukum@gmail.com",
     "role": "user",
-    "nama_unit": "hukum1",
+    "nama_unit": "kesehatan",
     "alamat": "kota"
 }
 
