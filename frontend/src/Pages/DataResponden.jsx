@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from "react-redux";
 
 function DataResponden() {
+  const { user } = useSelector((state) => state.auth);
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -84,42 +86,28 @@ function DataResponden() {
         <table className="w-full border-collapse">
           <thead>
             <tr>
-              <th className="p-3 font-bold text-left">
-                <input
-                  type="checkbox"
-                  checked={allChecked}
-                  onChange={handleSelectAll}
-                  className="mr-2"
-                />
-                Nama
-              </th>
+              <th className="p-3 font-bold text-center">Name</th>
               <th className="p-3 font-bold text-center">Umur</th>
               <th className="p-3 font-bold text-center">No. Telp</th>
               <th className="p-3 font-bold text-center">Jenis Kelamin</th>
               <th className="p-3 font-bold text-center">Layanan</th>
-              <th className="p-3 font-bold text-center">Unit Kerja</th>
+              {user && user.role === "admin" && (
+                <th className="p-3 font-bold text-center">Unit Kerja</th>
+              )}
             </tr>
           </thead>
           <tbody>
             {currentUsers.map(user => (
               <tr key={user.id}>
-                <td className="p-3 text-left">
-                  <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={checkedUsers.has(user.id)}
-                      onChange={() => handleCheckboxChange(user.id)}
-                      className="mr-2"
-                    />
-                    <img src={user.avatar} alt={user.name} className="w-8 h-8 rounded-full mr-2" />
-                    {user.name}
-                  </div>
-                </td>
+                <td className="p-3 text-center">{user.name}</td>
                 <td className="p-3 text-center">{user.age}</td>
                 <td className="p-3 text-center">{user.phone}</td>
                 <td className="p-3 text-center">{user.gender}</td>
                 <td className="p-3 text-center">{user.service}</td>
-                <td className="p-3 text-center">{user.unit}</td>
+                {user && user.role === "admin" && (
+
+                  <td className="p-3 text-center">{user.unit}</td>
+                )}
               </tr>
             ))}
           </tbody>

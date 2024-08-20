@@ -4,10 +4,10 @@ const {
     getUnit,
     updateUnit,
 } = require('../controller/unitkerja');
-const { verifyUser } = require('../middleware/authuser');
+const { verifyUser, userAdmin } = require('../middleware/authuser');
 
 // Routes
-router.get('/', verifyUser, getUnit);
+router.get('/', verifyUser, userAdmin, getUnit);
 router.patch('/:id_unit', verifyUser, updateUnit);
 
 module.exports = router;

@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchLayanan } from '../auth/Layananslice';
 import { FaEye, FaTrash } from 'react-icons/fa';
 
 const UnitKerja = () => {
+  const dispatch = useDispatch();
+  const { layanan } = useSelector((state) => state.layanan);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [users, setUsers] = useState([]);
-  const [layanan, setLayanan] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedUnit, setSelectedUnit] = useState(null);
   const [newUser, setNewUser] = useState({
@@ -20,23 +23,20 @@ const UnitKerja = () => {
     alamat: '',
   });
 
-  const getUsersAndLayanan = async () => {
+  const getUsers = async () => {
     try {
-      const [usersResponse, layananResponse] = await Promise.all([
-        axios.get("http://localhost:5000/users/"),
-        axios.get("http://localhost:5000/layanan/")
-      ]);
-      setUsers(usersResponse.data);
-      setLayanan(layananResponse.data);
+      const response = await axios.get("http://localhost:5000/users/");
+      setUsers(response.data);
     } catch (error) {
       console.error("Error fetching data: ", error);
     }
   };
+
   
   useEffect(() => {
-
-    getUsersAndLayanan();
-  }, []);
+    dispatch(fetchLayanan());
+    getUsers();
+  }, [dispatch]);
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);

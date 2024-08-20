@@ -1,34 +1,20 @@
 const argon2 = require('argon2');
 const unitkerja = require('../models/unit_kerja');
 const user = require('../models/user');
+const Layanan = require('../models/layanan');
 
 const getUnit = async (req, res) => {
     try {
         let respon;
         if(req.role === 'admin') {
             respon = await unitkerja.findAll({
+                attributes: ['uuid', 'nama_unit', 'alamat'],
                 include: [{
-                    model: user,
-                    attributes: ['username']
+                    model: Layanan,
+                    attributes: ['nama_layanan']
                 }],
-                attributes: ['uuid', 'nama_unit', 'alamat', 'id_user']
             });
-        } else {
-            if (!req.id_user) { 
-                return res.status(400).json({ msg: 'User ID is required' });
-            }
-
-            respon = await unitkerja.findAll({
-                where: {
-                    id_user: req.id_user
-                },
-                include: [{
-                    model: user,
-                    attributes: ['username']
-                }],
-                attributes: ['uuid', 'nama_unit', 'alamat', 'id_user']
-            });
-        }
+        } 
         res.status(200).json(respon);
     } catch (error) {
         res.status(500).json({ msg: error.message });

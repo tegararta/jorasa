@@ -3,13 +3,16 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { fetchLayanan } from '../auth/Layananslice'; 
+import { fetchLayanan } from '../auth/Layananslice';
+import axios from 'axios';
 
 function Saran() {
   const [unitKerja, setUnitKerja] = useState('');
   const [layanan1, setLayanan1] = useState('');
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [units, setUnits] = useState([]);
+  const [selectedUnitLayanan, setSelectedUnitLayanan] = useState([]);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
@@ -18,6 +21,26 @@ function Saran() {
   useEffect(() => {
     dispatch(fetchLayanan());
   }, [dispatch]);
+
+  useEffect(() => {
+    const fetchUnits = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/unit');
+        setUnits(response.data);
+      } catch (error) {
+        console.error('Error fetching units:', error);
+      }
+    };
+
+    fetchUnits();
+  }, []);
+
+  const handleUnitKerjaChange = (e) => {
+    const selectedUnit = e.target.value;
+    setUnitKerja(selectedUnit);
+    const unitData = units.find(unit => unit.nama_unit === selectedUnit);
+    setSelectedUnitLayanan(unitData ? unitData.layanans : []);
+  };
 
   const handleFilter = () => {
     navigate('/detailSaran', {
@@ -40,13 +63,14 @@ function Saran() {
               id="unitKerja"
               className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               value={unitKerja}
-              onChange={(e) => setUnitKerja(e.target.value)}
+              onChange={handleUnitKerjaChange}
             >
               <option value="">Pilih Unit Kerja</option>
-              <option value="Lembaga A">Lembaga A</option>
-              <option value="Lembaga B">Lembaga B</option>
-              <option value="Lembaga C">Lembaga C</option>
-              {/* Tambahkan opsi lainnya sesuai kebutuhan */}
+              {units.map(unit => (
+                <option key={unit.uuid} value={unit.nama_unit}>
+                  {unit.nama_unit}
+                </option>
+              ))}
             </select>
           </div>
         )}
@@ -54,6 +78,23 @@ function Saran() {
           <label htmlFor="layanan" className="block text-gray-700 text-sm font-bold mb-2">
             Layanan
           </label>
+          { user && user.role === "admin" && (
+            <select
+            id="layanan"
+            className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            value={layanan1}
+            onChange={(e) => setLayanan1(e.target.value)}
+          >
+            <option value="">Pilih Layanan</option>
+            {selectedUnitLayanan.map((item, index) => (
+              <option key={index} value={item.nama_layanan}>
+                {item.nama_layanan}
+              </option>
+            ))}
+          </select>
+          
+          )}
+          { user && user.role === "user" && (
           <select
             id="layanan"
             className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
@@ -61,12 +102,21 @@ function Saran() {
             onChange={(e) => setLayanan1(e.target.value)}
           >
             <option value="">Pilih Layanan</option>
-            {layanan && layanan.map((item) => (
-              <option key={item.uuid} value={item.nama_layanan}>
-                {item.nama_layanan}
-              </option>
-            ))}
+            {selectedUnitLayanan.length > 0 ? (
+              selectedUnitLayanan.map((item, index) => (
+                <option key={index} value={item.nama_layanan}>
+                  {item.nama_layanan}
+                </option>
+              ))
+            ) : (
+              layanan.map((item) => (
+                <option key={item.uuid} value={item.nama_layanan}>
+                  {item.nama_layanan}
+                </option>
+              ))
+            )}
           </select>
+          )}
         </div>
         <div className="flex mb-4">
           <div className="mr-4">
