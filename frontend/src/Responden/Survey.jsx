@@ -72,6 +72,7 @@ function Survey({ urlSurvey, respondenData }) {
       nohp: respondenData.nohp,
       usia: respondenData.usia,
       layanan: respondenData.layanan,
+      jenisKelamin: respondenData.jenisKelamin,
       id_survey: respondenData.id_survey,
       user: respondenData.user,
       ratings: ratings,

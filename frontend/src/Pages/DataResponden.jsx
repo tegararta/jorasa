@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from "react-redux";
+import axios from 'axios';
 
 function DataResponden() {
   const { user } = useSelector((state) => state.auth);
@@ -7,60 +8,35 @@ function DataResponden() {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(5);
-  const [allChecked, setAllChecked] = useState(false);
-  const [checkedUsers, setCheckedUsers] = useState(new Set());
+
+  const getData = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/responden/biores');
+      setUsers(response.data); // pastikan menggunakan response.data
+    } catch (error) {
+      console.error('Error fetching units:', error);
+    }
+  }
 
   useEffect(() => {
-    // Fetch user data from your database
-    // fetch('/api/users') 
-    //   .then(response => response.json())
-    //   .then(data => setUsers(data));
-
-    const dummyUsers = [
-      { id: 1, name: 'Agnes Graham', age: 25, phone: '08123456789', gender: 'Perempuan', service: 'Layanan A', unit: 'Unit 1', avatar: 'https://i.pravatar.cc/150?img=1' },
-      { id: 2, name: 'Amos Nienow', age: 30, phone: '08234567890', gender: 'Laki-laki', service: 'Layanan B', unit: 'Unit 2', avatar: 'https://i.pravatar.cc/150?img=2' },
-      { id: 3, name: 'Archie Kertzmann', age: 28, phone: '08545678901', gender: 'Laki-laki', service: 'Layanan A', unit: 'Unit 3', avatar: 'https://i.pravatar.cc/150?img=3' },
-      { id: 4, name: 'Carla Emmerich', age: 27, phone: '08356789012', gender: 'Perempuan', service: 'Layanan C', unit: 'Unit 1', avatar: 'https://i.pravatar.cc/150?img=4' },
-      { id: 5, name: 'Chelsea Barton I', age: 29, phone: '08767890123', gender: 'Perempuan', service: 'Layanan B', unit: 'Unit 2', avatar: 'https://i.pravatar.cc/150?img=5' },
-      // Add more dummy users here...
-    ];
-    setUsers(dummyUsers);
+    getData();
   }, []);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
 
-  const filteredUsers = users.filter(user =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredUsers = Array.isArray(users)
+    ? users.filter(user =>
+        user.nama.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : [];
 
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
   const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  const handleSelectAll = (e) => {
-    const checked = e.target.checked;
-    setAllChecked(checked);
-    if (checked) {
-      setCheckedUsers(new Set(currentUsers.map(user => user.id)));
-    } else {
-      setCheckedUsers(new Set());
-    }
-  };
-
-  const handleCheckboxChange = (userId) => {
-    const newCheckedUsers = new Set(checkedUsers);
-    if (newCheckedUsers.has(userId)) {
-      newCheckedUsers.delete(userId);
-    } else {
-      newCheckedUsers.add(userId);
-    }
-    setCheckedUsers(newCheckedUsers);
-    setAllChecked(currentUsers.length === newCheckedUsers.size);
-  };
 
   return (
     <div className="container mx-auto p-4">
@@ -97,16 +73,17 @@ function DataResponden() {
             </tr>
           </thead>
           <tbody>
-            {currentUsers.map(user => (
-              <tr key={user.id}>
-                <td className="p-3 text-center">{user.name}</td>
-                <td className="p-3 text-center">{user.age}</td>
-                <td className="p-3 text-center">{user.phone}</td>
-                <td className="p-3 text-center">{user.gender}</td>
-                <td className="p-3 text-center">{user.service}</td>
-                {user && user.role === "admin" && (
-
-                  <td className="p-3 text-center">{user.unit}</td>
+            {currentUsers.map((responden, index) => (
+              <tr key={index}>
+                <td className="p-3 text-center">{responden.nama}</td>
+                <td className="p-3 text-center">{responden.usia}</td>
+                <td className="p-3 text-center">{responden.nohp}</td>
+                <td className="p-3 text-center">{responden.jenisKelamin}</td>
+                <td className="p-3 text-center">{responden.layanan}</td>
+                {user && user.role === "admin" && responden.survey && responden.survey.user && (
+                  <td className="p-3 text-center">
+                    {responden.survey.user.unit_kerjas[0]?.nama_unit}
+                  </td>
                 )}
               </tr>
             ))}

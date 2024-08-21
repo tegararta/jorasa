@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { fetchSaran } from '../auth/Saranslice';
+import { useSelector, useDispatch } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Table,
@@ -9,86 +11,84 @@ import {
   Select,
   MenuItem,
   Button,
-  IconButton, // Import IconButton
+  IconButton,
 } from '@mui/material';
-import { CheckCircle, Cancel, Edit } from '@mui/icons-material'; // Import Cancel and Edit icons
+import { CheckCircle, Cancel } from '@mui/icons-material';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
-const data = [
-  {
-    no: 1,
-    lembaga: 'Lembaga A',
-    layanan: 'Layanan A',
-    tanggal: '2023-03-01',
-    saran: 'Saran A',
-    terlaksana: true,
-  },
-  {
-    no: 2,
-    lembaga: 'Lembaga B',
-    layanan: 'Layanan B',
-    tanggal: '2023-03-02',
-    saran: 'Saran B',
-    terlaksana: false,
-  },
-  // Add more data as needed
-];
-
 const DetailSaran = () => {
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
   const location = useLocation();
   const navigate = useNavigate();
   const { unitKerja, layanan, startDate: initialStartDate, endDate: initialEndDate } = location.state || {};
-  
   const [selectedStatus, setSelectedStatus] = useState('semua');
   const [startDate, setStartDate] = useState(initialStartDate ? new Date(initialStartDate) : null);
   const [endDate, setEndDate] = useState(initialEndDate ? new Date(initialEndDate) : null);
-  const [filteredData, setFilteredData] = useState(data);
-
+  const [filteredData, setFilteredData] = useState([]);
+  const rowsPerPage = 10; // Jumlah baris per halaman
+  
   useEffect(() => {
-    const filterData = () => {
-      const isWithinDateRange = (date) => {
-        const selectedDate = new Date(date);
-        const start = startDate ? new Date(startDate).setHours(0, 0, 0, 0) : null;
-        const end = endDate ? new Date(endDate).setHours(23, 59, 59, 999) : null;
-
-        if (start && end) {
-          return selectedDate >= start && selectedDate <= end;
-        } else if (start) {
-          return selectedDate >= start;
-        } else if (end) {
-          return selectedDate <= end;
-        } else {
-          return true;
-        }
-      };
-
-      const filtered = data.filter((item) => {
-        const matchesStatus =
-          selectedStatus === 'semua'
-            ? true
-            : selectedStatus === 'terlaksana'
-            ? item.terlaksana
-            : !item.terlaksana;
-
-        const matchesDate = isWithinDateRange(item.tanggal);
-        const matchesUnitKerja = unitKerja ? item.lembaga === unitKerja : true;
-        const matchesLayanan = layanan ? item.layanan === layanan : true;
-
-        return matchesStatus && matchesDate && matchesUnitKerja && matchesLayanan;
+    dispatch(fetchSaran())
+      .unwrap()
+      .then((response) => {
+        const mappedData = response.map((item) => {
+          return {   
+            lembaga: user.role === 'admin' ? item.survey.user.unit_kerjas[0].nama_unit : '',
+            layanan: item.layanan,
+            tanggal: new Date(item.createdAt).toLocaleDateString(),
+            saran: item.sarans[0]?.saran,
+            terlaksana: false, // Set initial status, change as needed
+          };
+        });
+        setFilteredData(mappedData);
+      })
+      .catch((error) => {
+        console.error('Error fetching saran:', error);
       });
-
-      setFilteredData(filtered);
-    };
-
-    filterData();
-  }, [selectedStatus, unitKerja, layanan, startDate, endDate]);
+  }, [dispatch, user]);
 
   const handleStatusChange = (index) => {
     const updatedData = [...filteredData];
     updatedData[index].terlaksana = !updatedData[index].terlaksana;
     setFilteredData(updatedData);
   };
+
+  const filterData = () => {
+    const isWithinDateRange = (date) => {
+      const selectedDate = new Date(date);
+      const start = startDate ? new Date(startDate).setHours(0, 0, 0, 0) : null;
+      const end = endDate ? new Date(endDate).setHours(23, 59, 59, 999) : null;
+
+      if (start && end) {
+        return selectedDate >= start && selectedDate <= end;
+      } else if (start) {
+        return selectedDate >= start;
+      } else if (end) {
+        return selectedDate <= end;
+      } else {
+        return true;
+      }
+    };
+
+    return filteredData.filter((item) => {
+      const matchesStatus =
+        selectedStatus === 'semua'
+          ? true
+          : selectedStatus === 'terlaksana'
+          ? item.terlaksana
+          : !item.terlaksana;
+
+      const matchesDate = isWithinDateRange(item.tanggal);
+      const matchesUnitKerja = unitKerja ? item.lembaga === unitKerja : true;
+      const matchesLayanan = layanan ? item.layanan === layanan : true;
+      return matchesStatus && matchesDate && matchesUnitKerja && matchesLayanan;
+    });
+  };
+
+  const startIndex = (1 - 1) * rowsPerPage;
+  const endIndex = startIndex + rowsPerPage;
 
   return (
     <div className="bg-gray-100 min-h-screen">
@@ -145,7 +145,9 @@ const DetailSaran = () => {
               <TableHead>
                 <TableRow className="bg-[#A8D1A1]">
                   <TableCell>No.</TableCell>
-                  <TableCell>Lembaga</TableCell>
+                  { user && user.role === "admin" && (
+                    <TableCell>Lembaga</TableCell>
+                  )}
                   <TableCell>Layanan</TableCell>
                   <TableCell>Tanggal</TableCell>
                   <TableCell>Saran</TableCell>
@@ -153,17 +155,19 @@ const DetailSaran = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {filteredData.map((item, index) => (
-                  <TableRow key={item.no}>
-                    <TableCell>{item.no}</TableCell>
-                    <TableCell>{item.lembaga}</TableCell>
+                {filterData().slice(startIndex, endIndex).map((item, index) => (
+                  <TableRow key={startIndex + index + 1}>
+                    <TableCell>{startIndex + index + 1}</TableCell>
+                    { user && user.role === "admin" &&(
+                      <TableCell>{item.lembaga}</TableCell>
+                    )}
                     <TableCell>{item.layanan}</TableCell>
                     <TableCell>{item.tanggal}</TableCell>
                     <TableCell>{item.saran}</TableCell>
                     <TableCell>
                       <IconButton
                         color={item.terlaksana ? 'success' : 'default'}
-                        onClick={() => handleStatusChange(index)}
+                        onClick={() => handleStatusChange(startIndex + index)}
                       >
                         {item.terlaksana ? <CheckCircle /> : <Cancel />}
                       </IconButton>

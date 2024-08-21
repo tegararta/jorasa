@@ -14,7 +14,18 @@ const getUnit = async (req, res) => {
                     attributes: ['nama_layanan']
                 }],
             });
-        } 
+        } else {
+            respon = await unitkerja.findAll({
+                where: {
+                    id_user: req.id_user
+                },
+                attributes: [ 'nama_unit', 'alamat'],
+                include: [{
+                    model: Layanan,
+                    attributes: ['nama_layanan']
+                }],
+            })
+        }
         res.status(200).json(respon);
     } catch (error) {
         res.status(500).json({ msg: error.message });

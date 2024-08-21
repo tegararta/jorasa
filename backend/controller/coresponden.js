@@ -11,7 +11,7 @@ const getCoresponden = async (req, res) => {
         let respon;
         if (req.role === 'admin') {
             respon = await Coresponden.findAll({
-                attributes: ['uuid', 'nama', 'nohp', 'usia', 'layanan', 'createdAt'],
+                attributes: ['uuid', 'nama', 'nohp', 'usia', 'layanan', 'jenisKelamin', 'createdAt'],
                 include: [
                     {
                         model: Survey,
@@ -51,7 +51,7 @@ const getCoresponden = async (req, res) => {
                 where: {
                     user: req.id_user,
                 },
-                attributes: ['uuid', 'nama', 'nohp', 'usia', 'layanan', 'createdAt'],
+                attributes: ['uuid', 'nama', 'nohp', 'usia', 'layanan', 'jenisKelamin', 'createdAt'],
                 include: [
                     {
                         model: Survey,
@@ -82,7 +82,7 @@ const getCoresponden = async (req, res) => {
 };
 
 const createCoresponden = async (req, res) => {
-    const { nama, nohp, usia, layanan, id_survey, user, ratings, suggestion } = req.body;
+    const { nama, nohp, usia, layanan, jenisKelamin, id_survey, user, ratings, suggestion } = req.body;
 
     try {
         // Buat Coresponden
@@ -91,6 +91,7 @@ const createCoresponden = async (req, res) => {
             nohp,
             usia,
             layanan,
+            jenisKelamin,
             id_survey,
             user,
         });
@@ -150,16 +151,29 @@ const deleteCoresponden = async (req, res) => {
     }
 }
 
+// Menampilkan hanya saran
 const getSaran = async (req, res) => {
     try {
         let respon;
         if (req.role === 'admin') {
             respon = await Coresponden.findAll({
-                attributes: ['uuid', 'nama', 'nohp', 'usia', 'layanan', 'createdAt'],
+                attributes: ['uuid', 'nama', 'nohp', 'usia', 'layanan', 'jenisKelamin', 'createdAt'],
                 include: [
                     {
                         model: Saran,
-                        attributes: ['saran'],
+                        attributes: ['uuid', 'saran'],
+                    },
+                    {
+                    model: Survey,
+                    attributes: ['judul'],
+                    include: {
+                        model: User,
+                        attributes: ['role'],
+                        include:{
+                            model: UnitKerja,
+                            attributes: ['nama_unit']
+                        }
+                    }
                     }
                 ],
             });
@@ -168,13 +182,49 @@ const getSaran = async (req, res) => {
                 where: {
                     user: req.id_user,
                 },
-                attributes: ['uuid', 'nama', 'nohp', 'usia', 'layanan', 'createdAt'],
+                attributes: ['uuid', 'nama', 'nohp', 'usia', 'layanan', 'jenisKelamin', 'createdAt'],
                 include: [
                     {
                         model: Saran,
-                        attributes: ['saran'],
+                        attributes: ['uuid', 'saran'],
                     }
                 ],
+            });
+        }
+        res.status(200).json(respon);
+    } catch (error) {
+        res.status(500).json({ msg: error.message });
+    }
+}
+
+
+// Menampilkan Biodata responden
+const getBiodata = async (req, res) => {
+    try {
+        let respon;
+        if (req.role === 'admin') {
+            respon = await Coresponden.findAll({
+                attributes: ['uuid', 'nama', 'nohp', 'usia', 'layanan', 'jenisKelamin', 'createdAt'],
+                include: {
+                    model: Survey,
+                    attributes: ['judul'],
+                    include: {
+                        model: User,
+                        attributes: ['role'],
+                        include:{
+                            model: UnitKerja,
+                            attributes: ['nama_unit']
+                        }
+                    }
+
+                }
+            })
+        } else {
+            respon = await Coresponden.findAll({
+                where: {
+                    user: req.id_user,
+                },
+                attributes: ['uuid', 'nama', 'nohp', 'usia', 'layanan', 'jenisKelamin','createdAt'],
             });
         }
         res.status(200).json(respon);
@@ -187,5 +237,6 @@ module.exports = {
     getCoresponden,
     createCoresponden,
     deleteCoresponden,
-    getSaran
+    getSaran,
+    getBiodata
 }

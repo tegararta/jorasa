@@ -1,5 +1,11 @@
-###
+### Respon survey dan jawaban
+GET http://localhost:5000/responden/
+
+### Melihat saran
 GET http://localhost:5000/responden/saran
+
+### melihat biodata dari responden
+GET http://localhost:5000/responden/biores
 
 ###
 POST  http://localhost:5000/login

@@ -7,6 +7,9 @@ const SurveyPage = () => {
   const { uuid } = useParams(); // Mengambil parameter uuid dari URL
   const [respondenData, setRespondenData] = useState(null);
 
+  console.log(respondenData);
+  
+
   return (
     <div>
       {!respondenData ? (

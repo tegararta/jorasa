@@ -34,6 +34,10 @@ const coresponden = sequelize.define('coresponden', {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
+    jenisKelamin: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
     layanan: {
         type: DataTypes.STRING,
         allowNull: false,

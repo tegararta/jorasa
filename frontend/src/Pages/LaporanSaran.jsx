@@ -22,6 +22,9 @@ function Saran() {
     dispatch(fetchLayanan());
   }, [dispatch]);
 
+  console.log('darat', selectedUnitLayanan);
+  
+
   useEffect(() => {
     const fetchUnits = async () => {
       try {
@@ -35,6 +38,9 @@ function Saran() {
     fetchUnits();
   }, []);
 
+  // jika role === user maka mengirim state unitKerja dengan data ini user.unit_kerjas[0].nama_unit
+  console.log(unitKerja)
+  
   const handleUnitKerjaChange = (e) => {
     const selectedUnit = e.target.value;
     setUnitKerja(selectedUnit);
@@ -54,7 +60,6 @@ function Saran() {
         <div className="bg-[#A8D1A1] p-4 rounded-md mb-4">
           <h2 className="text-xl font-bold text-[#416829]">Lihat Data Tiap Unit Kerja</h2>
         </div>
-        {user && user.role === "admin" && (
           <div className="mb-4">
             <label htmlFor="unitKerja" className="block text-gray-700 text-sm font-bold mb-2">
               Unit Kerja
@@ -65,7 +70,9 @@ function Saran() {
               value={unitKerja}
               onChange={handleUnitKerjaChange}
             >
-              <option value="">Pilih Unit Kerja</option>
+              {user && user.role === "admin" && (
+                <option value="">Semua Unit Kerja</option>
+              )}
               {units.map(unit => (
                 <option key={unit.uuid} value={unit.nama_unit}>
                   {unit.nama_unit}
@@ -73,7 +80,6 @@ function Saran() {
               ))}
             </select>
           </div>
-        )}
         <div className="mb-4">
           <label htmlFor="layanan" className="block text-gray-700 text-sm font-bold mb-2">
             Layanan
@@ -84,7 +90,7 @@ function Saran() {
             className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             value={layanan1}
             onChange={(e) => setLayanan1(e.target.value)}
-          >
+            >
             <option value="">Pilih Layanan</option>
             {selectedUnitLayanan.map((item, index) => (
               <option key={index} value={item.nama_layanan}>
