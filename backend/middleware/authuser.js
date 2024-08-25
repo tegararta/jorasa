@@ -20,6 +20,7 @@ const verifyUser = async(req, res, next) => {
     }
     req.id_user = user.id_user;
     req.role = user.role;
+    req.pass = user.password
     req.unitkerja = unitKerja;
     next();
 };

@@ -15,7 +15,7 @@ const getCoresponden = async (req, res) => {
                 include: [
                     {
                         model: Survey,
-                        attributes: ['judul', 'uuid', 'id_user'],
+                        attributes: ['judul'],
                         required: false,
                         include: [
                             {
@@ -57,6 +57,18 @@ const getCoresponden = async (req, res) => {
                         model: Survey,
                         attributes: ['judul', 'uuid'],
                         required: false,
+                        include: [
+                            {
+                                model: User,
+                                attributes: ['role'],
+                                include: [
+                                    {
+                                        model: UnitKerja,
+                                        attributes: ['nama_unit'],
+                                    }
+                                ]
+                            }
+                        ]
                     },
                     {
                         model: Jawaban,

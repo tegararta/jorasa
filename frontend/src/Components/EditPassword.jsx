@@ -1,20 +1,38 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
-function EditPassword({ onClose }) {
+function EditPassword({ uuid, onClose }) {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    // Validasi dan kirim data ke server
+    
     if (newPassword !== confirmPassword) {
       alert('Kata sandi baru dan konfirmasi kata sandi tidak cocok');
       return;
     }
+    
+    try {
+      const response = await axios.patch(`http://localhost:5000/users/update/${uuid}`, {
+        sandilama: currentPassword,
+        password: newPassword,
+        confPassword: confirmPassword
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
 
-    console.log('Kata sandi diperbarui:', { currentPassword, newPassword });
-    onClose(); // Tutup form setelah pengiriman
+      if (response.status === 200) {
+        alert('Kata sandi berhasil diperbarui');
+        onClose(); // Tutup form setelah pengiriman
+      }
+    } catch (error) {
+      console.error('Error updating password:', error);
+      alert('Gagal memperbarui kata sandi');
+    }
   };
 
   return (

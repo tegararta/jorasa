@@ -1,4 +1,4 @@
-GET  http://localhost:5000/users
+GET  http://localhost:5000/users/68556600-4d9a-4cbc-87a6-c1d345864eaf
 
 ###
 POST  http://localhost:5000/users/create
@@ -32,7 +32,7 @@ POST  http://localhost:5000/login
 Content-Type: application/json
 
 {
-    "username": "kesehatan",
+    "username": "admin",
     "password": "12"
 }
 
@@ -43,15 +43,21 @@ GET http://localhost:5000/userOn/
 DELETE http://localhost:5000/logout
 
 ### Admin
-PATCH  http://localhost:5000/users/b4cc51e2-3c35-40c9-9f13-a4a12d47ba8b
+PATCH  http://localhost:5000/users/update/68556600-4d9a-4cbc-87a6-c1d345864eaf
 Content-Type: application/json
 
 {
-    "username": "kesehatan1",
-    "password": "123",
-    "confPassword": "123",
-    "email": "kesehatan@gmail.com",
-    "role": "user"
+    "username": "newUsername",
+    "password": "newPassword",
+    "confPassword": "newPassword",
+    "email": "newemail@example.com",
+    "role": "user",
+    "unit_kerjas": [
+        {
+            "nama_unit": "UpdatedNamaUnit",
+            "alamat": "UpdatedAlamat"
+        }
+    ]
 }
 
 ###

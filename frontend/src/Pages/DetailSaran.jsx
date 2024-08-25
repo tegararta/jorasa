@@ -13,6 +13,7 @@ import {
   Button,
   IconButton,
 } from '@mui/material';
+import { FaUser } from 'react-icons/fa';
 import { CheckCircle, Cancel } from '@mui/icons-material';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -28,7 +29,9 @@ const DetailSaran = () => {
   const [endDate, setEndDate] = useState(initialEndDate ? new Date(initialEndDate) : null);
   const [filteredData, setFilteredData] = useState([]);
   const rowsPerPage = 10; // Jumlah baris per halaman
-  
+  const [modalBiodata, setModalBiodata] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+
   useEffect(() => {
     dispatch(fetchSaran())
       .unwrap()
@@ -40,6 +43,11 @@ const DetailSaran = () => {
             tanggal: new Date(item.createdAt).toLocaleDateString(),
             saran: item.sarans[0]?.saran,
             terlaksana: false, // Set initial status, change as needed
+            // Detail data responden
+            nama: item.nama,
+            nomor: item.nohp,
+            usia: item.usia,
+            jenisKelamin: item.jenisKelamin,
           };
         });
         setFilteredData(mappedData);
@@ -48,6 +56,15 @@ const DetailSaran = () => {
         console.error('Error fetching saran:', error);
       });
   }, [dispatch, user]);
+
+  const showModal = (item) => {
+    setSelectedItem(item);
+    setModalBiodata(true); // Show modal
+  };
+
+  const closeLayananModal = () => {
+    setModalBiodata(false); // Hide modal
+  };
 
   const handleStatusChange = (index) => {
     const updatedData = [...filteredData];
@@ -143,22 +160,23 @@ const DetailSaran = () => {
           <div className="bg-white rounded-md shadow-md p-4">
             <Table>
               <TableHead>
-                <TableRow className="bg-[#A8D1A1]">
+                <TableRow className="bg-[#A8D1A1] text-center">
                   <TableCell>No.</TableCell>
-                  { user && user.role === "admin" && (
+                  {user && user.role === "admin" && (
                     <TableCell>Lembaga</TableCell>
                   )}
                   <TableCell>Layanan</TableCell>
                   <TableCell>Tanggal</TableCell>
                   <TableCell>Saran</TableCell>
                   <TableCell>Status</TableCell>
+                  <TableCell>Responden</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {filterData().slice(startIndex, endIndex).map((item, index) => (
                   <TableRow key={startIndex + index + 1}>
                     <TableCell>{startIndex + index + 1}</TableCell>
-                    { user && user.role === "admin" &&(
+                    {user && user.role === "admin" && (
                       <TableCell>{item.lembaga}</TableCell>
                     )}
                     <TableCell>{item.layanan}</TableCell>
@@ -172,6 +190,14 @@ const DetailSaran = () => {
                         {item.terlaksana ? <CheckCircle /> : <Cancel />}
                       </IconButton>
                     </TableCell>
+                    <TableCell>
+                    <button
+                        onClick={() => showModal(item)}
+                        className="text-blue-500 hover:text-blue-700"
+                      >
+                        <FaUser className="inline-block mr-1" />
+                      </button>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -179,6 +205,33 @@ const DetailSaran = () => {
           </div>
         </div>
       </div>
+      {modalBiodata && selectedItem && (
+  <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white p-6 rounded-lg shadow-2xl w-full max-w-md">
+      <div className="bg-[#A8D1A1] w-full rounded-t-lg p-4">
+        <h2 className="text-2xl font-semibold text-black">Detail Responden</h2>
+      </div>
+      <div className="p-4">
+        <ul className="space-y-2">
+          <li><strong>Nama:</strong> {selectedItem.nama}</li>
+          <li><strong>No HP:</strong> {selectedItem.nomor}</li>
+          <li><strong>Umur:</strong> {selectedItem.usia}</li>
+          <li><strong>Jenis Kelamin:</strong> {selectedItem.jenisKelamin}</li>
+          <li><strong>Layanan:</strong> {selectedItem.layanan}</li>
+        </ul>
+        <div className="flex justify-end mt-4">
+          <Button
+            onClick={closeLayananModal}
+            className="bg-gray-300 text-gray-800 py-2 px-4 rounded-lg shadow-md hover:bg-gray-400"
+          >
+            Tutup
+          </Button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };

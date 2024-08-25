@@ -1,5 +1,5 @@
-const argon2 = require('argon2');
 const { Op } = require('sequelize');
+const argon2 = require('argon2');
 const user = require('../models/user'); // Sesuaikan nama model
 const Unitkerja = require('../models/unit_kerja');
 
@@ -19,37 +19,18 @@ const getUsers = async (req, res) => {
     }
 };
 
-const getUnit = async (req, res) => {
-    try {
-        const response = await user.findAll({
-            include: {
-                model: Unitkerja,
-                attributes: ['nama_unit']
-            },
-            attributes: ['uuid', 'username', 'email', 'role'],
-            where: {
-                role: {
-                    [Op.ne]: 'Admin'  // Exclude users with the role of 'Admin'
-                }
-            }
-        });
-        res.status(200).json(response);
-    } catch (error) {
-        console.error('Error fetching users:', error);
-        res.status(500).json({ error: 'Failed to fetch users' });
-    }
-};
-
-
-
 // Get user by ID
 const getUserById = async (req, res) => {
     try {
         const respon = await user.findOne({
             where: {
-                uuid: req.params.id_user
+                uuid: req.params.uuid
             },
-            attributes:['uuid', 'username', 'email', 'role']
+            attributes:['uuid', 'username', 'email', 'role'],
+            include: {
+                model: Unitkerja,
+                attributes: ['nama_unit', 'alamat']
+            },
         });
         res.status(200).json(respon);
     } catch (error) {
@@ -104,47 +85,78 @@ const createUsers = async (req, res) => {
 
 // Update user by ID
 const update = async (req, res) => {
-    const { username, password, confPassword, email, role } = req.body;
+    const { username, password, confPassword, email, role, unit_kerjas } = req.body;
+
     // Pengecekan apakah password dan confPassword sama
     if (password && password !== confPassword) {
         return res.status(400).json({ msg: "Kata sandi tidak cocok" });
     }
+
     try {
-        // Temukan pengguna berdasarkan ID
+        // Temukan pengguna berdasarkan UUID
         const User = await user.findOne({
             where: {
                 uuid: req.params.uuid,
             },
+            include: {
+                model: unit_kerjas // Pastikan untuk menyertakan unit_kerja jika relasi sudah diatur
+            }
         });
 
         if (!User) {
             return res.status(404).json({ msg: "Pengguna tidak ditemukan" });
         }
 
-        // Variabel untuk menyimpan data yang akan diperbarui
-        const updatedData = {
-            username: username || User.username,
-            email: email || User.email,
-            role: role || User.role,
-            updatedAt: new Date()
-        };
+        if (req.role === 'admin') {
+            // Jika admin, dapat memperbarui username, email, role, nama_unit, dan alamat
+            const updatedData = {
+                username: username || User.username,
+                email: email || User.email,
+                role: role || User.role,
+                updatedAt: new Date()
+            };
 
-        // Jika password ada, hash password baru
-        if (password) {
-            updatedData.password = await argon2.hash(password);
+            // Handle unit_kerjas jika ada
+            if (unit_kerjas && unit_kerjas.length > 0) {
+                const unitKerja = unit_kerjas[0];
+                updatedData.nama_unit = unitKerja.nama_unit || User.unit_kerja.nama_unit;
+                updatedData.alamat = unitKerja.alamat || User.unit_kerja.alamat;
+                
+                // Update relasi unit_kerja jika ada
+                await User.unit_kerja.update({
+                    nama_unit: unitKerja.nama_unit || User.unit_kerja.nama_unit,
+                    alamat: unitKerja.alamat || User.unit_kerja.alamat
+                });
+            }
+
+            // Jika password ada, hash password baru
+            if (password) {
+                updatedData.password = await argon2.hash(password);
+            } else {
+                updatedData.password = User.password; // Menggunakan password lama jika tidak ada perubahan
+            }
+
+            await User.update(updatedData);
         } else {
-            updatedData.password = User.password; // Menggunakan password lama jika tidak ada perubahan
+            // Jika pengguna biasa, hanya perbarui password
+            if (password) {
+                await User.update({
+                    password: await argon2.hash(password),
+                    updatedAt: new Date()
+                });
+            } else {
+                return res.status(400).json({ msg: "Password harus diisi untuk memperbarui" });
+            }
         }
 
-        // Update informasi pengguna
-        await User.update(updatedData);
-
         res.status(200).json({ msg: "Pengguna berhasil diperbarui" });
+
     } catch (error) {
         console.error('Error updating account:', error);
         res.status(500).json({ error: 'Gagal memperbarui akun' });
     }
 };
+
 
 
 // Delete user by ID
@@ -181,6 +193,5 @@ module.exports = {
     createUsers,
     update,
     deleteUsersById,
-    getUnit
 }
 

@@ -24,7 +24,7 @@ const Layout = ({ children }) => {
         <div className="flex h-screen">
             <Sidebar className="sidebar" />
             <div className="flex flex-col flex-grow">
-                <TopBar className="topbar" />
+                <TopBar className="topbar " />
                 <div className="flex-grow p-4 bg-gray-100 overflow-auto">
                     {children}
                 </div>

@@ -28,7 +28,6 @@ ChartJS.register(
 
 const Dashboard = () => {
   const dispatch = useDispatch();
-  const [showSidebar, setShowSidebar] = useState(true);
   const [unit, setUnit] = useState([]);
   const { user } = useSelector((state) => state.auth);
   const { layanan } = useSelector((state) => state.layanan);
@@ -123,37 +122,13 @@ const layananData = {
 };
 
 
-  // Menghitung jumlah responden berdasarkan usia
-  const ageCounts = responden.reduce((acc, curr) => {
-    const age = curr.usia;
-    if (age < 18) acc['<18']++;
-    else if (age <= 25) acc['18-25']++;
-    else if (age <= 35) acc['26-35']++;
-    else if (age <= 45) acc['36-45']++;
-    else if (age <= 60) acc['46-60']++;
-    else acc['>60']++;
-    return acc;
-  }, { '<18': 0, '18-25': 0, '26-35': 0, '36-45': 0, '46-60': 0, '>60': 0 });
-
-  const ageData = {
-    labels: ['<18', '18-25', '26-35', '36-45', '46-60', '>60'],
-    datasets: [
-      {
-        label: 'Jumlah Responden',
-        data: Object.values(ageCounts),
-        backgroundColor: 'rgba(153, 102, 255, 0.2)',
-        borderColor: 'rgba(153, 102, 255, 1)',
-        borderWidth: 1,
-      },
-    ],
-  };
-
   // Menghitung jumlah responden berdasarkan tahun
   const yearCounts = responden.reduce((acc, curr) => {
     const year = new Date(curr.createdAt).getFullYear();
     acc[year] = (acc[year] || 0) + 1;
     return acc;
   }, {});
+
 
   const labelsBar = ['2024', '2025', '2026', '2027'];
   const dataBar = {
@@ -169,8 +144,57 @@ const layananData = {
     ],
   };
 
-  const toggleSidebar = () => {
-    setShowSidebar(!showSidebar);
+  const ageCounts = responden.reduce((acc, curr) => {
+    const age = curr.usia;
+    if (age <= 17) {
+      acc['0-17'] = (acc['0-17'] || 0) + 1;
+    } else if (age <= 25) {
+      acc['18-25'] = (acc['18-25'] || 0) + 1;
+    } else if (age <= 35) {
+      acc['26-35'] = (acc['26-35'] || 0) + 1;
+    } else if (age <= 45) {
+      acc['36-45'] = (acc['36-45'] || 0) + 1;
+    } else if (age <= 55) {
+      acc['46-55'] = (acc['46-55'] || 0) + 1;
+    } else {
+      acc['56+'] = (acc['56+'] || 0) + 1;
+    }
+
+    return acc;
+  }, {});
+
+  const ageData = {
+    labels: ['0-17', '18-25', '26-35', '36-45', '46-55', '56+'],
+    datasets: [
+      {
+        label: 'Jumlah Responden',
+        data: [
+          ageCounts['0-17'] || 0,
+          ageCounts['18-25'] || 0,
+          ageCounts['26-35'] || 0,
+          ageCounts['36-45'] || 0,
+          ageCounts['46-55'] || 0,
+          ageCounts['56+'] || 0,
+        ],
+        backgroundColor: [
+          'rgba(255, 99, 132, 0.2)', // Merah
+          'rgba(54, 162, 235, 0.2)', // Biru
+          'rgba(75, 192, 192, 0.2)', // Teal
+          'rgba(153, 102, 255, 0.2)', // Ungu
+          'rgba(255, 159, 64, 0.2)', // Oranye
+          'rgba(255, 205, 86, 0.2)', // Kuning
+        ],
+        borderColor: [
+          'rgba(255, 99, 132, 1)',
+          'rgba(54, 162, 235, 1)',
+          'rgba(75, 192, 192, 1)',
+          'rgba(153, 102, 255, 1)',
+          'rgba(255, 159, 64, 1)',
+          'rgba(255, 205, 86, 1)',
+        ],
+        borderWidth: 1,
+      },
+    ],
   };
 
   return (
@@ -178,16 +202,16 @@ const layananData = {
       <div className="flex-grow">
         <div className="grid grid-cols-3 gap-6">
           {user && user.role === "admin" && (
-            <div className="bg-white rounded-lg shadow-md p-2 text-center w-full">
+            <div className="rounded-lg shadow-md p-2 text-center w-full bg-[#A8D1A1]">
               <h2 className="text-2xl font-bold mt-1">{unit.length}</h2>
               <p className="text-gray-500">Unit Kerja</p>
             </div>
           )}
-          <div className="bg-white rounded-lg shadow-md p-2 text-center w-full">
+          <div className="bg-[#A8D1A1] rounded-lg shadow-md p-2 text-center w-full">
             <h2 className="text-2xl font-bold mt-1">{layanan.length}</h2>
             <p className="text-gray-500">Layanan</p>
           </div>
-          <div className="bg-white rounded-lg shadow-md p-2 text-center w-full">
+          <div className="bg-[#A8D1A1] rounded-lg shadow-md p-2 text-center w-full">
             <h2 className="text-2xl font-bold mt-1">{responden.length}</h2>
             <p className="text-gray-500">Responden</p>
           </div>
@@ -221,12 +245,38 @@ const layananData = {
         <div className='grid grid-cols-2 gap-6 mt-6'>
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-bold text-center">Jumlah Responden Berdasarkan Jenis Kelamin</h2>
-            <Bar options={{ responsive: true, plugins: { legend: { position: 'top' }, title: { display: true, text: 'Jumlah Responden Berdasarkan Jenis Kelamin' } } }} data={genderData} />
+            <Bar options={{ 
+              responsive: true, 
+              plugins: { 
+                legend: { 
+                  position: 'top' 
+                }, 
+                title: { 
+                  display: true, 
+                  text: 'Jumlah Responden Berdasarkan Jenis Kelamin' 
+                }
+              } 
+            }
+          } data={genderData} />
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-bold text-center">Jumlah Responden Berdasarkan Usia</h2>
-            <Bar options={{ responsive: true, plugins: { legend: { position: 'top' }, title: { display: true, text: 'Jumlah Responden Berdasarkan Usia' } } }} data={ageData} />
-          </div>
+        <h2 className="text-xl font-bold text-center mb-4">Jumlah Responden Berdasarkan Usia</h2>
+        <Bar
+          options={{
+            responsive: true,
+            plugins: {
+              legend: {
+                position: 'top',
+              },
+              title: {
+                display: true,
+                text: 'Jumlah Responden Berdasarkan Usia',
+              },
+            },
+          }}
+          data={ageData}
+        />
+      </div>
         </div>
       </div>
     </div>

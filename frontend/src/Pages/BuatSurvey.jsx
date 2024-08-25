@@ -118,11 +118,18 @@ function BuatSurvey() {
         </h2>
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white">
-            <tbody>
+          <thead>
+            <tr className='bg-gray-200 text-gray-600 uppercase text-sm leading-relaxed'>
+            <th className="border border-slate-600 py-3 px-6 text-center">No</th>  
+            <th className="border border-slate-600 py-3 px-6 text-center">Pertanyaan</th>
+            <th className="border border-slate-600 py-3 px-6 text-center">Aksi</th>
+            </tr>
+          </thead>
+            <tbody className='text-gray-600 '>
               {questions.map((question, index) => (
                 <tr key={index}>
-                  <td className="py-2 px-4 border-b text-center w-1/12">{index + 1}.</td>
-                  <td className="py-2 px-4 border-b w-10/12">
+                  <td className="border border-slate-700 py-3 px-6 text-center">{index + 1}.</td>
+                  <td className="border border-slate-700 py-3 px-6 text-center">
                     {editingIndex === index ? (
                       <input
                         type="text"
@@ -134,7 +141,7 @@ function BuatSurvey() {
                       <p>{question}</p>
                     )}
                   </td>
-                  <td className="py-2 px-4 border-b w-1/12 flex justify-end space-x-2">
+                  <td className="border border-slate-700 py-3 px-6 text-center whitespace-nowrap">
                     {editingIndex === index ? (
                       <button onClick={() => saveQuestion(index)} className="bg-green-700 hover:bg-green-800 text-white font-bold py-2 px-4 rounded-md">
                         Simpan
@@ -152,7 +159,7 @@ function BuatSurvey() {
               ))}
               {questions.length === 0 && (
                 <tr>
-                  <td colSpan="3" className="py-2 px-4 border-b text-center">Tidak ada pertanyaan.</td>
+                  <td colSpan="3" className="border border-slate-700 py-3 px-6 text-center">Tidak ada pertanyaan.</td>
                 </tr>
               )}
             </tbody>

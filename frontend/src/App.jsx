@@ -1,7 +1,8 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Login, Beranda, Dashboard, Saran, DetailSaran, BuatSurvey, DataResponden, TentangKami, EditPassword, LaporanSurvey, UnitKerja, Layanan, SurveyLink, ListSurvey } from './Pages';
-import { Survey, DataDiri } from './Responden';
+import { DataDiri } from './Responden';
+import Notifikasi from './Components/Notifikasi/Notifikasi';
 import SurveyPage from './Pages/SurveyPage';
 import './App.css';
 import { Layout } from './Components'; // Pastikan path benar
@@ -9,6 +10,7 @@ import { Layout } from './Components'; // Pastikan path benar
 const App = () => {
   return (
     <BrowserRouter>
+    <Notifikasi />
       <Routes>
         <Route path="/" element={<Beranda />} />
         <Route path="/login" element={<Login />} />

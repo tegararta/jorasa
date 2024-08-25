@@ -9,7 +9,7 @@ const LayananList = ({
   handlePageChange,
   handleRowsPerPageChange,
   handleMenu,
-  handleDelete,
+  handleDeleteUser,
   viewADD,
 }) => {
   const filteredLayanan = layanan
@@ -66,7 +66,7 @@ const LayananList = ({
                     Edit
                   </button>
                   <button
-                    onClick={() => handleDelete(layanan.uuid)}
+                    onClick={() => handleDeleteUser(layanan.uuid)}
                     className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-200"
                   >
                     Hapus

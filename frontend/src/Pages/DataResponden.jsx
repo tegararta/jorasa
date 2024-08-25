@@ -60,12 +60,14 @@ function DataResponden() {
         </div>
 
         <table className="w-full border-collapse">
-          <thead>
+          <thead className='bg-[#A8D1A1]'>
             <tr>
+              <th className="px-4 py-2 text-center">No</th>
               <th className="p-3 font-bold text-center">Name</th>
               <th className="p-3 font-bold text-center">Umur</th>
               <th className="p-3 font-bold text-center">No. Telp</th>
               <th className="p-3 font-bold text-center">Jenis Kelamin</th>
+              <th className="p-3 font-bold text-center">Tanggal</th>
               <th className="p-3 font-bold text-center">Layanan</th>
               {user && user.role === "admin" && (
                 <th className="p-3 font-bold text-center">Unit Kerja</th>
@@ -75,10 +77,12 @@ function DataResponden() {
           <tbody>
             {currentUsers.map((responden, index) => (
               <tr key={index}>
+                <td className="px-4 py-2 text-center">{index + 1}</td>
                 <td className="p-3 text-center">{responden.nama}</td>
                 <td className="p-3 text-center">{responden.usia}</td>
                 <td className="p-3 text-center">{responden.nohp}</td>
                 <td className="p-3 text-center">{responden.jenisKelamin}</td>
+                <td className="p-3 text-center">{new Date(responden.createdAt).toLocaleDateString('id-ID')}</td>
                 <td className="p-3 text-center">{responden.layanan}</td>
                 {user && user.role === "admin" && responden.survey && responden.survey.user && (
                   <td className="p-3 text-center">

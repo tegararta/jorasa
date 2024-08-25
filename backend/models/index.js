@@ -12,7 +12,7 @@ const saran = require('./saran');
 user.hasMany(unit_kerja, { foreignKey: 'id_user' });
 user.hasMany(survey, { foreignKey: 'id_user' });
 survey.hasMany(pertanyaan, { foreignKey: 'id_survey'})
-unit_kerja.hasOne(user, { foreignKey: 'id_user' });
+unit_kerja.belongsTo(user, { foreignKey: 'id_user' });
 survey.belongsTo(user, { foreignKey: 'id_user' });
 layanan.belongsTo(unit_kerja, { foreignKey: 'id_unit' });
 unit_kerja.hasMany(layanan, { foreignKey: 'id_unit' })
@@ -21,6 +21,8 @@ pertanyaan.belongsTo(survey, { foreignKey: 'id_survey' });
 jawaban.belongsTo(pertanyaan, { foreignKey: 'id_pertanyaan' });
 saran.belongsTo(coresponden, { foreignKey: 'id_coresponden' });
 survey.hasMany(coresponden, { foreignKey: 'id_survey' });
+
+
 
 // Coresponden model
 coresponden.hasMany(jawaban, { foreignKey: 'id_coresponden' });
