@@ -273,6 +273,15 @@ const layananData = {
                 text: 'Jumlah Responden Berdasarkan Usia',
               },
             },
+            scales: {
+              y: {
+                ticks: {
+                  callback: function(value) {
+                    return Math.round(value); // Membulatkan angka menjadi integer
+                  }
+                }
+              }
+            }
           }}
           data={ageData}
         />

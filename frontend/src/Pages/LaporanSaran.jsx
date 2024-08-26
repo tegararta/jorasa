@@ -20,10 +20,7 @@ function Saran() {
 
   useEffect(() => {
     dispatch(fetchLayanan());
-  }, [dispatch]);
-
-  console.log('darat', selectedUnitLayanan);
-  
+  }, [dispatch]);  
 
   useEffect(() => {
     const fetchUnits = async () => {
@@ -37,9 +34,6 @@ function Saran() {
 
     fetchUnits();
   }, []);
-
-  // jika role === user maka mengirim state unitKerja dengan data ini user.unit_kerjas[0].nama_unit
-  console.log(unitKerja)
   
   const handleUnitKerjaChange = (e) => {
     const selectedUnit = e.target.value;
@@ -107,7 +101,7 @@ function Saran() {
             value={layanan1}
             onChange={(e) => setLayanan1(e.target.value)}
           >
-            <option value="">Pilih Layanan</option>
+            <option value="">Semua Layanan</option>
             {selectedUnitLayanan.length > 0 ? (
               selectedUnitLayanan.map((item, index) => (
                 <option key={index} value={item.nama_layanan}>

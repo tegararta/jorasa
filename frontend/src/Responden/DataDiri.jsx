@@ -17,7 +17,7 @@ function DataDiri({ urlSurvey, onSubmit }) {
       const response = await axios.get(`http://localhost:5000/survey/${urlSurvey}`);
       const layanan = response.data;
       setLayanan(layanan.user.unit_kerjas[0].layanans);
-      setUser(layanan.user.id_user)
+      setUser(layanan.id_user)
       setSurvey(layanan.id_survey)
     } catch (error) {
       console.error(error);

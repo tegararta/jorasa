@@ -6,6 +6,11 @@ const Unitkerja = require('../models/unit_kerja');
 const getUsers = async (req, res) => {
     try {
         const response = await user.findAll({
+            where: {
+                role: {
+                    [Op.ne]: 'admin' // Exclude users with the role of 'admin'
+                }
+            },
             include: {
                 model: Unitkerja,
                 attributes: ['nama_unit', 'alamat']
@@ -87,19 +92,17 @@ const createUsers = async (req, res) => {
 const update = async (req, res) => {
     const { username, password, confPassword, email, role, unit_kerjas } = req.body;
 
-    // Pengecekan apakah password dan confPassword sama
+    // Validate password and confirm password
     if (password && password !== confPassword) {
         return res.status(400).json({ msg: "Kata sandi tidak cocok" });
     }
 
     try {
-        // Temukan pengguna berdasarkan UUID
+        // Find the user by UUID
         const User = await user.findOne({
-            where: {
-                uuid: req.params.uuid,
-            },
+            where: { uuid: req.params.uuid },
             include: {
-                model: unit_kerjas // Pastikan untuk menyertakan unit_kerja jika relasi sudah diatur
+                model: Unitkerja, 
             }
         });
 
@@ -107,56 +110,48 @@ const update = async (req, res) => {
             return res.status(404).json({ msg: "Pengguna tidak ditemukan" });
         }
 
-        if (req.role === 'admin') {
-            // Jika admin, dapat memperbarui username, email, role, nama_unit, dan alamat
-            const updatedData = {
-                username: username || User.username,
-                email: email || User.email,
-                role: role || User.role,
-                updatedAt: new Date()
-            };
+        // Initialize the update data object
+        const updatedData = {
+            username: username || User.username,
+            email: email || User.email,
+            role: role || User.role,
+            updatedAt: new Date()
+        };
 
-            // Handle unit_kerjas jika ada
-            if (unit_kerjas && unit_kerjas.length > 0) {
-                const unitKerja = unit_kerjas[0];
-                updatedData.nama_unit = unitKerja.nama_unit || User.unit_kerja.nama_unit;
-                updatedData.alamat = unitKerja.alamat || User.unit_kerja.alamat;
-                
-                // Update relasi unit_kerja jika ada
-                await User.unit_kerja.update({
-                    nama_unit: unitKerja.nama_unit || User.unit_kerja.nama_unit,
-                    alamat: unitKerja.alamat || User.unit_kerja.alamat
-                });
-            }
+        // Handle password update
+        if (password) {
+            updatedData.password = await argon2.hash(password);
+        }
 
-            // Jika password ada, hash password baru
-            if (password) {
-                updatedData.password = await argon2.hash(password);
-            } else {
-                updatedData.password = User.password; // Menggunakan password lama jika tidak ada perubahan
-            }
+        // If the user has admin role, they can update the associated unit_kerjas
+        if (req.role === 'admin' && unit_kerjas && unit_kerjas.length > 0) {
+            const unitKerja = unit_kerjas[0];
 
-            await User.update(updatedData);
-        } else {
-            // Jika pengguna biasa, hanya perbarui password
-            if (password) {
-                await User.update({
-                    password: await argon2.hash(password),
-                    updatedAt: new Date()
+            // Update the user's unit_kerjas if provided
+            if (User.unit_kerjas && User.unit_kerjas.length > 0) {
+                await User.unit_kerjas[0].update({
+                    nama_unit: unitKerja.nama_unit || User.unit_kerjas[0].nama_unit,
+                    alamat: unitKerja.alamat || User.unit_kerjas[0].alamat,
                 });
             } else {
-                return res.status(400).json({ msg: "Password harus diisi untuk memperbarui" });
+                // If there is no existing unit_kerja, create a new one
+                await Unitkerja.create({
+                    nama_unit: unitKerja.nama_unit,
+                    alamat: unitKerja.alamat,
+                    id_user: User.id_user,
+                });
             }
         }
 
-        res.status(200).json({ msg: "Pengguna berhasil diperbarui" });
+        // Update the user information
+        await User.update(updatedData);
 
+        res.status(200).json({ msg: "Pengguna berhasil diperbarui" });
     } catch (error) {
         console.error('Error updating account:', error);
         res.status(500).json({ error: 'Gagal memperbarui akun' });
     }
 };
-
 
 
 // Delete user by ID

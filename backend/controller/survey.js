@@ -108,7 +108,7 @@ const getSurveyuuid = async (req, res) => {
     try {
         const Survey = await survey.findOne({
             where: { url: req.params.uuid },
-            attributes: ['url', 'judul', 'created_at'],
+            attributes: ['url', 'id_survey', 'id_user', 'judul', 'created_at'],
             include: [
                 {
                     model: Pertanyaan,

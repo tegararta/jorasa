@@ -124,9 +124,7 @@ const UnitKerja = () => {
     }));
   };
 
-  const handleUpdateUserSubmit = async () => {
-    console.log(selectedUser);
-    
+  const handleUpdateUserSubmit = async () => {    
     try {
       await axios.patch(`http://localhost:5000/users/update/${selectedUser.uuid}`, selectedUser);
       toast.success('Berhasil Mengupdate Pengguna!');
