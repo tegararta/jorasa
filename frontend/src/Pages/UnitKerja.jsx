@@ -80,7 +80,6 @@ const UnitKerja = () => {
       });
       setShowModal(false);
       toast.success('Berhasil Membuat Unit Kerja!');
-      // Refresh user list
       setShowModal(false)
       const response = await axios.get("http://localhost:5000/users");
       setUsers(response.data);

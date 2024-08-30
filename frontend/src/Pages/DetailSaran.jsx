@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { fetchSaran } from '../auth/Saranslice';
+import { toast } from 'react-toastify';
+import { fetchSaran, updateSaranStatus } from '../auth/Saranslice';
 import { useSelector, useDispatch } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -37,13 +38,13 @@ const DetailSaran = () => {
       .unwrap()
       .then((response) => {
         const mappedData = response.map((item) => {
-          return {   
+          return {
             lembaga: user.role === 'admin' ? item.survey.user.unit_kerjas[0].nama_unit : '',
             layanan: item.layanan,
             tanggal: new Date(item.createdAt).toLocaleDateString(),
+            uuidsaran: item.sarans[0]?.uuid,
             saran: item.sarans[0]?.saran,
-            terlaksana: false, // Set initial status, change as needed
-            // Detail data responden
+            status: item.sarans[0]?.status,
             nama: item.nama,
             nomor: item.nohp,
             usia: item.usia,
@@ -66,10 +67,44 @@ const DetailSaran = () => {
     setModalBiodata(false); // Hide modal
   };
 
-  const handleStatusChange = (index) => {
-    const updatedData = [...filteredData];
-    updatedData[index].terlaksana = !updatedData[index].terlaksana;
-    setFilteredData(updatedData);
+  const handleStatusChange = (uuidsaran, currentStatus) => {
+    const newStatus = !currentStatus;
+  
+    dispatch(updateSaranStatus({ uuidsaran, status: newStatus }))
+      .unwrap()
+      .then(() => {
+        // Fetch updated data
+        dispatch(fetchSaran())
+          .unwrap()
+          .then((response) => {
+            const mappedData = response.map((item) => {
+              return {
+                lembaga: user.role === 'admin' ? item.survey.user.unit_kerjas[0].nama_unit : '',
+                layanan: item.layanan,
+                tanggal: new Date(item.createdAt).toLocaleDateString(),
+                uuidsaran: item.sarans[0]?.uuid,
+                saran: item.sarans[0]?.saran,
+                status: item.sarans[0]?.status,
+                nama: item.nama,
+                nomor: item.nohp,
+                usia: item.usia,
+                jenisKelamin: item.jenisKelamin,
+              };
+            });
+            setFilteredData(mappedData);
+          })
+          .catch((error) => {
+            console.error('Error fetching saran:', error);
+          });
+      })
+      .catch((error) => {
+        console.error('Error updating saran status:', error);
+      });
+  
+    const endpoint = newStatus
+    ? 'Dibatalkan'
+    : 'Saran sudah diterima';
+    toast.success(endpoint);
   };
 
   const filterData = () => {
@@ -93,9 +128,9 @@ const DetailSaran = () => {
       const matchesStatus =
         selectedStatus === 'semua'
           ? true
-          : selectedStatus === 'terlaksana'
-          ? item.terlaksana
-          : !item.terlaksana;
+          : selectedStatus === 'true'
+            ? !item.status
+            : item.status;
 
       const matchesDate = isWithinDateRange(item.tanggal);
       const matchesUnitKerja = unitKerja ? item.lembaga === unitKerja : true;
@@ -119,8 +154,8 @@ const DetailSaran = () => {
                 className="rounded-md"
               >
                 <MenuItem value="semua">Semua</MenuItem>
-                <MenuItem value="terlaksana">Terlaksana</MenuItem>
-                <MenuItem value="belum terlaksana">Belum Terlaksana</MenuItem>
+                <MenuItem value="true">Terlaksana</MenuItem>
+                <MenuItem value="false">Belum Terlaksana</MenuItem>
               </Select>
             </div>
             <Button
@@ -174,7 +209,7 @@ const DetailSaran = () => {
               </TableHead>
               <TableBody>
                 {filterData().slice(startIndex, endIndex).map((item, index) => (
-                  <TableRow key={startIndex + index + 1}>
+                  <TableRow key={startIndex + index}>
                     <TableCell>{startIndex + index + 1}</TableCell>
                     {user && user.role === "admin" && (
                       <TableCell>{item.lembaga}</TableCell>
@@ -184,54 +219,51 @@ const DetailSaran = () => {
                     <TableCell>{item.saran}</TableCell>
                     <TableCell>
                       <IconButton
-                        color={item.terlaksana ? 'success' : 'default'}
-                        onClick={() => handleStatusChange(startIndex + index)}
+                        color={item.status ? 'default' : 'success'}
+                        onClick={() => handleStatusChange(item.uuidsaran, item.status)}
                       >
-                        {item.terlaksana ? <CheckCircle /> : <Cancel />}
+                        {item.status ? <Cancel /> : <CheckCircle />}
                       </IconButton>
                     </TableCell>
-                    <TableCell>
-                    <button
-                        onClick={() => showModal(item)}
-                        className="text-blue-500 hover:text-blue-700"
-                      >
-                        <FaUser className="inline-block mr-1" />
-                      </button>
+                    <TableCell className='justify-center'>
+                      <IconButton 
+                      onClick={() => showModal(item)}
+                      color='primary'>
+                        <FaUser />
+                      </IconButton>
                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
+            {modalBiodata && selectedItem && (
+              <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-white p-6 rounded-lg shadow-2xl w-full max-w-md">
+                  <div className="bg-[#A8D1A1] w-full rounded-t-lg p-4">
+                    <h2 className="text-2xl font-semibold text-black">Detail Responden</h2>
+                  </div>
+                  <div className="p-4">
+                    <ul className="space-y-2">
+                      <li><strong>Nama:</strong> {selectedItem.nama}</li>
+                      <li><strong>No HP:</strong> {selectedItem.nomor}</li>
+                      <li><strong>Umur:</strong> {selectedItem.usia}</li>
+                      <li><strong>Jenis Kelamin:</strong> {selectedItem.jenisKelamin}</li>
+                    </ul>
+                    <div className="flex justify-center mt-4 ">
+                      <Button
+                        onClick={closeLayananModal}
+                        className="bg-gray-300 text-gray-800 py-2 px-4 rounded-lg shadow-md hover:bg-gray-400"
+                      >
+                        Tutup
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
-      {modalBiodata && selectedItem && (
-  <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
-    <div className="bg-white p-6 rounded-lg shadow-2xl w-full max-w-md">
-      <div className="bg-[#A8D1A1] w-full rounded-t-lg p-4">
-        <h2 className="text-2xl font-semibold text-black">Detail Responden</h2>
-      </div>
-      <div className="p-4">
-        <ul className="space-y-2">
-          <li><strong>Nama:</strong> {selectedItem.nama}</li>
-          <li><strong>No HP:</strong> {selectedItem.nomor}</li>
-          <li><strong>Umur:</strong> {selectedItem.usia}</li>
-          <li><strong>Jenis Kelamin:</strong> {selectedItem.jenisKelamin}</li>
-          <li><strong>Layanan:</strong> {selectedItem.layanan}</li>
-        </ul>
-        <div className="flex justify-end mt-4">
-          <Button
-            onClick={closeLayananModal}
-            className="bg-gray-300 text-gray-800 py-2 px-4 rounded-lg shadow-md hover:bg-gray-400"
-          >
-            Tutup
-          </Button>
-        </div>
-      </div>
-    </div>
-  </div>
-)}
-
     </div>
   );
 };

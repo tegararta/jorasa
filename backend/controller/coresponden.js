@@ -42,7 +42,7 @@ const getCoresponden = async (req, res) => {
                     },
                     {
                         model: Saran,
-                        attributes: ['saran'],
+                        attributes: ['status', 'saran'],
                     }
                 ],
             });
@@ -173,7 +173,7 @@ const getSaran = async (req, res) => {
                 include: [
                     {
                         model: Saran,
-                        attributes: ['uuid', 'saran'],
+                        attributes: ['uuid', 'status', 'saran'],
                     },
                     {
                     model: Survey,
@@ -198,7 +198,7 @@ const getSaran = async (req, res) => {
                 include: [
                     {
                         model: Saran,
-                        attributes: ['uuid', 'saran'],
+                        attributes: ['uuid', 'status','saran'],
                     }
                 ],
             });
@@ -208,6 +208,44 @@ const getSaran = async (req, res) => {
         res.status(500).json({ msg: error.message });
     }
 }
+
+// True/False saran
+const falseSaranStatus = async (req, res) => {
+    try {
+        const [affectedRows] = await Saran.update(
+            { status: false },
+            { where: { uuid: req.params.uuid } }
+        );
+        
+        if (affectedRows === 0) {
+            return res.status(404).json({ msg: 'Saran not found' });
+        }
+
+        res.status(200).json({ msg: 'Saran status updated to false' });
+    } catch (error) {
+        res.status(500).json({ msg: error.message });
+    }
+};
+
+const activateSaranStatus = async (req, res) => {
+    try {
+        const [affectedRows] = await Saran.update(
+            { status: true },
+            { where: { uuid: req.params.uuid } }
+        );
+        
+        if (affectedRows === 0) {
+            return res.status(404).json({ msg: 'Saran not found' });
+        }
+
+        res.status(200).json({ msg: 'Saran status updated to true' });
+    } catch (error) {
+        res.status(500).json({ msg: error.message });
+    }
+};
+
+
+
 
 
 // Menampilkan Biodata responden
@@ -250,5 +288,7 @@ module.exports = {
     createCoresponden,
     deleteCoresponden,
     getSaran,
-    getBiodata
+    getBiodata,
+    falseSaranStatus,
+    activateSaranStatus
 }

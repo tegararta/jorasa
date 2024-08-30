@@ -4,6 +4,12 @@ GET http://localhost:5000/responden/
 ### Melihat saran
 GET http://localhost:5000/responden/saran
 
+### Rubah status saran
+PATCH http://localhost:5000/responden/saran/status/8b03eb41-3457-45eb-8e96-6e8f157ed262/false
+
+###
+PATCH http://localhost:5000/responden/saran/status/86ccd07d-7c20-4c1d-bdbd-bdb5a8be7301/true
+
 ### melihat biodata dari responden
 GET http://localhost:5000/responden/biores
 

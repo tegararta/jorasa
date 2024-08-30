@@ -94,7 +94,7 @@ const Layanan = () => {
     try {
       toast.success('Layanan deleted successfully!');
       await axios.delete(`http://localhost:5000/layanan/${confirmDelete.uuid}`);
-      dispatch(fetchLayanan()); // Ambil ulang data layanan setelah menghapus layanan
+      dispatch(fetchLayanan()); 
     } catch (error) {
       console.error(error);
       toast.error('Failed to delete Layanan.');

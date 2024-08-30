@@ -5,7 +5,9 @@ const {
     createCoresponden,
     deleteCoresponden,
     getBiodata,
-    getSaran } = require('../controller/coresponden');
+    getSaran,
+    falseSaranStatus,
+    activateSaranStatus } = require('../controller/coresponden');
 const { verifyUser } = require('../middleware/authuser');
 
 // Routes role admin
@@ -14,6 +16,7 @@ router.post('/create', createCoresponden);
 router.delete('/:uuid', verifyUser, deleteCoresponden);
 router.get('/saran', verifyUser, getSaran);
 router.get('/biores', verifyUser, getBiodata);
-
+router.patch('/saran/status/:uuid/false', verifyUser, falseSaranStatus);
+router.patch('/saran/status/:uuid/true', verifyUser, activateSaranStatus);
 
 module.exports = router;
