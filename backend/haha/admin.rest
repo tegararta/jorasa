@@ -1,4 +1,4 @@
-GET  http://localhost:5000/users/454407b6-201d-41ef-9fda-5370d7b9f0d0
+GET  http://localhost:5000/users/
 
 ###
 POST  http://localhost:5000/users/create

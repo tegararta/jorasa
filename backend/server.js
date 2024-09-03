@@ -1,4 +1,6 @@
 const express = require('express');
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
 const helmet = require('helmet');
 const dotenv = require('dotenv');
 const sequelizestore = require('connect-session-sequelize');
@@ -9,7 +11,6 @@ const { user, unit_kerja, survey, layanan, pertanyaan, coresponden, jawaban, sar
 const middlewareLogReq = require('./middleware/logs');
 const authRoutes = require('./routes/authRoutes');
 dotenv.config();
-
 // Import Routes
 const { 
     adminRoutes, 
@@ -19,12 +20,30 @@ const {
     responden
 } = require('./routes/'); 
 const app = express();
-
 const sessionStore = sequelizestore(session.Store);
 const store = new sessionStore({
     db: sequelize
 });
 
+
+// Dokumentasi API
+const options = {
+    definition: {
+      openapi: '3.0.0',
+      info: {
+        title: 'API Documentation Jorasa',
+        version: '1.0.0',
+        description: 'API documentation using Swagger',
+      },
+      servers: [
+        {
+          url: 'http://localhost:5000',
+        },
+      ],
+    },
+    apis: ['./controller/**/*.js'], // Ganti dengan lokasi file routing kamu
+  };
+  const specs = swaggerJsdoc(options);
 // Middleware
 app.use(helmet());
 app.use(express.json());
@@ -55,6 +74,8 @@ const startServer = async () => {
         await sequelize.sync({ force: false });
         console.log('All models were syncloginhronized successfully.');
 
+        //API Dokumentasi
+        app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
         // Middleware and Routes
         app.use(middlewareLogReq);
         app.use(authRoutes); 

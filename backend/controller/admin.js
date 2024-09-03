@@ -3,6 +3,231 @@ const argon2 = require('argon2');
 const user = require('../models/user'); // Sesuaikan nama model
 const Unitkerja = require('../models/unit_kerja');
 
+/**
+ * @swagger
+ * tags:
+ *   name: Users
+ *   description: API untuk mengelola pengguna
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       required:
+ *         - username
+ *         - email
+ *         - role
+ *       properties:
+ *         uuid:
+ *           type: string
+ *           description: UUID pengguna
+ *         username:
+ *           type: string
+ *           description: Nama pengguna
+ *         email:
+ *           type: string
+ *           description: Email pengguna
+ *         role:
+ *           type: string
+ *           description: Role pengguna
+ *         unit_kerjas:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/UnitKerja'
+ *       example:
+ *         uuid: '454407b6-201d-41ef-9fda-5370d7b9f0d0'
+ *         username: 'kesehatan'
+ *         email: 'kesehatan@example.com'
+ *         role: 'user'
+ *         unit_kerjas:
+ *           - nama_unit: 'Lembaga Kesehatan'
+ *             alamat: 'Jl. Surya No. 2'
+ *   
+ *     UnitKerja:
+ *       type: object
+ *       required:
+ *         - nama_unit
+ *         - alamat
+ *       properties:
+ *         nama_unit:
+ *           type: string
+ *           description: Nama unit kerja
+ *         alamat:
+ *           type: string
+ *           description: Alamat unit kerja
+ *       example:
+ *         nama_unit: 'Lembaga Kesehatan'
+ *         alamat: 'Jl. Surya No. 2'
+ *
+ *     CreateUserRequest:
+ *       type: object
+ *       required:
+ *         - username
+ *         - password
+ *         - confPassword
+ *         - email
+ *         - role
+ *       properties:
+ *         username:
+ *           type: string
+ *           description: Nama pengguna
+ *         password:
+ *           type: string
+ *           description: Kata sandi pengguna
+ *         confPassword:
+ *           type: string
+ *           description: Konfirmasi kata sandi
+ *         email:
+ *           type: string
+ *           description: Email pengguna
+ *         role:
+ *           type: string
+ *           description: Role pengguna (misalnya: admin, user)
+ *         unit_kerjas:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/UnitKerja'
+ *       example:
+ *         username: 'raharja'
+ *         password: '123456'
+ *         confPassword: '123456'
+ *         email: 'raharja@gmail.com'
+ *         role: 'user'
+ *         unit_kerjas:
+ *           - nama_unit: 'Jasa Raharja'
+ *             alamat: 'Jl. Merdeka No. 56'
+ *
+ *     UpdateUserRequest:
+ *       type: object
+ *       properties:
+ *         username:
+ *           type: string
+ *           description: Nama pengguna (opsional)
+ *         password:
+ *           type: string
+ *           description: Kata sandi pengguna (opsional)
+ *         confPassword:
+ *           type: string
+ *           description: Konfirmasi kata sandi (opsional)
+ *         email:
+ *           type: string
+ *           description: Email pengguna (opsional)
+ *         role:
+ *           type: string
+ *           description: Role pengguna (opsional)
+ *         unit_kerjas:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/UnitKerja'
+ *       example:
+ *         username: 'hukum_updated'
+ *         email: 'hukum_new@gmail.com'
+ *         role: 'user'
+ *         unit_kerjas:
+ *           - nama_unit: 'Lembaga Hukum Baru'
+ *             alamat: 'Jl. Merdeka No. 25'
+ */
+
+/**
+ * @swagger
+ * /users:
+ *   get:
+ *     summary: Mendapatkan daftar pengguna
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: Daftar semua pengguna (kecuali admin)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
+ *       500:
+ *         description: Gagal mendapatkan pengguna
+ */
+
+/**
+ * @swagger
+ * /users/{uuid}:
+ *   get:
+ *     summary: Mendapatkan pengguna berdasarkan UUID
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: uuid
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: UUID pengguna
+ *     responses:
+ *       200:
+ *         description: Detail pengguna
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       404:
+ *         description: Pengguna tidak ditemukan
+ *       500:
+ *         description: Gagal mendapatkan pengguna
+ */
+
+/**
+ * @swagger
+ * /users:
+ *   post:
+ *     summary: Membuat pengguna baru
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateUserRequest'
+ *     responses:
+ *       201:
+ *         description: Pengguna berhasil dibuat
+ *       400:
+ *         description: Kata sandi tidak cocok
+ *       500:
+ *         description: Gagal membuat pengguna
+ */
+
+/**
+ * @swagger
+ * /users/{uuid}:
+ *   patch:
+ *     summary: Memperbarui pengguna berdasarkan UUID
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: uuid
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: UUID pengguna
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/UpdateUserRequest'
+ *     responses:
+ *       200:
+ *         description: Pengguna berhasil diperbarui
+ *       400:
+ *         description: Kata sandi tidak cocok
+ *       404:
+ *         description: Pengguna tidak ditemukan
+ *       500:
+ *         description: Gagal memperbarui pengguna
+ */
+
+
 const getUsers = async (req, res) => {
     try {
         const response = await user.findAll({
@@ -153,7 +378,27 @@ const update = async (req, res) => {
     }
 };
 
-
+/**
+ * @swagger
+ * /users/{uuid}:
+ *   delete:
+ *     summary: Menghapus pengguna berdasarkan UUID
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: uuid
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: UUID pengguna
+ *     responses:
+ *       204:
+ *         description: Pengguna berhasil dihapus
+ *       404:
+ *         description: Pengguna tidak ditemukan
+ *       500:
+ *         description: Gagal menghapus pengguna
+ */
 // Delete user by ID
 const deleteUsersById = async (req, res) => {
     try {
