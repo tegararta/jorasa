@@ -46,20 +46,24 @@ const Dashboard = () => {
   const dispatch = useDispatch();
   const [unit, setUnit] = useState([]);
   const { user } = useSelector((state) => state.auth);
+  const [selectedUnit, setSelectedunit] = useState('');
+  const [analisaUnit, setAnalisaunit] = useState([]);
   const { layanan } = useSelector((state) => state.layanan);
   const { responden } = useSelector((state) => state.responden);
   const [selectedYear, setSelectedYear] = useState('');
   const [years, setYears] = useState([]);
-
+ 
   const getUnitAndLayanan = async () => {
     try {
       const usersResponse = await axios.get("http://localhost:5000/unit");
       setUnit(usersResponse.data);
+      // const unitNames = usersResponse.data.map((unit) => unit.nama_unit);
+      setAnalisaunit(usersResponse.data);  // Menyimpan nama_unit
     } catch (error) {
       console.error("Error fetching data: ", error);
     }
   };
-
+  
   useEffect(() => {
     dispatch(fetchLayanan());
     dispatch(fetchResponden());
@@ -80,21 +84,30 @@ const Dashboard = () => {
     setSelectedYear(e.target.value);
   };
 
+  const pilihUnit = (e) => {
+    setSelectedunit(e.target.value);
+  };
+
+  // Filter responden berdasarkan unitKerja yang dipilih
+  const filterUnit = selectedUnit
+    ? responden.filter((resp) => resp.survey.user.unit_kerjas.some(unit => unit.nama_unit === selectedUnit))
+    : responden;
+
   const filteredRespondents = selectedYear
     ? responden.filter((resp) => new Date(resp.createdAt).getFullYear() === parseInt(selectedYear))
     : responden;
 
-  const genderCounts = filteredRespondents.reduce((acc, curr) => {
+  const genderCounts = responden.reduce((acc, curr) => {
     acc[curr.jenisKelamin] = (acc[curr.jenisKelamin] || 0) + 1;
     return acc;
   }, {});
 
-  const layananCounts = filteredRespondents.reduce((acc, curr) => {
+  const layananCounts = responden.reduce((acc, curr) => {
     acc[curr.layanan] = (acc[curr.layanan] || 0) + 1;
     return acc;
   }, {});
 
-  const genderData = {
+  const dataJeniskelamin = {
     labels: [''],
     datasets: [
       {
@@ -114,8 +127,6 @@ const Dashboard = () => {
     ],
   };
 
-  const layananKeys = Object.keys(layananCounts);
-
   const colorPalette = [
     'rgba(75, 192, 192, 0.2)', 
     'rgba(153, 102, 255, 0.2)', 
@@ -132,12 +143,15 @@ const Dashboard = () => {
     'rgba(54, 162, 235, 1)', 
   ];
 
+  // Label X untuk layanan user
+  const layananKeys = Object.keys(layananCounts);
+  
   const colors = layananKeys.map((_, index) => ({
     backgroundColor: colorPalette[index % colorPalette.length],
     borderColor: borderColorPalette[index % borderColorPalette.length],
   }));
 
-  const layananData = {
+  const dataLayanandiSurvey = {
     labels: layananKeys,
     datasets: [
       {
@@ -162,7 +176,7 @@ const Dashboard = () => {
     'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
   ];
 
-  const dataBar = {
+  const dataPerbulan = {
     labels: labelsBar,
     datasets: [
       {
@@ -175,7 +189,7 @@ const Dashboard = () => {
     ],
   };
 
-  const ageCounts = filteredRespondents.reduce((acc, curr) => {
+  const ageCounts = responden.reduce((acc, curr) => {
     const age = curr.usia;
     if (age <= 17) acc['0-17'] = (acc['0-17'] || 0) + 1;
     else if (age <= 25) acc['18-25'] = (acc['18-25'] || 0) + 1;
@@ -186,7 +200,7 @@ const Dashboard = () => {
     return acc;
   }, {});
 
-  const ageData = {
+  const dataUsia = {
     labels: ['0-17', '18-25', '26-35', '36-45', '46-55', '56+'],
     datasets: [
       {
@@ -220,6 +234,37 @@ const Dashboard = () => {
     ],
   };
 
+  // Label X untuk analisa Data layanan
+  const layananUnit = filterUnit.reduce((acc, curr) => {
+    acc[curr.layanan] = (acc[curr.layanan] || 0) + 1;
+    return acc;
+  }, {});
+  const unitLayanan = Object.keys(layananUnit);  
+
+  //data dari analisa layanan dari setiap unit kerja 
+  const dataAnalisa = {
+    labels: unitLayanan,
+    datasets: [
+      {
+        label: 'Rata-Rata Kepuasan',
+        data: unitLayanan.map((layanan) => {
+          const filteredRespondentsForLayanan = filterUnit.filter((respondent) => respondent.layanan === layanan);
+          // Sum all the ratings within the 'jawabans' array for each respondent
+          const sumRatings = filteredRespondentsForLayanan.reduce((acc, curr) => {
+            const penilaian = curr.jawabans.reduce((sum, answer) => sum + answer.bintang, 0);
+            return acc + penilaian;
+          }, 0);
+          const totalRatings = filteredRespondentsForLayanan.reduce((acc, curr) => acc + curr.jawabans.length, 0);
+          const averageRating = sumRatings / totalRatings || 0;
+          return averageRating;
+        }),
+        backgroundColor: colors.map((color) => color.backgroundColor),
+        borderColor: colors.map((color) => color.borderColor),
+        borderWidth: 1,
+      },
+    ],
+  };
+  
   return (
     <div className="flex bg-gray-100">
       <div className="flex-grow">
@@ -240,22 +285,28 @@ const Dashboard = () => {
           </div>
         </div>
         <div className="grid grid-cols-2 gap-6 mt-6">
-
-          {/* admin */}
-          {/* {user && user.role === "admin" && (
+          {user && user.role === "admin" && (
             <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-bold mb-4 text-center">Penilaian Unit Kerja</h2>
+              <h2 className="text-xl font-bold mb-4 text-center">Analisa Layanan</h2>
+              <select  className=' text-xl font-mono text-center' value={selectedUnit} onChange={pilihUnit}>
+                <option value="">Semua Unit</option>
+                {analisaUnit.map((unit) => (
+                  <option key={unit.nama_unit} value={unit.nama_unit}>
+                    {unit.nama_unit}
+                  </option>
+                ))}
+              </select>
               <div className="flex items-center justify-center w-full h-64">
-                <Bar options={{ responsive: true, plugins: { legend: { position: 'top' }, title: { display: true, text: 'Penilaian Unit Kerja' } } }} data={penilaianData} />
+              <Bar data={dataAnalisa} options={optionsBar} />
               </div>
             </div>
-          )} */}
+          )}
           {/* user */}
           {user && user.role === "user" && (
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-xl font-bold mb-4 text-center">Banyak Layanan di survey</h2>
               <div className="flex items-center justify-center w-full h-64">
-              <Bar options={{ ...optionsBar, plugins: { ...optionsBar.plugins, title: { display: true, text: 'Jumlah Responden Berdasarkan Jenis Kelamin' } } }} data={layananData} />
+              <Bar data={dataLayanandiSurvey} options={optionsBar} />
               </div>
             </div>
           )}
@@ -263,7 +314,7 @@ const Dashboard = () => {
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-bold text-center">Jumlah Responden</h2>
             <input type="" name="" id="" />
-            <Bar options={{ ...optionsBar, plugins: { ...optionsBar.plugins, title: { display: true, text: 'Jumlah Responden perbulan' } } }} data={dataBar} />
+            <Bar data={dataPerbulan} options={optionsBar} />
             <select  className=' text-xl font-mono text-center' value={selectedYear} onChange={handleYearChange}>
               <option value="">Pilih Tahun</option>
               {years.map((year) => (
@@ -277,11 +328,11 @@ const Dashboard = () => {
         <div className='grid grid-cols-2 gap-6 mt-6'>
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-bold text-center">Jumlah Responden Berdasarkan Jenis Kelamin</h2>
-            <Bar options={{ ...optionsBar, plugins: { ...optionsBar.plugins, title: { display: true, text: 'Jumlah Responden Berdasarkan Jenis Kelamin' } } }} data={genderData} />
+            <Bar data={dataJeniskelamin} options={optionsBar} />
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-bold text-center mb-4">Jumlah Responden Berdasarkan Usia</h2>
-            <Bar options={{ ...optionsBar, plugins: { ...optionsBar.plugins, title: { display: true, text: 'Jumlah Responden Berdasarkan Usia' } } }} data={ageData} />
+            <Bar data={dataUsia} options={optionsBar} />
           </div>
         </div>
       </div>

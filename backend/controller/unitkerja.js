@@ -1,7 +1,122 @@
 const argon2 = require('argon2');
 const unitkerja = require('../models/unit_kerja');
-const user = require('../models/user');
 const Layanan = require('../models/layanan');
+
+/**
+ * @swagger
+ * tags:
+ *   name: Unit Kerja
+ *   description: API for managing users and associated unit kerja
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     UnitKerja:
+ *       type: object
+ *       properties:
+ *         uuid:
+ *           type: string
+ *           description: Unique identifier for the Unit Kerja
+ *         nama_unit:
+ *           type: string
+ *           description: Name of the Unit Kerja
+ *         alamat:
+ *           type: string
+ *           description: Address of the Unit Kerja
+ *         Layanan:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               nama_layanan:
+ *                 type: string
+ *                 description: Name of the service provided by the Unit Kerja
+ *       required:
+ *         - uuid
+ *         - nama_unit
+ *         - alamat
+ */
+
+/**
+ * @swagger
+ * /unitkerja:
+ *   get:
+ *     summary: Get all Unit Kerja or filtered Unit Kerja based on user role
+ *     tags: [Unit Kerja]
+ *     responses:
+ *       200:
+ *         description: A list of Unit Kerja along with associated Layanan
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/UnitKerja'
+ *             examples:
+ *               AdminExample:
+ *                 summary: Role Admin
+ *                 value: [
+ *                   {
+ *                     "uuid": "e13e6760-3c9b-4eeb-9f1b-35d576c8df45",
+ *                     "nama_unit": "Dinas Kesehatan",
+ *                     "alamat": "Jl.Merdeka No.21",
+ *                     "Layanan": [
+ *                       {
+ *                         "nama_layanan": "Pengurusan surat"
+ *                       },
+ *                       {
+ *                         "nama_layanan": "Customer Service"
+ *                       }
+ *                     ]
+ *                   },
+ *                   {
+ *                     "uuid": "b73b5b6a-c567-4f3b-a8c7-2908c2d0c9a4",
+ *                     "nama_unit": "Dinas Hukum",
+ *                     "alamat": "Jl.Merdeka No.78",
+ *                     "Layanan": [
+ *                       {
+ *                         "nama_layanan": "Pengurusan surat"
+ *                       },
+ *                       {
+ *                         "nama_layanan": "Customer Service"
+ *                       }
+ *                     ]
+ *                   }
+ *                 ]
+ *               UserExample:
+ *                 summary: Role User
+ *                 value: [
+ *                   {
+ *                     "uuid": "e13e6760-3c9b-4eeb-9f1b-35d576c8df45",
+ *                     "nama_unit": "Dinas Kesehatan",
+ *                     "alamat": "Jl.Merdeka No.21",
+ *                     "Layanan": [
+ *                       {
+ *                         "nama_layanan": "Service 1"
+ *                       }
+ *                     ]
+ *                   }
+ *                 ]
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   description: Error message
+ *             examples:
+ *               ErrorExample:
+ *                 summary: Example error response
+ *                 value:
+ *                   msg: "Internal server error"
+ */
+
+
 
 const getUnit = async (req, res) => {
     try {
@@ -32,50 +147,7 @@ const getUnit = async (req, res) => {
     }
 };
 
-const updateUnit = async (req, res) => {
-    const { username, password, confPassword, email } = req.body;
-    // Pengecekan apakah password dan confPassword sama
-    if (password && password !== confPassword) {
-        return res.status(400).json({ msg: "Kata sandi tidak cocok" });
-    }
-
-    try {
-        // Temukan pengguna berdasarkan ID
-        const User = await user.findOne({
-            where: {
-                id_user: req.id_user
-            },
-        });
-
-        if (!User) {
-            return res.status(404).json({ msg: "Pengguna tidak ditemukan" });
-        }
-
-        // Variabel untuk menyimpan data yang akan diperbarui
-        const updatedData = {
-            username: username || User.username,
-            email: email || User.email,
-            updatedAt: new Date()
-        };
-
-        // Jika password ada, hash password baru
-        if (password) {
-            updatedData.password = await argon2.hash(password);
-        } else {
-            updatedData.password = User.password; // Menggunakan password lama jika tidak ada perubahan
-        }
-
-        // Update informasi pengguna
-        await User.update(updatedData);
-
-        res.status(200).json({ msg: "Berhasil diperbarui" });
-    } catch (error) {
-        console.error('Error updating account:', error);
-        res.status(500).json({ error: 'Gagal memperbarui akun' });
-    }
-};
 
 module.exports = {
-    getUnit,
-    updateUnit,
+    getUnit
 }

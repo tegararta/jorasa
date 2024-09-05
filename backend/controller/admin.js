@@ -7,226 +7,63 @@ const Unitkerja = require('../models/unit_kerja');
  * @swagger
  * tags:
  *   name: Users
- *   description: API untuk mengelola pengguna
- */
-
-/**
- * @swagger
- * components:
- *   schemas:
- *     User:
- *       type: object
- *       required:
- *         - username
- *         - email
- *         - role
- *       properties:
- *         uuid:
- *           type: string
- *           description: UUID pengguna
- *         username:
- *           type: string
- *           description: Nama pengguna
- *         email:
- *           type: string
- *           description: Email pengguna
- *         role:
- *           type: string
- *           description: Role pengguna
- *         unit_kerjas:
- *           type: array
- *           items:
- *             $ref: '#/components/schemas/UnitKerja'
- *       example:
- *         uuid: '454407b6-201d-41ef-9fda-5370d7b9f0d0'
- *         username: 'kesehatan'
- *         email: 'kesehatan@example.com'
- *         role: 'user'
- *         unit_kerjas:
- *           - nama_unit: 'Lembaga Kesehatan'
- *             alamat: 'Jl. Surya No. 2'
- *   
- *     UnitKerja:
- *       type: object
- *       required:
- *         - nama_unit
- *         - alamat
- *       properties:
- *         nama_unit:
- *           type: string
- *           description: Nama unit kerja
- *         alamat:
- *           type: string
- *           description: Alamat unit kerja
- *       example:
- *         nama_unit: 'Lembaga Kesehatan'
- *         alamat: 'Jl. Surya No. 2'
- *
- *     CreateUserRequest:
- *       type: object
- *       required:
- *         - username
- *         - password
- *         - confPassword
- *         - email
- *         - role
- *       properties:
- *         username:
- *           type: string
- *           description: Nama pengguna
- *         password:
- *           type: string
- *           description: Kata sandi pengguna
- *         confPassword:
- *           type: string
- *           description: Konfirmasi kata sandi
- *         email:
- *           type: string
- *           description: Email pengguna
- *         role:
- *           type: string
- *           description: Role pengguna (misalnya: admin, user)
- *         unit_kerjas:
- *           type: array
- *           items:
- *             $ref: '#/components/schemas/UnitKerja'
- *       example:
- *         username: 'raharja'
- *         password: '123456'
- *         confPassword: '123456'
- *         email: 'raharja@gmail.com'
- *         role: 'user'
- *         unit_kerjas:
- *           - nama_unit: 'Jasa Raharja'
- *             alamat: 'Jl. Merdeka No. 56'
- *
- *     UpdateUserRequest:
- *       type: object
- *       properties:
- *         username:
- *           type: string
- *           description: Nama pengguna (opsional)
- *         password:
- *           type: string
- *           description: Kata sandi pengguna (opsional)
- *         confPassword:
- *           type: string
- *           description: Konfirmasi kata sandi (opsional)
- *         email:
- *           type: string
- *           description: Email pengguna (opsional)
- *         role:
- *           type: string
- *           description: Role pengguna (opsional)
- *         unit_kerjas:
- *           type: array
- *           items:
- *             $ref: '#/components/schemas/UnitKerja'
- *       example:
- *         username: 'hukum_updated'
- *         email: 'hukum_new@gmail.com'
- *         role: 'user'
- *         unit_kerjas:
- *           - nama_unit: 'Lembaga Hukum Baru'
- *             alamat: 'Jl. Merdeka No. 25'
+ *   description: API for managing users and associated unit kerja
  */
 
 /**
  * @swagger
  * /users:
  *   get:
- *     summary: Mendapatkan daftar pengguna
+ *     summary: Mengambil semua data Dinas kecuali admin
  *     tags: [Users]
  *     responses:
  *       200:
- *         description: Daftar semua pengguna (kecuali admin)
+ *         description: Successfully retrieved users
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/User'
+ *                 type: object
+ *                 properties:
+ *                   uuid:
+ *                     type: string
+ *                     description: The user's UUID
+ *                     example: "123e4567-e89b-12d3-a456-426614174000"
+ *                   username:
+ *                     type: string
+ *                     description: The user's username
+ *                     example: "kesehatan"
+ *                   email:
+ *                     type: string
+ *                     description: The user's email
+ *                     example: "kesehatan@example.com"
+ *                   role:
+ *                     type: string
+ *                     description: The user's role
+ *                     example: "user"
+ *                   unitkerja:
+ *                     type: object
+ *                     properties:
+ *                       nama_unit:
+ *                         type: string
+ *                         description: Unit kerja name
+ *                         example: "Dinas Kesehatan"
+ *                       alamat:
+ *                         type: string
+ *                         description: Unit kerja address
+ *                         example: "Jl. Contoh Alamat No. 123"
  *       500:
- *         description: Gagal mendapatkan pengguna
- */
-
-/**
- * @swagger
- * /users/{uuid}:
- *   get:
- *     summary: Mendapatkan pengguna berdasarkan UUID
- *     tags: [Users]
- *     parameters:
- *       - in: path
- *         name: uuid
- *         schema:
- *           type: string
- *         required: true
- *         description: UUID pengguna
- *     responses:
- *       200:
- *         description: Detail pengguna
+ *         description: Failed to fetch users
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/User'
- *       404:
- *         description: Pengguna tidak ditemukan
- *       500:
- *         description: Gagal mendapatkan pengguna
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Failed to fetch users"
  */
-
-/**
- * @swagger
- * /users:
- *   post:
- *     summary: Membuat pengguna baru
- *     tags: [Users]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/CreateUserRequest'
- *     responses:
- *       201:
- *         description: Pengguna berhasil dibuat
- *       400:
- *         description: Kata sandi tidak cocok
- *       500:
- *         description: Gagal membuat pengguna
- */
-
-/**
- * @swagger
- * /users/{uuid}:
- *   patch:
- *     summary: Memperbarui pengguna berdasarkan UUID
- *     tags: [Users]
- *     parameters:
- *       - in: path
- *         name: uuid
- *         schema:
- *           type: string
- *         required: true
- *         description: UUID pengguna
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/UpdateUserRequest'
- *     responses:
- *       200:
- *         description: Pengguna berhasil diperbarui
- *       400:
- *         description: Kata sandi tidak cocok
- *       404:
- *         description: Pengguna tidak ditemukan
- *       500:
- *         description: Gagal memperbarui pengguna
- */
-
 
 const getUsers = async (req, res) => {
     try {
@@ -249,6 +86,67 @@ const getUsers = async (req, res) => {
     }
 };
 
+/**
+ * @swagger
+ * /users/{uuid}:
+ *   get:
+ *     summary: Get user by UUID
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: uuid
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: UUID of the user
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 uuid:
+ *                   type: string
+ *                   description: The user's UUID
+ *                   example: "123e4567-e89b-12d3-a456-426614174000"
+ *                 username:
+ *                   type: string
+ *                   description: The user's username
+ *                   example: "kesehatan"
+ *                 email:
+ *                   type: string
+ *                   description: The user's email
+ *                   example: "kesehatan@example.com"
+ *                 role:
+ *                   type: string
+ *                   description: The user's role
+ *                   example: "user"
+ *                 unitkerja:
+ *                   type: object
+ *                   properties:
+ *                     nama_unit:
+ *                       type: string
+ *                       description: Unit kerja name
+ *                       example: "Dinas Kesehatan"
+ *                     alamat:
+ *                       type: string
+ *                       description: Unit kerja address
+ *                       example: "Jl. Contoh Alamat No. 123"
+ *       500:
+ *         description: Failed to fetch user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Failed to fetch user"
+ */
+
+
 // Get user by ID
 const getUserById = async (req, res) => {
     try {
@@ -268,6 +166,76 @@ const getUserById = async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch accounts' });
     }
 };
+
+/**
+ * @swagger
+ * /users:
+ *   post:
+ *     summary: Menambahkan akun dinas
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 example: "hukum"
+ *               password:
+ *                 type: string
+ *                 example: "password123"
+ *               confPassword:
+ *                 type: string
+ *                 example: "password123"
+ *               email:
+ *                 type: string
+ *                 example: "hukum@example.com"
+ *               role:
+ *                 type: string
+ *                 example: "user"
+ *               nama_unit:
+ *                 type: string
+ *                 description: Unit kerja name (only for non-admin roles)
+ *                 example: "Dinas Hukum"
+ *               alamat:
+ *                 type: string
+ *                 description: Unit kerja address (only for non-admin roles)
+ *                 example: "Jl. Contoh Alamat No. 789"
+ *     responses:
+ *       201:
+ *         description: Respon sukses
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Akun dinas berhasil ditambahkan"
+ *       400:
+ *         description: Respon password yang di input tidak sama
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Kata sandi tidak cocok"
+ *       500:
+ *         description: Respon gagal
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Kesalahan membuat akun"
+ */
+
 
 // Create a new user
 const createUsers = async (req, res) => {
@@ -311,6 +279,95 @@ const createUsers = async (req, res) => {
     }
     
 };
+
+/**
+ * @swagger
+ * /users/{uuid}:
+ *   put:
+ *     summary: Update data berdasarkan UUID
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: uuid
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: UUID of the user
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 example: "updateduser"
+ *               password:
+ *                 type: string
+ *                 example: "newpassword123"
+ *               confPassword:
+ *                 type: string
+ *                 example: "newpassword123"
+ *               email:
+ *                 type: string
+ *                 example: "updateduser@example.com"
+ *               role:
+ *                 type: string
+ *                 example: "dinas"
+ *               unit_kerjas:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     nama_unit:
+ *                       type: string
+ *                       example: "Unit Kerja Updated"
+ *                     alamat:
+ *                       type: string
+ *                       example: "Jl. Alamat Baru No. 321"
+ *     responses:
+ *       200:
+ *         description: Respon sukses
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Pengguna berhasil diperbarui"
+ *       400:
+ *         description: Respon password yang di input tidak sama
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Kata sandi tidak cocok"
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Pengguna tidak ditemukan"
+ *       500:
+ *         description: Respon kesalahan
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Gagal memperbarui akun"
+ */
 
 
 // Update user by ID
@@ -382,7 +439,7 @@ const update = async (req, res) => {
  * @swagger
  * /users/{uuid}:
  *   delete:
- *     summary: Menghapus pengguna berdasarkan UUID
+ *     summary: Delete
  *     tags: [Users]
  *     parameters:
  *       - in: path
@@ -390,15 +447,17 @@ const update = async (req, res) => {
  *         schema:
  *           type: string
  *         required: true
- *         description: UUID pengguna
+ *         description: UUID of the user
+ *         example: "123e4567-e89b-12d3-a456-426614174000"
  *     responses:
  *       204:
- *         description: Pengguna berhasil dihapus
+ *         description: Successfully deleted user
  *       404:
- *         description: Pengguna tidak ditemukan
+ *         description: User not found
  *       500:
- *         description: Gagal menghapus pengguna
+ *         description: Failed to delete user
  */
+
 // Delete user by ID
 const deleteUsersById = async (req, res) => {
     try {

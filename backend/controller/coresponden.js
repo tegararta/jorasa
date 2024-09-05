@@ -6,6 +6,140 @@ const Jawaban = require('../models/jawaban')
 const Pertanyaan = require('../models/pertanyaan')
 const Saran = require('../models/saran');
 
+/**
+ * @swagger
+ * tags:
+ *   name: Responden
+ *   description: API for managing users and associated unit kerja
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Coresponden:
+ *       type: object
+ *       properties:
+ *         uuid:
+ *           type: string
+ *           description: UUID
+ *         nama:
+ *           type: string
+ *           description: Nama Coresponden
+ *         nohp:
+ *           type: string
+ *           description: Nomor Coresponden
+ *           example: 62145678
+ *         usia:
+ *           type: integer
+ *           description: Umur Coresponden
+ *           example: 34
+ *         layanan:
+ *           type: string
+ *           description: Layanan yang dipilih Coresponden
+ *           example: "Costumer Service"
+ *         jenisKelamin:
+ *           type: string
+ *           description: Jenis kelamin Coresponden
+ *           example: "Laki_laki"
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: tanggal penilaian yang di buat
+ *         Survey:
+ *           $ref: '#/components/schemas/Survey'
+ *         Jawaban:
+ *           $ref: '#/components/schemas/Jawaban'
+ *         Saran:
+ *           $ref: '#/components/schemas/Saran'
+ *     Survey:
+ *       type: object
+ *       properties:
+ *         judul:
+ *           type: string
+ *           description: Title of the survey
+ *     User:
+ *       type: object
+ *       properties:
+ *         role:
+ *           type: string
+ *           description: Role of the user
+ *     UnitKerja:
+ *       type: object
+ *       properties:
+ *         nama_unit:
+ *           type: string
+ *           description: Name of the unit
+ *     Jawaban:
+ *       type: object
+ *       properties:
+ *         bintang1:
+ *           type: integer
+ *           description: Penilaian dari Responden
+ *           example: 5
+ *         Pertanyaan1:
+ *           $ref: '#/components/schemas/Pertanyaan1'
+ *         bintang2:
+ *           type: integer
+ *           description: Penilaian dari Responden
+ *           example: 4
+ *         Pertanyaan2:
+ *           $ref: '#/components/schemas/Pertanyaan2'
+ *     Pertanyaan1:
+ *       type: object
+ *       properties:
+ *         pertanyaan:
+ *           type: string
+ *           description: Pertanyaan yang dinilai
+ *           example: "Gimana pelayanan kami?"
+ *     Pertanyaan2:
+ *       type: object
+ *       properties:
+ *         pertanyaan:
+ *           type: string
+ *           description: Pertanyaan yang dinilai
+ *           example: "Gimana pelayanan kami?"
+ *     Saran:
+ *       type: object
+ *       properties:
+ *         status:
+ *           type: boolean
+ *           description: Status of the suggestion
+ *           example: true
+ *         saran:
+ *           type: string
+ *           description: Suggestion given by the Coresponden
+ *           example: " Antriannya terlalu lama, Perbaiki lagi untuk skema antriannya "
+ */
+
+/**
+ * @swagger
+ * /coresponden:
+ *   get:
+ *     summary: Mengambil data coresponden 
+ *     tags: [Responden]
+ *     responses:
+ *       200:
+ *         description: A list of all Coresponden
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Coresponden'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   description: Error message
+ *                   example: "Kesalahan mengambil data responden"
+ */
+
 const getCoresponden = async (req, res) => {
     try {
         let respon;
@@ -93,6 +227,72 @@ const getCoresponden = async (req, res) => {
     }
 };
 
+/**
+ * @swagger
+ * /coresponden:
+ *   post:
+ *     summary: Membuat data Coresponden
+ *     tags: [Responden]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nama:
+ *                 type: string
+ *                 example: "John Doe"
+ *               nohp:
+ *                 type: string
+ *                 example: "08123456789"
+ *               usia:
+ *                 type: integer
+ *                 example: 30
+ *               layanan:
+ *                 type: string
+ *                 example: "Customer Service"
+ *               jenisKelamin:
+ *                 type: string
+ *                 example: "Perempuan"
+ *               id_survey:
+ *                 type: integer
+ *                 example: 1
+ *               user:
+ *                 type: integer
+ *                 example: 2
+ *               ratings:
+ *                 type: object
+ *                 additionalProperties:
+ *                   type: integer
+ *                   example: 4
+ *               suggestion:
+ *                 type: string
+ *                 example: "Pelayanan Sangat Baik"
+ *     responses:
+ *       201:
+ *         description: Respon sukses
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Coresponden, jawaban, dan saran berhasil disimpan"
+ *       500:
+ *         description: Respon kesalahan upload data responden
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Terjadi Kesalahan"
+ */
+
+
 const createCoresponden = async (req, res) => {
     const { nama, nohp, usia, layanan, jenisKelamin, id_survey, user, ratings, suggestion } = req.body;
 
@@ -144,9 +344,37 @@ const createCoresponden = async (req, res) => {
         return res.status(201).json({ msg: "Coresponden, jawaban, dan saran berhasil disimpan" });
     } catch (error) {
         console.error('Error creating Coresponden:', error);
-        return res.status(500).json({ error: 'Failed to create Coresponden' });
+        return res.status(500).json({ error: 'Terjadi Kesalahan' });
     }
 };
+
+/**
+ * @swagger
+ * /coresponden/{uuid}:
+ *   delete:
+ *     summary: Menghapus Data Responden
+ *     tags: [Responden]
+ *     parameters:
+ *       - in: path
+ *         name: uuid
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: UUID of the Coresponden to delete
+ *     responses:
+ *       204:
+ *         description: Respon sukses 
+ *       500:
+ *         description: Respon Kesalahan
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Failed to delete Coresponden"
+ */
 
 const deleteCoresponden = async (req, res) => {
     try {
@@ -163,6 +391,32 @@ const deleteCoresponden = async (req, res) => {
     }
 }
 
+/**
+ * @swagger
+ * /saran:
+ *   get:
+ *     summary: Mengambil data Saran
+ *     tags: [Responden]
+ *     responses:
+ *       200:
+ *         description: Respon Saran 
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Saran'
+ *       500:
+ *         description: Respon kesalahan
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   description: Error message
+ */
 // Menampilkan hanya saran
 const getSaran = async (req, res) => {
     try {
@@ -209,6 +463,52 @@ const getSaran = async (req, res) => {
     }
 }
 
+/**
+ * @swagger
+ * /saran/{uuid}/false:
+ *   patch:
+ *     summary: Update status menjadi False = Saran Terlaksanakan
+ *     tags: [Responden]
+ *     parameters:
+ *       - in: path
+ *         name: uuid
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: UUID of the Saran to update
+ *     responses:
+ *       200:
+ *         description: Saran status updated to false
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Saran status updated to false"
+ *       404:
+ *         description: Saran not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Saran not found"
+ *       500:
+ *         description: Failed to update Saran status
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Failed to update Saran status"
+ */
+
 // True/False saran
 const falseSaranStatus = async (req, res) => {
     try {
@@ -227,6 +527,52 @@ const falseSaranStatus = async (req, res) => {
     }
 };
 
+/**
+ * @swagger
+ * /saran/{uuid}/true:
+ *   patch:
+ *     summary: Update status menjadi true = belum Terlaksanakan
+ *     tags: [Responden]
+ *     parameters:
+ *       - in: path
+ *         name: uuid
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: UUID of the Saran to update
+ *     responses:
+ *       200:
+ *         description: Saran status updated to true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Saran status updated to true"
+ *       404:
+ *         description: Saran not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Saran not found"
+ *       500:
+ *         description: Failed to update Saran status
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: "Failed to update Saran status"
+ */
+
 const activateSaranStatus = async (req, res) => {
     try {
         const [affectedRows] = await Saran.update(
@@ -244,8 +590,32 @@ const activateSaranStatus = async (req, res) => {
     }
 };
 
-
-
+/**
+ * @swagger
+ * /biodata:
+ *   get:
+ *     summary: Mengambil Biodata Responden
+ *     tags: [Responden]
+ *     responses:
+ *       200:
+ *         description: Biodata Responden
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Coresponden'
+ *       500:
+ *         description: Respon kesalahan
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   description: Error message
+ */
 
 
 // Menampilkan Biodata responden
