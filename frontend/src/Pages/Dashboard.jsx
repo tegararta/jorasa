@@ -286,9 +286,14 @@ const Dashboard = () => {
         </div>
         <div className="grid grid-cols-2 gap-6 mt-6">
           {user && user.role === "admin" && (
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-bold mb-4 text-center">Analisa Layanan</h2>
-              <select  className=' text-xl font-mono text-center' value={selectedUnit} onChange={pilihUnit}>
+           <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-xl font-bold mb-4 text-center">Analisa Layanan</h2>
+            <div className="flex justify-center mb-4">
+              <select
+                className=' text-xl font-mono border border-gray-300 rounded-lg py-2 px-4 bg-whit text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm'
+                value={selectedUnit}
+                onChange={pilihUnit}
+              >
                 <option value="">Semua Unit</option>
                 {analisaUnit.map((unit) => (
                   <option key={unit.nama_unit} value={unit.nama_unit}>
@@ -296,11 +301,12 @@ const Dashboard = () => {
                   </option>
                 ))}
               </select>
-              <div className="flex items-center justify-center w-full h-64">
-              <Bar data={dataAnalisa} options={optionsBar} />
-              </div>
             </div>
-          )}
+            <div className="flex items-center justify-center w-full h-64">
+              <Bar data={dataAnalisa} options={optionsBar} />
+            </div>
+          </div>
+         )}
           {/* user */}
           {user && user.role === "user" && (
             <div className="bg-white rounded-lg shadow-md p-6">
@@ -314,15 +320,20 @@ const Dashboard = () => {
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-bold text-center">Jumlah Responden</h2>
             <input type="" name="" id="" />
-            <Bar data={dataPerbulan} options={optionsBar} />
-            <select  className=' text-xl font-mono text-center' value={selectedYear} onChange={handleYearChange}>
-              <option value="">Pilih Tahun</option>
+            <div className="flex justify-center mb-4">
+            <select  
+              className=' text-xl font-mono border border-gray-300 rounded-lg py-2 px-4 bg-whit text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm'
+              value={selectedYear} 
+              onChange={handleYearChange}>
+              <option value="">Semua</option>
               {years.map((year) => (
                 <option key={year} value={year}>
                   {year}
                 </option>
               ))}
-          </select>
+            </select>
+          </div>
+            <Bar data={dataPerbulan} options={optionsBar} />
           </div>
         </div>
         <div className='grid grid-cols-2 gap-6 mt-6'>
