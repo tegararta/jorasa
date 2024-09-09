@@ -182,7 +182,7 @@ const ListSurvey = () => {
               {selectedSurveyLink}
             </a>
             <div className="flex justify-center mt-4 mb-4">
-              <QRCode value={selectedSurveyLink} size={300} />
+              <QRCode value={selectedSurveyLink} size={400} />
             </div>
             <button
               onClick={printPDF}

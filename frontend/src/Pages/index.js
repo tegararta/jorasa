@@ -10,10 +10,9 @@ import Layanan from "./Layanan";
 import DataResponden from "./DataResponden";
 import LaporanSurvey from "./LaporanSurvey";
 import TentangKami from "./TentangKami";
-import SurveyLink from "./SurveyLink";
 import Survey from "../Responden/Survey";
 import Sidebar from "../Components/SidebarDiv";
 import TopBar from "../Components/TopBar";
 import ListSurvey from "./ListSurvey";
 
-export { Login, Beranda, Dashboard, EditPassword, Saran, Sidebar, TopBar, DetailSaran, Survey, BuatSurvey, UnitKerja, Layanan, DataResponden, LaporanSurvey, TentangKami, SurveyLink, ListSurvey };
+export { Login, Beranda, Dashboard, EditPassword, Saran, Sidebar, TopBar, DetailSaran, Survey, BuatSurvey, UnitKerja, Layanan, DataResponden, LaporanSurvey, TentangKami, ListSurvey };

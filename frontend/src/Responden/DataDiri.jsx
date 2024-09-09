@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import axios from 'axios';
+import axios from "axios";
 
 function DataDiri({ urlSurvey, onSubmit }) {
   const [nama, setNama] = useState("");
@@ -14,11 +14,13 @@ function DataDiri({ urlSurvey, onSubmit }) {
 
   const getLayanan = useCallback(async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/survey/${urlSurvey}`);
+      const response = await axios.get(
+        `http://localhost:5000/survey/${urlSurvey}`
+      );
       const layanan = response.data;
       setLayanan(layanan.user.unit_kerjas[0].layanans);
-      setUser(layanan.id_user)
-      setSurvey(layanan.id_survey)
+      setUser(layanan.id_user);
+      setSurvey(layanan.id_survey);
     } catch (error) {
       console.error(error);
     }
@@ -32,10 +34,10 @@ function DataDiri({ urlSurvey, onSubmit }) {
     // Memeriksa apakah semua field telah diisi
     setIsFormComplete(
       nama.trim() !== "" &&
-      nohp.trim() !== "" &&
-      usia.trim() !== "" &&
-      jenisKelamin !== "" &&
-      selectedLayanan !== ""
+        nohp.trim() !== "" &&
+        usia.trim() !== "" &&
+        jenisKelamin !== "" &&
+        selectedLayanan !== ""
     );
   }, [nama, nohp, usia, jenisKelamin, selectedLayanan]);
 
@@ -74,23 +76,27 @@ function DataDiri({ urlSurvey, onSubmit }) {
         jenisKelamin,
         layanan: selectedLayanan,
         id_survey: survey,
-        user: user
+        user: user,
       };
       console.log(respondenData);
-      
+
       onSubmit(respondenData);
     } else {
       alert("Harap lengkapi semua field sebelum melanjutkan.");
     }
   };
-  
 
   return (
     <div className="bg-[#A8D1A1] min-h-screen flex justify-center items-center">
       <div className="bg-white shadow-md rounded-md p-8 w-96">
-        <h2 className="text-2xl font-bold text-white mb-4 bg-[#416829] p-2 rounded-md text-center">Data Responden</h2>
+        <h2 className="text-2xl font-bold text-white mb-4 bg-[#416829] p-2 rounded-md text-center">
+          Data Responden
+        </h2>
         <div className="mb-4">
-          <label htmlFor="nama" className="block text-gray-700 text-sm font-bold mb-2">
+          <label
+            htmlFor="nama"
+            className="block text-gray-700 text-sm font-bold mb-2"
+          >
             Masukkan Nama
           </label>
           <input
@@ -102,8 +108,11 @@ function DataDiri({ urlSurvey, onSubmit }) {
           />
         </div>
         <div className="mb-4">
-          <label htmlFor="nohp" className="block text-gray-700 text-sm font-bold mb-2">
-            Masukkan No. HP
+          <label
+            htmlFor="nohp"
+            className="block text-gray-700 text-sm font-bold mb-2"
+          >
+            Nomor Hp/Wa
           </label>
           <input
             type="text"
@@ -114,7 +123,10 @@ function DataDiri({ urlSurvey, onSubmit }) {
           />
         </div>
         <div className="mb-4">
-          <label htmlFor="usia" className="block text-gray-700 text-sm font-bold mb-2">
+          <label
+            htmlFor="usia"
+            className="block text-gray-700 text-sm font-bold mb-2"
+          >
             Masukkan usia
           </label>
           <input
@@ -126,7 +138,10 @@ function DataDiri({ urlSurvey, onSubmit }) {
           />
         </div>
         <div className="mb-4">
-          <label htmlFor="layanan" className="block text-gray-700 text-sm font-bold mb-2">
+          <label
+            htmlFor="layanan"
+            className="block text-gray-700 text-sm font-bold mb-2"
+          >
             Layanan
           </label>
           <select
@@ -142,10 +157,12 @@ function DataDiri({ urlSurvey, onSubmit }) {
               </option>
             ))}
           </select>
-
         </div>
         <div className="mb-4">
-          <label htmlFor="jenisKelamin" className="block text-gray-700 text-sm font-bold mb-2">
+          <label
+            htmlFor="jenisKelamin"
+            className="block text-gray-700 text-sm font-bold mb-2"
+          >
             Pilih Jenis Kelamin
           </label>
           <div className="flex items-center">
@@ -176,7 +193,9 @@ function DataDiri({ urlSurvey, onSubmit }) {
         <div className="flex justify-center">
           <button
             onClick={handleSubmit}
-            className={`bg-[#416829] hover:bg-[#A1C19C] text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline ${!isFormComplete ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`bg-[#416829] hover:bg-[#A1C19C] text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline ${
+              !isFormComplete ? "opacity-50 cursor-not-allowed" : ""
+            }`}
             disabled={!isFormComplete}
           >
             Selanjutnya

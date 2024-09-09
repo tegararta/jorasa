@@ -1,24 +1,10 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import Navbar from '../Components/Navbar';
 
 function TentangKami() {
   return (
     <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center px-9">
-            <img src="/assets/logo.png" alt="Logo" className="h-12 w-auto" />
-            <div className="flex gap-10">
-            <Link to="/" className="text-[#416829] font-bold hover:text-[#A8D1A1] transition duration-300 ease-in-out">
-                Beranda
-            </Link>
-            <Link to="/TentangKami" className="text-[#416829] font-bold hover:text-[#A8D1A1] transition duration-300 ease-in-out">
-                Tentang Kami
-            </Link>
-            <Link to="/login" className="text-[#416829] font-bold hover:text-[#A8D1A1] transition duration-300 ease-in-out">
-                Masuk
-            </Link>
-            </div>
-        </div>
-
+        <Navbar />
         <div className="flex flex-col md:flex-row gap-8 items-center mt-20">
         <div className="w-full md:w-1/2 flex justify-center">
           <img

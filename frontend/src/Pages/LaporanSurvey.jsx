@@ -8,44 +8,52 @@ const LaporanSurvey = () => {
   const [data, setData] = useState([]);
   const { user } = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/responden/');
-        const fetchedData = response.data;
-
-        const processedData = fetchedData.reduce((acc, item) => {
-          // Cek apakah item.survey dan item.survey.user terdefinisi
-          if (item.survey && item.survey.user) {
-            const unit = item.survey.user.unit_kerjas[0]?.nama_unit || 'Unknown Unit';
-            const layanan = item.layanan;
-            const ratings = item.jawabans.reduce((acc, jwb) => {
-              acc[jwb.bintang] = (acc[jwb.bintang] || 0) + 1;
-              return acc;
-            }, {});
-
-            const existingItem = acc.find(l => l.layanan === layanan && l.unit === unit);
-            if (existingItem) {
-              for (let i = 1; i <= 5; i++) {
-                existingItem.rating[i] = (existingItem.rating[i] || 0) + (ratings[i] || 0);
-              }
-            } else {
-              acc.push({
-                unit,
-                layanan,
-                rating: ratings,
-              });
+  const fetchData = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/responden/');
+      const fetchedData = response.data;
+    
+      const processedData = fetchedData.reduce((acc, item) => {
+        // Cek apakah item.survey dan item.survey.user terdefinisi
+        if (item.survey && item.survey.user) {
+          const unit = item.survey.user.unit_kerjas[0]?.nama_unit || 'Unknown Unit';
+          const layanan = item.layanan;
+          const bintangs = item.jawabans.reduce((bAcc, jwb) => {
+            bAcc[jwb.bintang] = (bAcc[jwb.bintang] || 0) + 1;
+            return bAcc;
+          }, {});
+    
+          const existingItem = acc.find(l => l.layanan === layanan && l.unit === unit);
+          if (existingItem) {
+            for (let i = 1; i <= 5; i++) {
+              existingItem.bintang[i] = (existingItem.bintang[i] || 0) + (bintangs[i] || 0);
             }
+            // Hitung hasil baru (misalnya, rata-rata nilai bintang)
+            const totalBintang = Object.keys(existingItem.bintang).reduce((total, key) => {
+              return total + (existingItem.bintang[key] * key);
+            }, 0);
+            existingItem.hasil = totalBintang
+          } else {
+            const totalBintang = Object.keys(bintangs).reduce((total, key) => {
+              return total + (bintangs[key] * key);
+            }, 0);
+            acc.push({
+              unit,
+              layanan,
+              bintang: bintangs,
+              hasil: totalBintang
+            });
           }
-          return acc;
-        }, []);
+        }
+        return acc;
+      }, []);
+      setData(processedData);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  }
 
-        setData(processedData);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -76,6 +84,8 @@ const LaporanSurvey = () => {
     return acc;
   }, []);
 
+  
+
   return (
     <div className="bg-white p-4 rounded-lg shadow-md">
       <h2 className="text-center text-lg font-bold mb-4">Laporan Survey</h2>
@@ -100,6 +110,7 @@ const LaporanSurvey = () => {
             <th className="px-4 py-2 text-center">★★★</th>
             <th className="px-4 py-2 text-center">★★★★</th>
             <th className="px-4 py-2 text-center">★★★★★</th>
+            <th className="px-4 py-2 text-center">Survey</th>
             <th className="px-4 py-2 text-center">Total</th>
           </tr>
         </thead>
@@ -116,14 +127,13 @@ const LaporanSurvey = () => {
                   </td>
                 )}
                 <td className="px-4 py-2 border text-center">{item.layanan}</td>
-                <td className="px-4 py-2 border text-center">{item.rating[1] || 0}</td>
-                <td className="px-4 py-2 border text-center">{item.rating[2] || 0}</td>
-                <td className="px-4 py-2 border text-center">{item.rating[3] || 0}</td>
-                <td className="px-4 py-2 border text-center">{item.rating[4] || 0}</td>
-                <td className="px-4 py-2 border text-center">{item.rating[5] || 0}</td>
-                <td className="px-4 py-2 border text-center">
-                  {Object.values(item.rating).reduce((sum, value) => sum + value, 0)}
-                </td>
+                <td className="px-4 py-2 border text-center">{item.bintang[1] || 0}</td>
+                <td className="px-4 py-2 border text-center">{item.bintang[2] || 0}</td>
+                <td className="px-4 py-2 border text-center">{item.bintang[3] || 0}</td>
+                <td className="px-4 py-2 border text-center">{item.bintang[4] || 0}</td>
+                <td className="px-4 py-2 border text-center">{item.bintang[5] || 0}</td>
+                <td className="px-4 py-2 border text-center">{index + 1}</td>
+                <td className="px-4 py-2 border text-center">{item.hasil}</td>
               </tr>
             ))
           ))}

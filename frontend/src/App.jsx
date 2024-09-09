@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { Login, Beranda, Dashboard, Saran, DetailSaran, BuatSurvey, DataResponden, TentangKami, EditPassword, LaporanSurvey, UnitKerja, Layanan, SurveyLink, ListSurvey } from './Pages';
+import { Login, Beranda, Dashboard, Saran, DetailSaran, BuatSurvey, DataResponden, TentangKami, EditPassword, LaporanSurvey, UnitKerja, Layanan, ListSurvey } from './Pages';
 import { DataDiri } from './Responden';
 import Notifikasi from './Components/Notifikasi/Notifikasi';
 import SurveyPage from './Pages/SurveyPage';
@@ -25,7 +25,6 @@ const App = () => {
         <Route path="/layanan" element={<Layout><Layanan /></Layout>} />
         <Route path="/dataresponden" element={<Layout><DataResponden /></Layout>} />
         <Route path="/laporan-survey" element={<Layout><LaporanSurvey /></Layout>} />
-        <Route path="/SurveyLink" element={<Layout><SurveyLink /></Layout>} />
         <Route path="/TentangKami" element={<TentangKami />} />
         <Route path="/ListSurvey" element={<Layout><ListSurvey/></Layout>} />
       </Routes>
